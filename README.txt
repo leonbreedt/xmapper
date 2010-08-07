@@ -18,8 +18,8 @@ No guarantees that it compiles, or even, works.
     - Slow-ass XML serialization (using hand-crafted XLinq generation though,
       *NOT* XmlSerializer), for when we need to debug.
 
-* Have the notion of an "identifier scope", within which objects with identifiers
-  are indexed and retrievable via identifier. XXX: How, 
+* Have the notion of an object index, within which objects with identifiers
+  can index themselves via deserialization callbacks.
 
 NOTE: Since protobuf does not preserve object references within the message
       (it's a tree format), we'll use an ID scheme for this. An object wanting to 
