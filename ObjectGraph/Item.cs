@@ -26,18 +26,12 @@ using ProtoBuf;
 
 namespace ObjectGraph
 {
-    public enum SerializationFormat
-    {
-        ProtocolBuffer,
-        Xml
-    }
-
     public abstract class Item<TItem> where TItem : class
     {
         public static TItem Load(Stream stream, SerializationFormat format)
         {
             if (format == SerializationFormat.ProtocolBuffer)
-                return Serializer.Deserialize<TItem>(stream);
+                return Serializer.DeserializeWithLengthPrefix<TItem>(stream, PrefixStyle.Fixed32);
 
             throw new NotImplementedException();
         }
@@ -45,7 +39,7 @@ namespace ObjectGraph
         public void Save(Stream stream, SerializationFormat format)
         {
             if (format == SerializationFormat.ProtocolBuffer)
-                Serializer.Serialize(stream, this as TItem);
+                Serializer.SerializeWithLengthPrefix(stream, this as TItem, PrefixStyle.Fixed32);
             else
                 throw new NotImplementedException();
         }

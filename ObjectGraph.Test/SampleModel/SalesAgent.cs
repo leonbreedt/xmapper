@@ -15,21 +15,14 @@
 // limitations under the License.using System;
 //
 
-using System.Collections.Generic;
 using System.Runtime.Serialization;
 
 namespace ObjectGraph.Test.SampleModel
 {
     [DataContract]
-    public class Document : DocumentItem<Document>
+    public class SalesAgent : Person
     {
         [DataMember(Order=1)]
-        public long Id { get; set; }
-
-        [DataMember(Order=2)]
-        public string Name { get; set; }
-
-        [DataMember(Order=3)]
-        public List<Manager> Managers { get; set; }
+        public decimal SalesTotal { get; set; }    
     }
 }

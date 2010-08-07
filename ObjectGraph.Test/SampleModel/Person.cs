@@ -15,25 +15,24 @@
 // limitations under the License.using System;
 //
 
-using System.Collections.Generic;
-using System.Reflection;
 using System.Runtime.Serialization;
+using ProtoBuf;
 
 namespace ObjectGraph.Test.SampleModel
 {
-    public enum PersonType
+    public enum PersonRole
     {
         Undefined,
-        Friend,
-        Colleague,
-        Family
+        Sales,
+        Manager
     }
 
     [DataContract]
-    public class Person : Item<Person>
+    [ProtoContract]
+    [ProtoInclude(1000, typeof(SalesAgent))]
+    [ProtoInclude(1001, typeof(Manager))]
+    public abstract class Person : Item<Person>
     {
-        static readonly MemberInfo[] EquatableMembers = {Property(x => x.Id)};
-
         [DataMember(Order=1)]
         public string Id { get; set; }
 
@@ -44,11 +43,6 @@ namespace ObjectGraph.Test.SampleModel
         public string LastName { get; set; }
 
         [DataMember(Order=4)]
-        public PersonType Type { get; set; }
-
-        protected override IEnumerable<MemberInfo> GetEquatableMembers()
-        {
-            return EquatableMembers;
-        }
+        public PersonRole Role { get; set; }
     }
 }

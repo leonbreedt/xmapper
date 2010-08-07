@@ -19,3 +19,8 @@ Just a toy framework, to play with some ideas I have for object graph serializat
   of a cost, so use lambda => expression tree magic to reference the equatable 
   fields or properties from our POCO types.
 
+
+NOTE: Since protobuf does not preserve object references, we'll use an ID
+      schema for this. An object wanting to take a reference to another object takes
+	  some form of ID (string, integer), and we'll have an in-memory index that
+	  can be queried to retrieve the reference once the graph is loaded.

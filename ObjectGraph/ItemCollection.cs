@@ -15,69 +15,32 @@
 // limitations under the License.using System;
 //
 
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
+using ProtoBuf;
 
 namespace ObjectGraph
 {
-    public abstract class ItemCollection<TItem> : ICollection<TItem> where TItem : Item<TItem>
+    public abstract class ItemCollection<TCollection, TItem> : List<TItem>, ICollection
+        where TCollection : class
+        where TItem : class
     {
-        #region Fields
-        readonly List<TItem> _items;
-        #endregion
-
-        protected ItemCollection()
+        public static TCollection Load(Stream stream, SerializationFormat format)
         {
-            _items = new List<TItem>();
+            if (format == SerializationFormat.ProtocolBuffer)
+                return Serializer.DeserializeWithLengthPrefix<TCollection>(stream, PrefixStyle.Fixed32);
+
+            throw new NotImplementedException();
         }
 
-        #region Implementation of IEnumerable
-        public IEnumerator<TItem> GetEnumerator()
+        public void Save(Stream stream, SerializationFormat format)
         {
-            return _items.GetEnumerator();
+            if (format == SerializationFormat.ProtocolBuffer)
+                Serializer.SerializeWithLengthPrefix(stream, this as TCollection, PrefixStyle.Fixed32);
+            else
+                throw new NotImplementedException();
         }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
-        #endregion
-
-        #region Implementation of ICollection<TItem>
-        public void Add(TItem item)
-        {
-            _items.Add(item);
-        }
-
-        public void Clear()
-        {
-            _items.Clear();
-        }
-
-        public bool Contains(TItem item)
-        {
-            return _items.Contains(item);
-        }
-
-        public void CopyTo(TItem[] array, int arrayIndex)
-        {
-            _items.CopyTo(array, arrayIndex);
-        }
-
-        public bool Remove(TItem item)
-        {
-            return _items.Remove(item);
-        }
-
-        public int Count
-        {
-            get { return _items.Count; }
-        }
-
-        public bool IsReadOnly
-        {
-            get { return false; }
-        }
-        #endregion
     }
 }

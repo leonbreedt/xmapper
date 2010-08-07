@@ -49,6 +49,7 @@
     <Compile Include="ItemCollection.cs" />
     <Compile Include="MemberBinding.cs" />
     <Compile Include="MemberEqualityComparer.cs" />
+    <Compile Include="SerializationFormat.cs" />
     <Compile Include="StringExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

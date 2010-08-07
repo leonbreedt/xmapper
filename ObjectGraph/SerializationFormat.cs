@@ -15,12 +15,11 @@
 // limitations under the License.using System;
 //
 
-using System.Runtime.Serialization;
-
-namespace ObjectGraph.Test.SampleModel
+namespace ObjectGraph
 {
-    [DataContract]
-    public class FamilyPerson : Item<FamilyPerson>
+    public enum SerializationFormat
     {
+        ProtocolBuffer,
+        Xml
     }
 }

@@ -20,7 +20,7 @@ using System.Runtime.Serialization;
 namespace ObjectGraph.Test.SampleModel
 {
     [DataContract]
-    public class Persons : ItemCollection<Person>
+    public class Managers : ItemCollection<Managers, Manager>
     {
     }
 }

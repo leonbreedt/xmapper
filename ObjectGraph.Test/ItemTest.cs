@@ -18,6 +18,7 @@
 using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ObjectGraph.Test.SampleModel;
+using ProtoBuf;
 
 namespace ObjectGraph.Test
 {
@@ -27,22 +28,52 @@ namespace ObjectGraph.Test
         [TestMethod]
         public void ProtoBuf_FlatObject_Serializes_And_Deserializes()
         {
-            var expected = new Person
-                               {
-                                   Id = "jd",
-                                   FirstName = "John",
-                                   LastName = "Doe",
-                                   Type = PersonType.Colleague
-                               };
+            var expected = new SalesAgent {Id = "jd", FirstName = "John", LastName = "Smith", Role = PersonRole.Sales};
             var stream = new MemoryStream();
 
             expected.Save(stream, SerializationFormat.ProtocolBuffer);
 
+            Assert.AreNotEqual(0, stream.Length);
+
             stream.Seek(0, SeekOrigin.Begin);
 
-            var actual = Person.Load(stream, SerializationFormat.ProtocolBuffer);
+            var actual = SalesAgent.Load(stream, SerializationFormat.ProtocolBuffer);
 
-            Assert.AreEqual(expected, actual);
+            Assert.AreNotSame(expected, actual);
+            Assert.AreEqual(new {expected.Id, actual.FirstName, actual.LastName, Type = actual.Role},
+                            new {actual.Id, actual.FirstName, actual.LastName, Type = actual.Role});
+            Assert.AreNotSame(expected, actual);
+
+            actual.FirstName = "James";
+
+            Assert.AreNotEqual(expected, actual);
+        }
+
+        [TestMethod]
+        public void ProtoBuf_EmbeddedCollection_Serializes_And_Deserializes_DoesNotPreserveObjectReferences()
+        {
+            var superior = new Manager {Id = "jw", FirstName = "James", LastName = "Smith", Role = PersonRole.Manager, CarParkNumber = 1};
+            var manager1 = new Manager {Id = "jd", FirstName = "John", LastName = "Smith", Role = PersonRole.Manager, CarParkNumber = 33, Superior = superior};
+            var manager2 = new Manager {Id = "pw", FirstName = "Paul", LastName = "Smith", Role = PersonRole.Manager, CarParkNumber = 33, Superior = superior};
+
+            // protobuf-net does not support a collection as the root object, so wrap it.
+            var managers = new Managers {superior, manager1, manager2};
+            var expected = new Document {Managers = managers};
+
+            var stream = new MemoryStream();
+
+            expected.Save(stream, SerializationFormat.ProtocolBuffer);
+            Serializer.Serialize(stream, expected);
+
+            Assert.AreNotEqual(0, stream.Length);
+
+            stream.Seek(0, SeekOrigin.Begin);
+
+            var actual = Document.Load(stream, SerializationFormat.ProtocolBuffer);
+
+            Assert.AreNotSame(expected, actual);
+            CollectionAssert.AreEqual(expected.Managers, actual.Managers);
+            Assert.AreNotSame(actual.Managers[1].Superior, actual.Managers[2].Superior);
         }
     }
 }

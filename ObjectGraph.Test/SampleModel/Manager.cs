@@ -15,21 +15,25 @@
 // limitations under the License.using System;
 //
 
-using System.Collections.Generic;
+using System.Reflection;
 using System.Runtime.Serialization;
 
 namespace ObjectGraph.Test.SampleModel
 {
     [DataContract]
-    public class Document : DocumentItem<Document>
+    public class Manager : Person
     {
+        static readonly MemberInfo[] EquatableMembers = new[] {Property(x => x.Id)};
+
         [DataMember(Order=1)]
-        public long Id { get; set; }
+        public int CarParkNumber { get; set; }
 
         [DataMember(Order=2)]
-        public string Name { get; set; }
+        public Manager Superior { get; set; }
 
-        [DataMember(Order=3)]
-        public List<Manager> Managers { get; set; }
+        protected override System.Collections.Generic.IEnumerable<MemberInfo> GetEquatableMembers()
+        {
+            return EquatableMembers;
+        }
     }
 }
