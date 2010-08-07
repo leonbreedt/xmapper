@@ -1,0 +1,6 @@
+*.suo
+*.user
+TestResults/*
+_ReSharper.ObjectGraph/*
+*/bin/*
+*/obj/*
