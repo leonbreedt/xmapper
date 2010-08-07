@@ -21,7 +21,7 @@ using System.Runtime.Serialization;
 namespace ObjectGraph.Test.SampleModel
 {
     [DataContract]
-    public class Document : DocumentItem<Document>
+    public class Document
     {
         [DataMember(Order=1)]
         public long Id { get; set; }

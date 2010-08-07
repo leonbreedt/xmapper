@@ -15,7 +15,6 @@
 // limitations under the License.using System;
 //
 
-using System.Reflection;
 using System.Runtime.Serialization;
 
 namespace ObjectGraph.Test.SampleModel
@@ -23,17 +22,24 @@ namespace ObjectGraph.Test.SampleModel
     [DataContract]
     public class Manager : Person
     {
-        static readonly MemberInfo[] EquatableMembers = new[] {Property(x => x.Id)};
-
         [DataMember(Order=1)]
         public int CarParkNumber { get; set; }
 
         [DataMember(Order=2)]
-        public Manager Superior { get; set; }
+        public Person Superior { get; set; }
 
-        protected override System.Collections.Generic.IEnumerable<MemberInfo> GetEquatableMembers()
+        public override bool Equals(object obj)
         {
-            return EquatableMembers;
+            if (obj == null || GetType() != obj.GetType())
+                return false;
+
+            var other = (Manager)obj;
+            return Id == other.Id;
+        }
+
+        public override int GetHashCode()
+        {
+            return Id != null ? Id.GetHashCode() : 0;
         }
     }
 }

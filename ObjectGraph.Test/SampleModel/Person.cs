@@ -16,6 +16,7 @@
 //
 
 using System.Runtime.Serialization;
+using ObjectGraph.Extensions;
 using ProtoBuf;
 
 namespace ObjectGraph.Test.SampleModel
@@ -31,7 +32,7 @@ namespace ObjectGraph.Test.SampleModel
     [ProtoContract]
     [ProtoInclude(1000, typeof(SalesAgent))]
     [ProtoInclude(1001, typeof(Manager))]
-    public abstract class Person : Item<Person>
+    public abstract class Person
     {
         [DataMember(Order=1)]
         public string Id { get; set; }
@@ -44,5 +45,11 @@ namespace ObjectGraph.Test.SampleModel
 
         [DataMember(Order=4)]
         public PersonRole Role { get; set; }
+
+        [OnDeserialized]
+        internal void OnDeserializing(StreamingContext context)
+        {
+            context.IndexObject(Id, this);
+        }
     }
 }

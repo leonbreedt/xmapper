@@ -15,9 +15,17 @@
 // limitations under the License.using System;
 //
 
-namespace ObjectGraph
+using System.Runtime.Serialization;
+
+namespace ObjectGraph.Extensions
 {
-    public abstract class DocumentItem<TItem> : Item<TItem> where TItem : class
+    public static class StreamingContextExtensions
     {
+        public static void IndexObject<TKey, TObject>(this StreamingContext context, TKey key, TObject obj)
+        {
+            var idx = context.Context as IObjectIndex;
+            if (idx != null)
+                idx.Put(key, obj);
+        }
     }
 }

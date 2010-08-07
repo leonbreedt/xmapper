@@ -16,29 +16,47 @@
 //
 
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.IO;
+using System.Runtime.Serialization;
 using ProtoBuf;
 
 namespace ObjectGraph
 {
-    public abstract class ItemCollection<TCollection, TItem> : List<TItem>, ICollection
-        where TCollection : class
-        where TItem : class
+    public static class Serialization
     {
-        public static TCollection Load(Stream stream, SerializationFormat format)
+        public static T Load<T>(Stream stream)
+        {
+            return Load<T>(stream, SerializationFormat.ProtocolBuffer, null);
+        }
+
+        public static T Load<T>(Stream stream, SerializationFormat format)
+        {
+            return Load<T>(stream, format, null);
+        }
+
+        public static T Load<T>(Stream stream, SerializationFormat format, IObjectIndex index)
         {
             if (format == SerializationFormat.ProtocolBuffer)
-                return Serializer.DeserializeWithLengthPrefix<TCollection>(stream, PrefixStyle.Fixed32);
+            {
+                var context = new StreamingContext(StreamingContextStates.Other, index);
+
+                var formatter = Serializer.CreateFormatter<T>();
+                formatter.Context = context;
+
+                T result = (T)formatter.Deserialize(stream);
+
+                return result;
+            }
 
             throw new NotImplementedException();
         }
 
-        public void Save(Stream stream, SerializationFormat format)
+        public static void Save<T>(T obj, Stream stream, SerializationFormat format) where T : class
         {
             if (format == SerializationFormat.ProtocolBuffer)
-                Serializer.SerializeWithLengthPrefix(stream, this as TCollection, PrefixStyle.Fixed32);
+            {
+                Serializer.Serialize(stream, obj);
+            }
             else
                 throw new NotImplementedException();
         }

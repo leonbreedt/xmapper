@@ -15,12 +15,12 @@
 // limitations under the License.using System;
 //
 
-using System.Runtime.Serialization;
-
-namespace ObjectGraph.Test.SampleModel
+namespace ObjectGraph
 {
-    [DataContract]
-    public class Managers : ItemCollection<Managers, Manager>
+    public interface IObjectIndex
     {
+        TValue Get<TKey, TValue>(TKey key);
+        void Put<TKey, TValue>(TKey key, TValue obj);
+        void Delete<TKey, TValue>(TKey key);
     }
 }

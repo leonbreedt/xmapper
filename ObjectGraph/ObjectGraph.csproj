@@ -44,11 +44,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DocumentItem.cs" />
-    <Compile Include="Item.cs" />
-    <Compile Include="ItemCollection.cs" />
-    <Compile Include="MemberBinding.cs" />
-    <Compile Include="MemberEqualityComparer.cs" />
+    <Compile Include="StreamingContextExtensions.cs" />
+    <Compile Include="InMemoryObjectIndex.cs" />
+    <Compile Include="IObjectIndex.cs" />
+    <Compile Include="Serialization.cs" />
     <Compile Include="SerializationFormat.cs" />
     <Compile Include="StringExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

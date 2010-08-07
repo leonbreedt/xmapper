@@ -50,12 +50,10 @@
     </CodeAnalysisDependentAssemblyPaths>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="MemberEqualityComparerTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ItemTest.cs" />
     <Compile Include="SampleModel\Manager.cs" />
     <Compile Include="SampleModel\Document.cs" />
-    <Compile Include="SampleModel\Managers.cs" />
     <Compile Include="SampleModel\SalesAgent.cs" />
     <Compile Include="SampleModel\Person.cs" />
   </ItemGroup>
