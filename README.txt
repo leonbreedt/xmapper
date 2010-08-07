@@ -20,7 +20,8 @@ Just a toy framework, to play with some ideas I have for object graph serializat
   fields or properties from our POCO types.
 
 
-NOTE: Since protobuf does not preserve object references, we'll use an ID
-      schema for this. An object wanting to take a reference to another object takes
-	  some form of ID (string, integer), and we'll have an in-memory index that
-	  can be queried to retrieve the reference once the graph is loaded.
+NOTE: Since protobuf does not preserve object references within the message
+      (it's a tree format), we'll use an ID scheme for this. An object wanting to 
+      take a reference to another object stores the identifier of that object 
+      (string, integer), and we'll have an in-memory index that can be queried 
+      to retrieve the reference once the graph is loaded.
