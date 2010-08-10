@@ -18,12 +18,11 @@
 using System.Collections.Generic;
 using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ObjectGraph.Test.SampleModel;
 
 namespace ObjectGraph.Test
 {
     [TestClass]
-    public class ItemTest
+    public class ProtoBufTest
     {
         [TestMethod]
         public void ProtoBuf_FlatObject_Serializes_And_Deserializes()

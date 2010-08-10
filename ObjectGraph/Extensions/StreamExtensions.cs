@@ -15,14 +15,16 @@
 // limitations under the License.using System;
 //
 
-using System.Runtime.Serialization;
+using System.IO;
+using System.Text;
 
-namespace ObjectGraph.Test.SampleModel
+namespace ObjectGraph.Extensions
 {
-    [DataContract]
-    public class SalesAgent : Person
+    public static class StreamExtensions
     {
-        [DataMember(Order=1)]
-        public decimal SalesTotal { get; set; }    
+        public static string ToUtf8String(this MemoryStream stream)
+        {
+            return Encoding.UTF8.GetString(stream.ToArray());
+        }
     }
 }

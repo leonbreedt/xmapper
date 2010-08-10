@@ -15,21 +15,11 @@
 // limitations under the License.using System;
 //
 
-using System.Collections.Generic;
-using System.Runtime.Serialization;
-
-namespace ObjectGraph.Test.SampleModel
+namespace ObjectGraph.Xml
 {
-    [DataContract]
-    public class Document
+    public enum NodeType
     {
-        [DataMember(Order=1)]
-        public long Id { get; set; }
-
-        [DataMember(Order=2)]
-        public string Name { get; set; }
-
-        [DataMember(Order=3)]
-        public List<Manager> Managers { get; set; }
+        Attribute,
+        Element
     }
 }

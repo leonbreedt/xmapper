@@ -15,31 +15,25 @@
 // limitations under the License.using System;
 //
 
-using System.Runtime.Serialization;
+using System;
+using System.Xml.Linq;
 
-namespace ObjectGraph.Test.SampleModel
+namespace ObjectGraph.Xml
 {
-    [DataContract]
-    public class Manager : Person
+    [AttributeUsage(AttributeTargets.Property)]
+    public class XOptionalAttribute : Attribute
     {
-        [DataMember(Order=1)]
-        public int CarParkNumber { get; set; }
-
-        [DataMember(Order=2)]
-        public Person Superior { get; set; }
-
-        public override bool Equals(object obj)
+        public XOptionalAttribute()
+            : this(NodeType.Attribute)
         {
-            if (obj == null || GetType() != obj.GetType())
-                return false;
-
-            var other = (Manager)obj;
-            return Id == other.Id;
         }
 
-        public override int GetHashCode()
+        public XOptionalAttribute(NodeType type)
         {
-            return Id != null ? Id.GetHashCode() : 0;
+            Type = type;
         }
+
+        public XName Name { get; set; }
+        public NodeType Type { get; set; }
     }
 }

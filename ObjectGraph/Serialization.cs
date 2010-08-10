@@ -18,6 +18,7 @@
 using System;
 using System.IO;
 using System.Runtime.Serialization;
+using ObjectGraph.Xml;
 using ProtoBuf;
 
 namespace ObjectGraph
@@ -54,9 +55,9 @@ namespace ObjectGraph
         public static void Save<T>(T obj, Stream stream, SerializationFormat format) where T : class
         {
             if (format == SerializationFormat.ProtocolBuffer)
-            {
                 Serializer.Serialize(stream, obj);
-            }
+            else if (format == SerializationFormat.Xml)
+                XSerializer<T>.Serialize(stream, obj);
             else
                 throw new NotImplementedException();
         }
