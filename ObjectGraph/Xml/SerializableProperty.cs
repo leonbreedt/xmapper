@@ -16,80 +16,65 @@
 //
 
 using System;
-using System.Xml;
 using System.Xml.Linq;
 
 namespace ObjectGraph.Xml
 {
-    internal class SerializableProperty<T> 
-        where T : class
+    internal abstract class SerializableProperty
     {
-        public SerializableProperty(XName name, NodeType nodeType, bool isRequired, Type propertyType, Func<T, object> getter, Action<T, object> setter)
+        protected SerializableProperty(XName name, NodeType nodeType, bool isRequired, Type propertyType)
         {
-            var underlyingType = Nullable.GetUnderlyingType(propertyType);
-
             Name = name;
             NodeType = nodeType;
             IsRequired = isRequired;
-            IsNullable = underlyingType != null;
+            UnderlyingType = Nullable.GetUnderlyingType(propertyType);
+            IsNullable = UnderlyingType != null;
             PropertyType = propertyType;
-            PropertyTypeCode = underlyingType != null ? Type.GetTypeCode(underlyingType) : Type.GetTypeCode(propertyType);
-            Getter = getter;
-            Setter = setter;
         }
 
         public XName Name { get; set; }
         public NodeType NodeType { get; set; }
         public bool IsRequired { get; set; }
         public bool IsNullable { get; set; }
+        public Type UnderlyingType { get; set; }
         public Type PropertyType { get; set; }
-        public TypeCode PropertyTypeCode { get; set; }
-        public Func<T, object> Getter { get; set; }
-        public Action<T, object> Setter { get; set; }
 
-        public string GetXmlValue(T obj)
+        public abstract string GetValueForXml(object obj);
+        public abstract void SetValueFromXml(object obj, string value);
+    }
+
+    internal class SerializableProperty<T, TProperty> : SerializableProperty
+        where T : class
+    {
+        public SerializableProperty(XName name,
+                                    NodeType nodeType,
+                                    bool isRequired,
+                                    Type propertyType,
+                                    Func<T, TProperty> getter,
+                                    Action<T, TProperty> setter,
+                                    Func<TProperty, string> toXmlValue,
+                                    Func<string, TProperty> fromXmlValue)
+            : base(name, nodeType, isRequired, propertyType)
         {
-            var value = Getter(obj);
-            if (value == null)
-                return null;
+            Getter = getter;
+            Setter = setter;
+            ToXmlValue = toXmlValue;
+            FromXmlValue = fromXmlValue;
+        }
 
-            switch (PropertyTypeCode)
-            {
-                case TypeCode.Boolean:
-                    return XmlConvert.ToString((bool)value);
-                case TypeCode.Byte:
-                    return XmlConvert.ToString((byte)value);
-                case TypeCode.Char:
-                    return XmlConvert.ToString((char)value);
-                case TypeCode.DateTime:
-                    return XmlConvert.ToString((DateTime)value, XmlDateTimeSerializationMode.Unspecified);
-                case TypeCode.Decimal:
-                    return XmlConvert.ToString((decimal)value);
-                case TypeCode.Double:
-                    return XmlConvert.ToString((double)value);
-                case TypeCode.Int16:
-                    return XmlConvert.ToString((short)value);
-                case TypeCode.Int32:
-                    return XmlConvert.ToString((int)value);
-                case TypeCode.Int64:
-                    return XmlConvert.ToString((long)value);
-                case TypeCode.Object:
-                    return value.ToString();
-                case TypeCode.SByte:
-                    return XmlConvert.ToString((sbyte)value);
-                case TypeCode.Single:
-                    return XmlConvert.ToString((float)value);
-                case TypeCode.String:
-                    return value as string;
-                case TypeCode.UInt16:
-                    return XmlConvert.ToString((ushort)value);
-                case TypeCode.UInt32:
-                    return XmlConvert.ToString((uint)value);
-                case TypeCode.UInt64:
-                    return XmlConvert.ToString((ulong)value);
-                default:
-                    throw new NotSupportedException(PropertyTypeCode.ToString());
-            }
+        public Func<T, TProperty> Getter { get; set; }
+        public Action<T, TProperty> Setter { get; set; }
+        public Func<TProperty, string> ToXmlValue { get; set; }
+        public Func<string, TProperty> FromXmlValue { get; set; }
+
+        public override string GetValueForXml(object obj)
+        {
+            return ToXmlValue(Getter((T)obj));
+        }
+
+        public override void SetValueFromXml(object obj, string value)
+        {
+            Setter((T)obj, FromXmlValue(value));
         }
     }
 }
