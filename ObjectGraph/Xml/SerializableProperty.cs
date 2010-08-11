@@ -52,8 +52,8 @@ namespace ObjectGraph.Xml
                                     Type propertyType,
                                     Func<T, TProperty> getter,
                                     Action<T, TProperty> setter,
-                                    Func<TProperty, string> toXmlValue,
-                                    Func<string, TProperty> fromXmlValue)
+                                    Func<string, TProperty> fromXmlValue,
+                                    Func<TProperty, string> toXmlValue)
             : base(name, nodeType, isRequired, propertyType)
         {
             Getter = getter;

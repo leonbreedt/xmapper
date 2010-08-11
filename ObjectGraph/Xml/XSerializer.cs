@@ -71,21 +71,43 @@ namespace ObjectGraph.Xml
                 var getter = PropertyGetter(propertyInfo.GetGetMethod());
                 var setter = PropertySetter(propertyInfo.GetSetMethod());
 
-                // FIXME: Generate delegate for reading XML value without boxing, and writing XML value without boxing, pass to serializableproperty
-                // FIXME: Maybe pre-generate delegates for primitive types to avoid too much reflection here?
+                object xmlReader;
+                object xmlWriter;
 
-                var serializableType = typeof(SerializableProperty<,>).MakeGenericType(typeof(T), propertyInfo.PropertyType);
+                var propertyType = propertyInfo.PropertyType;
+                var type = Nullable.GetUnderlyingType(propertyType) ?? propertyType;
+                var typeCode = Type.GetTypeCode(type);
+
+                if (typeCode != TypeCode.Empty && 
+                    typeCode != TypeCode.Object && 
+                    typeCode != TypeCode.DBNull)
+                {
+                    if (type.IsEnum)
+                    {
+                        xmlReader = XBasicConverter.ForReadingEnum(type);
+                        xmlWriter = XBasicConverter.ForWritingEnum(type);
+                    }
+                    else
+                    {
+                        xmlReader = XBasicConverter.ForReading(typeCode);
+                        xmlWriter = XBasicConverter.ForWriting(typeCode);
+                    }
+                }
+                else
+                    throw new NotSupportedException("Non-primitive types are not yet supported");
+
+                var serializableType = typeof(SerializableProperty<,>).MakeGenericType(typeof(T), propertyType);
                 var serializableTypeConstructor = serializableType.GetConstructor(new[]
-                                                                              {
-                                                                                  typeof(XName),
-                                                                                  typeof(NodeType),
-                                                                                  typeof(bool),
-                                                                                  typeof(Type),
-                                                                                  getter.GetType(),
-                                                                                  setter.GetType(),
-                                                                                  null, // FIXME
-                                                                                  null // FIXME
-                                                                              });
+                                                                                      {
+                                                                                          typeof(XName),
+                                                                                          typeof(NodeType),
+                                                                                          typeof(bool),
+                                                                                          typeof(Type),
+                                                                                          getter.GetType(),
+                                                                                          setter.GetType(),
+                                                                                          xmlReader.GetType(),
+                                                                                          xmlWriter.GetType()
+                                                                                      });
 
                 var serializableProperty =
                         (SerializableProperty)serializableTypeConstructor.Invoke(new[]
@@ -93,11 +115,11 @@ namespace ObjectGraph.Xml
                                                                                      info.Item1 ?? propertyInfo.Name,
                                                                                      info.Item2,
                                                                                      info.Item3,
-                                                                                     propertyInfo.PropertyType,
+                                                                                     propertyType,
                                                                                      getter,
                                                                                      setter,
-                                                                                     null, // FIXME
-                                                                                     null // FIXME
+                                                                                     xmlReader,
+                                                                                     xmlWriter
                                                                                  });
 
                 _properties.Add(serializableProperty);
@@ -183,11 +205,11 @@ namespace ObjectGraph.Xml
         }
 
 #pragma warning disable 0693
+// ReSharper disable UnusedMember.Local
         static Func<T, TProperty> PropertyGetterHelper<T, TProperty>(MethodInfo method)
+// ReSharper restore UnusedMember.Local
         {
-            var func = (Func<T, TProperty>)Delegate.CreateDelegate(typeof(Func<T, TProperty>), method);
-            Func<T, TProperty> ret = target => func(target);
-            return ret;
+            return (Func<T, TProperty>)Delegate.CreateDelegate(typeof(Func<T, TProperty>), method);
         }
 #pragma warning restore 0693
 
@@ -199,11 +221,11 @@ namespace ObjectGraph.Xml
         }
 
 #pragma warning disable 0693
+// ReSharper disable UnusedMember.Local
         static Action<T, TProperty> PropertySetterHelper<T, TProperty>(MethodInfo method)
+// ReSharper restore UnusedMember.Local
         {
-            var action = (Action<T, TProperty>)Delegate.CreateDelegate(typeof(Action<T, TProperty>), method);
-            Action<T, TProperty> ret = (target, value) => action(target, value);
-            return ret;
+            return (Action<T, TProperty>)Delegate.CreateDelegate(typeof(Action<T, TProperty>), method);
         }
 #pragma warning restore 0693
     }

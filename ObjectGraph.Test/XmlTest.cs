@@ -15,10 +15,8 @@
 // limitations under the License.using System;
 //
 
-using System;
 using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ObjectGraph.Extensions;
 
 namespace ObjectGraph.Test
 {
@@ -29,15 +27,10 @@ namespace ObjectGraph.Test
         public void XmlTest_SerializesAndDeserializes()
         {
             var expected = new SalesAgent { Id = "jd", FirstName = "John", LastName = "Smith", Role = PersonRole.Sales };
+
             var stream = new MemoryStream();
 
             Serialization.Save(expected, stream, SerializationFormat.Xml);
-
-            Assert.AreNotEqual(0, stream.Length);
-
-            stream.Seek(0, SeekOrigin.Begin);
-
-            Console.WriteLine(stream.ToUtf8String());
         }
     }
 }
