@@ -18,7 +18,6 @@
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using ObjectGraph.Extensions;
-using ObjectGraph.Xml;
 using ProtoBuf;
 
 namespace ObjectGraph.Test
@@ -34,23 +33,18 @@ namespace ObjectGraph.Test
     [ProtoContract]
     [ProtoInclude(1000, typeof(SalesAgent))]
     [ProtoInclude(1001, typeof(Manager))]
-    [XSerializable]
     internal abstract class Person
     {
         [DataMember(Order = 1)]
-        [XRequired]
         public string Id { get; set; }
 
         [DataMember(Order = 2)]
-        [XOptional]
         public string FirstName { get; set; }
 
         [DataMember(Order = 3)]
-        [XOptional]
         public string LastName { get; set; }
 
         [DataMember(Order = 4)]
-        [XRequired]
         public PersonRole Role { get; set; }
 
         [OnDeserialized]
@@ -61,15 +55,12 @@ namespace ObjectGraph.Test
     }
 
     [DataContract]
-    [XSerializable]
     internal class Manager : Person
     {
         [DataMember(Order = 1)]
-        [XRequired]
         public int CarParkNumber { get; set; }
 
         [DataMember(Order = 2)]
-        [XRequired]
         public Person Superior { get; set; }
 
         public override bool Equals(object obj)
@@ -88,28 +79,22 @@ namespace ObjectGraph.Test
     }
 
     [DataContract]
-    [XSerializable]
     internal class SalesAgent : Person
     {
         [DataMember(Order = 1)]
-        [XRequired]
         public decimal SalesTotal { get; set; }
     }
 
     [DataContract]
-    [XSerializable]
     internal class Document
     {
         [DataMember(Order = 1)]
-        [XRequired]
         public long Id { get; set; }
 
         [DataMember(Order = 2)]
-        [XOptional]
         public string Name { get; set; }
 
         [DataMember(Order = 3)]
-        [XOptional]
         public List<Manager> Managers { get; set; }
     }
 }

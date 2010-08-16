@@ -15,8 +15,10 @@
 // limitations under the License.using System;
 //
 
+using System.Diagnostics;
 using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using ObjectGraph.Extensions;
 
 namespace ObjectGraph.Test
 {
@@ -31,6 +33,8 @@ namespace ObjectGraph.Test
             var stream = new MemoryStream();
 
             Serialization.Save(expected, stream, SerializationFormat.Xml);
+
+            Debug.WriteLine(stream.ToUtf8String());
         }
     }
 }

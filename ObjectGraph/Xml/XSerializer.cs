@@ -21,6 +21,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.Serialization;
 using System.Xml;
 using System.Xml.Linq;
 using ObjectGraph.Extensions;
@@ -166,30 +167,31 @@ namespace ObjectGraph.Xml
         {
             if (memberInfo is Type)
             {
-                var serializableAttribute = memberInfo.GetCustomAttributes(typeof(XSerializableAttribute),
-                                                                           false).FirstOrDefault() as XSerializableAttribute;
+                var infoAttribute = memberInfo.GetCustomAttributes(typeof(XInfoAttribute),
+                                                   false).FirstOrDefault() as XInfoAttribute;
 
-                if (serializableAttribute != null)
-                    return Tuple.Create(serializableAttribute.Name, NodeType.Element, true);
+                var contractAttribute = memberInfo.GetCustomAttributes(typeof(DataContractAttribute),
+                                                                           false).FirstOrDefault() as DataContractAttribute;
+
+                if (contractAttribute != null)
+                    return Tuple.Create(infoAttribute != null ? infoAttribute.Name : contractAttribute.Name,
+                                        NodeType.Element,
+                                        true);
             }
             else
             {
-                var requiredAttribute = memberInfo.GetCustomAttributes(typeof(XRequiredAttribute),
-                                                                       false).FirstOrDefault() as XRequiredAttribute;
-                var optionalAttribute = memberInfo.GetCustomAttributes(typeof(XOptionalAttribute),
-                                                                       false).FirstOrDefault() as XOptionalAttribute;
+                var infoAttribute = memberInfo.GetCustomAttributes(typeof(XInfoAttribute),
+                                                                   false).FirstOrDefault() as XInfoAttribute;
 
-                if (requiredAttribute != null && optionalAttribute != null)
-                    throw new NotSupportedException("Only one of [Required] or [Optional] is supported on a particular property.");
+                var memberAttribute = memberInfo.GetCustomAttributes(typeof(DataMemberAttribute),
+                                                                       false).FirstOrDefault() as DataMemberAttribute;
 
-                if (requiredAttribute != null)
-                    return Tuple.Create(requiredAttribute.Name,
-                                        requiredAttribute.Type,
-                                        true);
-                if (optionalAttribute != null)
-                    return Tuple.Create(optionalAttribute.Name,
-                                        optionalAttribute.Type,
-                                        false);
+                if (memberAttribute != null)
+                {
+                    return Tuple.Create(infoAttribute != null ? infoAttribute.Name : memberAttribute.Name,
+                                        infoAttribute != null ? infoAttribute.Type : NodeType.Attribute,
+                                        infoAttribute != null ? infoAttribute.IsRequired : false);
+                }
             }
 
             return null;

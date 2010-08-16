@@ -5,11 +5,8 @@ Just a toy framework, to play with some ideas I have for object graph serializat
 
 No guarantees that it compiles, or even, works.
 
-* In memory, pretty plain C# objects, annotated with DataContract/DataMember so protobuf-net
-  works. XSerializable/XRequired/XOptional to annotate members which should be XML visible.
-  Open question: Should we just use [DataContract/DataMember]? Problem is if we need to customize
-  XML attr/element name, but arguably this framework is for new from-scratch formats only so the convention
-  of PropertyName/TypeName should suffice?
+* In memory, pretty plain C# objects, annotated with DataContract/DataMember. These
+  attributes are used for both protobuf-net and XML serialization. 
 
 * Seperate class for serialization/deserialization, keepin' it POCO.
 

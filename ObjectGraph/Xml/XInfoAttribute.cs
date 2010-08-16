@@ -21,19 +21,37 @@ using System.Xml.Linq;
 namespace ObjectGraph.Xml
 {
     [AttributeUsage(AttributeTargets.Property)]
-    public class XOptionalAttribute : Attribute
+    public class XInfoAttribute : Attribute
     {
-        public XOptionalAttribute()
-            : this(NodeType.Attribute)
+        public XInfoAttribute()
+            : this(null, NodeType.Attribute, false)
         {
         }
 
-        public XOptionalAttribute(NodeType type)
+        public XInfoAttribute(XName name)
+            : this(name, NodeType.Attribute, false)
         {
+        }
+
+        public XInfoAttribute(NodeType type)
+            : this(null, type, false)
+        {
+        }
+
+        public XInfoAttribute(XName name, NodeType type)
+            : this(name, type, false)
+        {
+        }
+
+        public XInfoAttribute(XName name, NodeType type, bool isRequired)
+        {
+            Name = name;
             Type = type;
+            IsRequired = isRequired;
         }
 
         public XName Name { get; set; }
         public NodeType Type { get; set; }
+        public bool IsRequired { get; set; }
     }
 }
