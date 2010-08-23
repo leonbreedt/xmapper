@@ -26,17 +26,22 @@ namespace ObjectGraph
     public static class Serialization
     {
         public static T Load<T>(Stream stream)
+            where T : class, new()
         {
             return Load<T>(stream, SerializationFormat.ProtocolBuffer, null);
         }
 
         public static T Load<T>(Stream stream, SerializationFormat format)
+            where T : class, new()
         {
             return Load<T>(stream, format, null);
         }
 
         public static T Load<T>(Stream stream, SerializationFormat format, IObjectIndex index)
+            where T : class, new()
         {
+            T result;
+
             if (format == SerializationFormat.ProtocolBuffer)
             {
                 var context = new StreamingContext(StreamingContextStates.Other, index);
@@ -44,15 +49,16 @@ namespace ObjectGraph
                 var formatter = Serializer.CreateFormatter<T>();
                 formatter.Context = context;
 
-                T result = (T)formatter.Deserialize(stream);
-
-                return result;
+                result = (T)formatter.Deserialize(stream);
             }
+            else
+                result = XSerializer<T>.Deserialize(stream);
 
-            throw new NotImplementedException();
+            return result;
         }
 
-        public static void Save<T>(T obj, Stream stream, SerializationFormat format) where T : class
+        public static void Save<T>(T obj, Stream stream, SerializationFormat format)
+            where T : class, new()
         {
             if (format == SerializationFormat.ProtocolBuffer)
                 Serializer.Serialize(stream, obj);

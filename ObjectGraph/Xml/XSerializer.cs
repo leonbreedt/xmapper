@@ -22,6 +22,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.Serialization;
+using System.Text;
 using System.Xml;
 using System.Xml.Linq;
 using ObjectGraph.Extensions;
@@ -29,17 +30,19 @@ using ObjectGraph.Extensions;
 namespace ObjectGraph.Xml
 {
     public class XSerializer<T> 
-        where T : class
+        where T : class, new()
     {
         #region Fields
+        static readonly XmlWriterSettings WriterSettings;
         static readonly MethodInfo PropertyGetterHelperMethod;
         static readonly MethodInfo PropertySetterHelperMethod;
-        static List<SerializableProperty> _properties;
+        static Dictionary<string, SerializableProperty> _propertiesByName;
         static SerializableClass<T> _class;
         #endregion
 
         static XSerializer()
         {
+            WriterSettings = new XmlWriterSettings {Encoding = new UTF8Encoding(false), OmitXmlDeclaration = true};
             PropertyGetterHelperMethod = typeof(XSerializer<T>).GetMethod("PropertyGetterHelper", BindingFlags.Static | BindingFlags.NonPublic);
             PropertySetterHelperMethod = typeof(XSerializer<T>).GetMethod("PropertySetterHelper", BindingFlags.Static | BindingFlags.NonPublic);
 
@@ -60,7 +63,7 @@ namespace ObjectGraph.Xml
 
         static void BuildProperties()
         {
-            _properties = new List<SerializableProperty>();
+            _propertiesByName = new Dictionary<string, SerializableProperty>();
 
             foreach (var propertyInfo in typeof(T).GetProperties())
             {
@@ -123,13 +126,13 @@ namespace ObjectGraph.Xml
                                                                                      xmlWriter
                                                                                  });
 
-                _properties.Add(serializableProperty);
+                _propertiesByName.Add(serializableProperty.Name.LocalName, serializableProperty);
             }
         }
 
         public static void Serialize(Stream stream, T obj)
         {
-            using (var writer = XmlWriter.Create(stream))
+            using (var writer = XmlWriter.Create(stream, WriterSettings))
             {
                 Debug.Assert(writer != null);
 
@@ -138,13 +141,84 @@ namespace ObjectGraph.Xml
                 writer.WriteStartElement(_class.Name.LocalName,
                                          _class.Name.NamespaceName);
 
-                foreach (var property in _properties)
+                foreach (var property in _propertiesByName.Values)
                     WriteProperty(writer, property, obj);
 
                 writer.WriteEndElement();
 
                 writer.WriteEndDocument();
             }
+        }
+
+        public static T Deserialize(Stream stream)
+        {
+            using (var reader = XmlReader.Create(stream))
+            {
+                Debug.Assert(reader != null);
+
+                return ReadObjectFromElement(reader);
+            }
+        }
+
+        static T ReadObjectFromElement(XmlReader reader)
+        {
+            var obj = new T();
+
+            var elementName = _class.Name.LocalName;
+            var namespaceName = _class.Name.NamespaceName;
+
+            while (reader.NodeType != XmlNodeType.Element && reader.Read())
+                ;
+
+            if (reader.NodeType == XmlNodeType.Element)
+            {
+                if (string.Compare(reader.Name, elementName, false) != 0 || string.Compare(reader.NamespaceURI, namespaceName, false) != 0)
+                    ThrowXmlFormatException(reader, "Expected element '{0}', namespace '{1}'".FormatWith(elementName, namespaceName));
+
+                if (reader.HasAttributes)
+                {
+                    for (int i = 0; i < reader.AttributeCount; i++)
+                    {
+                        reader.MoveToAttribute(i);
+                        var property = TryGetSerializableProperty(reader.Name, reader.NamespaceURI);
+                        if (property != null)
+                            property.SetValueFromXml(obj, reader.Value);
+                    }
+                }
+            }
+            else
+                ThrowXmlFormatException(reader, "Expected element '{0}', namespace '{1}'".FormatWith(elementName, namespaceName));
+
+            while (reader.Read())
+            {
+                if (reader.NodeType == XmlNodeType.Element)
+                {
+                }
+            }
+
+            return obj;
+        }
+
+        static void ThrowXmlFormatException(XmlReader reader, string message)
+        {
+            var lineInfo = reader.GetLineInfo();
+            throw new FormatException("({0}:{1}) {2}".FormatWith(lineInfo.Item1, lineInfo.Item2, message));
+        }
+
+        static SerializableProperty TryGetSerializableProperty(string name, string namespaceUri)
+        {
+            SerializableProperty property;
+
+            if (!_propertiesByName.TryGetValue(name, out property))
+                return null;
+
+            if (!string.IsNullOrWhiteSpace(namespaceUri))
+            {
+                if (string.Compare(namespaceUri, property.Name.NamespaceName, false) != 0)
+                    return null;
+            }
+
+            return property;
         }
 
         static void WriteProperty(XmlWriter writer, SerializableProperty property, T obj)

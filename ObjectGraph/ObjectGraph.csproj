@@ -58,6 +58,7 @@
     <Compile Include="Xml\XInfoAttribute.cs" />
     <Compile Include="Xml\SerializableClass.cs" />
     <Compile Include="Xml\SerializableProperty.cs" />
+    <Compile Include="Xml\XmlExtensions.cs" />
     <Compile Include="Xml\XSerializer.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
