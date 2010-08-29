@@ -15,10 +15,18 @@
 // limitations under the License.using System;
 //
 
+using System.IO;
+using System.Text;
+
 namespace ObjectGraph.Extensions
 {
     public static class StringExtensions
     {
+        public static Stream ToStream(this string s)
+        {
+            return s != null ? new MemoryStream(Encoding.UTF8.GetBytes(s)) : null;
+        }
+
         public static string FormatWith(this string s, params object[] args)
         {
             return s != null ? string.Format(s, args) : null;

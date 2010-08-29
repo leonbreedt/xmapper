@@ -79,6 +79,11 @@ namespace ObjectGraph.Test
     }
 
     [DataContract]
+    internal class Managers : List<Manager>
+    {
+    }
+
+    [DataContract]
     internal class SalesAgent : Person
     {
         [DataMember(Order = 1)]
@@ -95,6 +100,6 @@ namespace ObjectGraph.Test
         public string Name { get; set; }
 
         [DataMember(Order = 3)]
-        public List<Manager> Managers { get; set; }
+        public Managers Managers { get; set; }
     }
 }

@@ -51,8 +51,10 @@ namespace ObjectGraph
 
                 result = (T)formatter.Deserialize(stream);
             }
+            else if (format == SerializationFormat.Xml)
+                result = Serializer<T>.Deserialize(stream);
             else
-                result = XSerializer<T>.Deserialize(stream);
+                throw new NotSupportedException();
 
             return result;
         }
@@ -63,9 +65,9 @@ namespace ObjectGraph
             if (format == SerializationFormat.ProtocolBuffer)
                 Serializer.Serialize(stream, obj);
             else if (format == SerializationFormat.Xml)
-                XSerializer<T>.Serialize(stream, obj);
+                Serializer<T>.Serialize(stream, obj);
             else
-                throw new NotImplementedException();
+                throw new NotSupportedException();
         }
     }
 }

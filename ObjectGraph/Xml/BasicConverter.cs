@@ -23,7 +23,7 @@ using ObjectGraph.Extensions;
 
 namespace ObjectGraph.Xml
 {
-    public static class XBasicConverter
+    public static class BasicConverter
     {
         #region Fields
         static readonly MethodInfo EnumReaderBuilderMethod;
@@ -35,11 +35,11 @@ namespace ObjectGraph.Xml
         static Dictionary<Type, object> _writersByEnumType;
         #endregion
 
-        static XBasicConverter()
+        static BasicConverter()
         {
-            EnumReaderBuilderMethod = typeof(XBasicConverter).GetMethod("EnumReaderBuilder", BindingFlags.Static | BindingFlags.NonPublic);
-            EnumWriterBuilderMethod = typeof(XBasicConverter).GetMethod("EnumWriterBuilder", BindingFlags.Static | BindingFlags.NonPublic);
-            ParseEnumMethod = typeof(XBasicConverter).GetMethod("ParseEnum", BindingFlags.Static | BindingFlags.NonPublic);
+            EnumReaderBuilderMethod = typeof(BasicConverter).GetMethod("EnumReaderBuilder", BindingFlags.Static | BindingFlags.NonPublic);
+            EnumWriterBuilderMethod = typeof(BasicConverter).GetMethod("EnumWriterBuilder", BindingFlags.Static | BindingFlags.NonPublic);
+            ParseEnumMethod = typeof(BasicConverter).GetMethod("ParseEnum", BindingFlags.Static | BindingFlags.NonPublic);
 
             Func<string, string> stringConverter = s => s;
 
@@ -49,7 +49,7 @@ namespace ObjectGraph.Xml
             WritersByTypeCode[TypeCode.Byte] = (Func<byte, string>)XmlConvert.ToString;
             WritersByTypeCode[TypeCode.Char] = (Func<char, string>)XmlConvert.ToString;
 #pragma warning disable 0618
-            WritersByTypeCode[TypeCode.DateTime] = (Func<DateTime, string>)XmlConvert.ToString;
+            WritersByTypeCode[TypeCode.DateTime] = (Func<DateTime, string>)(d => XmlConvert.ToString(d, XmlDateTimeSerializationMode.Unspecified));
 #pragma warning restore 0618
             WritersByTypeCode[TypeCode.Decimal] = (Func<decimal, string>)XmlConvert.ToString;
             WritersByTypeCode[TypeCode.Double] = (Func<double, string>)XmlConvert.ToString;
@@ -69,7 +69,7 @@ namespace ObjectGraph.Xml
             ReadersByTypeCode[TypeCode.Byte] = (Func<string, byte>)XmlConvert.ToByte;
             ReadersByTypeCode[TypeCode.Char] = (Func<string, char>)XmlConvert.ToChar;
 #pragma warning disable 0618
-            ReadersByTypeCode[TypeCode.DateTime] = (Func<string, DateTime>)XmlConvert.ToDateTime;
+            ReadersByTypeCode[TypeCode.DateTime] = (Func<string, DateTime>)(s => XmlConvert.ToDateTime(s, XmlDateTimeSerializationMode.Unspecified));
 #pragma warning restore 0618
             ReadersByTypeCode[TypeCode.Decimal] = (Func<string, decimal>)XmlConvert.ToDecimal;
             ReadersByTypeCode[TypeCode.Double] = (Func<string, double>)XmlConvert.ToDouble;

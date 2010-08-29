@@ -15,11 +15,26 @@
 // limitations under the License.using System;
 //
 
+using System.Xml.Linq;
+
 namespace ObjectGraph.Xml
 {
-    public enum NodeType
+    /// <summary>
+    /// A collection type serializer is responsible for serializing a
+    /// contract type that is itself a collection. It has a containing element,
+    /// and contains zero or more member elements.
+    /// </summary>
+    internal class CollectionTypeSerializer<T> : TypeSerializer<T>
+        where T : new()
     {
-        Attribute,
-        Element
+        #region Fields
+        XName _memberElementName;
+        #endregion
+
+        public CollectionTypeSerializer(XName elementName, XName memberElementName)
+            : base(elementName)
+        {
+            _memberElementName = memberElementName;
+        }
     }
 }

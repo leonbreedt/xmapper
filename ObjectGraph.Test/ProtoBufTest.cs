@@ -15,12 +15,10 @@
 // limitations under the License.using System;
 //
 
-using System.Collections.Generic;
-using System.IO;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace ObjectGraph.Test
 {
+#if false
     [TestClass]
     public class ProtoBufTest
     {
@@ -76,4 +74,5 @@ namespace ObjectGraph.Test
             Assert.AreNotSame(actual.Managers[1].Superior, actual.Managers[2].Superior);
         }
     }
+#endif
 }

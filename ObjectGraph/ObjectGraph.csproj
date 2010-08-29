@@ -53,14 +53,15 @@
     <Compile Include="SerializationFormat.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Xml\NodeType.cs" />
-    <Compile Include="Xml\XBasicConverter.cs" />
-    <Compile Include="Xml\XInfoAttribute.cs" />
-    <Compile Include="Xml\SerializableClass.cs" />
-    <Compile Include="Xml\SerializableProperty.cs" />
-    <Compile Include="Xml\XmlExtensions.cs" />
-    <Compile Include="Xml\XSerializer.cs" />
+    <Compile Include="Xml\BasicConverter.cs" />
+    <Compile Include="Xml\CollectionTypeSerializer.cs" />
+    <Compile Include="Xml\SimplePropertySerializer.cs" />
+    <Compile Include="Xml\TypeSerializer.cs" />
+    <Compile Include="Xml\PropertySerializer.cs" />
+    <Compile Include="Xml\SerializationExtensions.cs" />
+    <Compile Include="Xml\Serializer.cs" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
