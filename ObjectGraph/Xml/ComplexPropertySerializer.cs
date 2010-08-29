@@ -23,7 +23,7 @@ namespace ObjectGraph.Xml
 {
     /// <summary>
     /// The complex property serializer is responsible for serializing a property that
-    /// is a user-defined type. It is serialized as an XML element attribute.
+    /// is a user-defined type. It is serialized as an XML element.
     /// </summary>
     /// <typeparam name="TDeclaringType">The type that declares the property.</typeparam>
     /// <typeparam name="TPropertyType">The type of the property itself.</typeparam>
