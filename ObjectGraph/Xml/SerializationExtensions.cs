@@ -33,25 +33,12 @@ namespace ObjectGraph.Xml
             return attrs[0] as TAttribute;
         }
 
-        internal static Tuple<int, int> GetXmlLineInfo(this XmlReader reader)
+        internal static string PrefixXmlLineInfo(this string s, XmlReader reader)
         {
             var info = reader as IXmlLineInfo;
             if (info != null)
-                return Tuple.Create(info.LineNumber, info.LinePosition);
-            return Tuple.Create(0, 0);
-        }
-
-        public static void EnsurePositionedOnNodeOfType(this XmlReader reader, XmlNodeType type)
-        {
-            if (reader.NodeType != type)
-            {
-                var line = reader.GetXmlLineInfo();
-                throw new FormatException(
-                    "({0},{1}): Expected XML element of type {2}, but was {3}".FormatWith(line.Item1,
-                                                                                          line.Item2,
-                                                                                          type,
-                                                                                          reader.NodeType));
-            }
+                return "({0},{1}): {2}".FormatWith(info.LineNumber, info.LinePosition, s);
+            return s;
         }
     }
 }

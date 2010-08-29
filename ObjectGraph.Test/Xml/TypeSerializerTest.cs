@@ -16,15 +16,17 @@
 //
 
 using System;
+using System.IO;
 using System.Linq;
 using System.Runtime.Serialization;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using ObjectGraph.Extensions;
 using ObjectGraph.Xml;
 
 namespace ObjectGraph.Test.Xml
 {
     [TestClass]
-    public class TypeSerializerTest
+    public class TypeSerializerTest : SerializerTestBase
     {
         [TestMethod]
         [ExpectedException(typeof(NotSupportedException))]
@@ -67,7 +69,33 @@ namespace ObjectGraph.Test.Xml
         {
             var serializer = TypeSerializer.Build<WithProperties>();
 
-            Assert.AreEqual(2, serializer.Properties.Count());
+            Assert.AreEqual(3, serializer.SimplePropertySerializers.Count());
+        }
+
+        [TestMethod]
+        public void TypeWithSimpleProperties_Serializes()
+        {
+            var stream = new MemoryStream();
+            var serializer = TypeSerializer.Build<WithProperties>();
+            var target = new WithProperties {FirstName = "John", LastName = "Smith", Age = 35, IsMarried = true};
+
+            using (var writer = BuildFragmentWriter(stream))
+                serializer.WriteObject(writer, target);
+
+            Assert.AreEqual("<WithProperties FirstName=\"John\" LastName=\"Smith\" IsMarried=\"true\" />", stream.ToUtf8String());
+        }
+
+        [TestMethod]
+        public void TypeWithSimpleProperties_Deserializes()
+        {
+            var serializer = TypeSerializer.Build<WithProperties>();
+            WithProperties target;
+
+            using (var reader = BuildFragmentReader("<WithProperties FirstName=\"John\" LastName=\"Smith\" IsMarried=\"true\" />".ToStream()))
+                target = serializer.ReadObject(reader);
+
+            Assert.AreEqual(new {FirstName="John", LastName="Smith", IsMarried=true}, 
+                            new {target.FirstName, target.LastName, target.IsMarried});
         }
 
         #region Helpers
@@ -92,6 +120,8 @@ namespace ObjectGraph.Test.Xml
             public string FirstName { get; set; }
             [DataMember]
             public string LastName { get; set; }
+            [DataMember]
+            public bool IsMarried { get; set; }
 
             public int Age { get; set; }
             bool IsPrivate { get; set; }

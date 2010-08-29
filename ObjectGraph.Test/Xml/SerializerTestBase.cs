@@ -37,7 +37,8 @@ namespace ObjectGraph.Test.Xml
             return XmlReader.Create(stream, new XmlReaderSettings { ConformanceLevel = ConformanceLevel.Fragment });
         }
 
-        internal static PropertySerializer BuildPropertySerializerFor<TContainingType, TPropertyType>(Expression<Func<TContainingType, TPropertyType>> expr)
+        internal static IPropertySerializer<TContainingType> BuildPropertySerializerFor<TContainingType, TPropertyType>(Expression<Func<TContainingType, TPropertyType>> expr)
+            where TContainingType : new()
         {
             return PropertySerializer.Build<TContainingType, TPropertyType>((PropertyInfo)((MemberExpression)expr.Body).Member);
         }

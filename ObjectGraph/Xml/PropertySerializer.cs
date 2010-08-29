@@ -49,19 +49,21 @@ namespace ObjectGraph.Xml
 
         public XName Name { get { return _name; } }
 
-        public static PropertySerializer Build<TDeclaringType>(Type propertyType, PropertyInfo info)
+        public static IPropertySerializer<TDeclaringType> Build<TDeclaringType>(Type propertyType, PropertyInfo info)
+            where TDeclaringType : new()
         {
-            return (PropertySerializer)_buildMethodT.MakeGenericMethod(typeof(TDeclaringType), propertyType).Invoke(null, new[] {info});
+            return (IPropertySerializer<TDeclaringType>)_buildMethodT.MakeGenericMethod(typeof(TDeclaringType), propertyType).Invoke(null, new[] { info });
         }
 
-        public static PropertySerializer Build<TDeclaringType, TPropertyType>(PropertyInfo info)
+        public static IPropertySerializer<TDeclaringType> Build<TDeclaringType, TPropertyType>(PropertyInfo info)
+            where TDeclaringType : new()
         {
             lock (_serializersByPropertyInfo)
             {
                 PropertySerializer serializer;
 
                 if (_serializersByPropertyInfo.TryGetValue(info, out serializer))
-                    return serializer;
+                    return (IPropertySerializer<TDeclaringType>)serializer;
 
                 var attr = info.GetAttribute<DataMemberAttribute>();
                 if (attr == null)
@@ -128,7 +130,7 @@ namespace ObjectGraph.Xml
                     _serializersByPropertyInfo[info] = serializer;
                 }
 
-                return serializer;
+                return (IPropertySerializer<TDeclaringType>)serializer;
             }
         }
     }

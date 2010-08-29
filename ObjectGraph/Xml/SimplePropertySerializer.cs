@@ -23,11 +23,12 @@ namespace ObjectGraph.Xml
 {
     /// <summary>
     /// The simple property serializer is responsible for serializing a simple property that
-    /// is not a user-defined type or collection.
+    /// is not a user-defined type or collection. It is serialized as an XML element attribute.
     /// </summary>
     /// <typeparam name="TDeclaringType">The type that declares the property.</typeparam>
     /// <typeparam name="TPropertyType">The type of the property itself.</typeparam>
-    internal class SimplePropertySerializer<TDeclaringType, TPropertyType> : PropertySerializer
+    internal class SimplePropertySerializer<TDeclaringType, TPropertyType> : PropertySerializer, IPropertySerializer<TDeclaringType>
+        where TDeclaringType : new()
     {
         public SimplePropertySerializer(XName name,
                                         Func<TDeclaringType, TPropertyType> getter,
@@ -46,6 +47,8 @@ namespace ObjectGraph.Xml
         public Action<TDeclaringType, TPropertyType> Setter { get; private set; }
         public Func<string, TPropertyType> FromXmlValue { get; private set; }
         public Func<TPropertyType, string> ToXmlValue { get; private set; }
+
+        public PropertySerializerType Type { get { return PropertySerializerType.Simple; } }
 
         public void ReadProperty(XmlReader reader, TDeclaringType obj)
         {

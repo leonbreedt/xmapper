@@ -34,32 +34,77 @@ namespace ObjectGraph.Xml
         where T : new()
     {
         #region Fields
-        readonly List<PropertySerializer> _propertySerializers;
-        readonly Dictionary<string, PropertySerializer> _propertySerializersByName;
+        readonly List<IPropertySerializer<T>> _simplePropertySerializers;
+        readonly List<IPropertySerializer<T>> _complexPropertySerializers;
+        readonly Dictionary<string, IPropertySerializer<T>> _propertySerializersByName;
         #endregion
 
         public TypeSerializer(XName name)
             : base(name)
         {
-            _propertySerializers = new List<PropertySerializer>();
-            _propertySerializersByName = new Dictionary<string, PropertySerializer>();
+            _simplePropertySerializers = new List<IPropertySerializer<T>>();
+            _complexPropertySerializers = new List<IPropertySerializer<T>>();
+            _propertySerializersByName = new Dictionary<string, IPropertySerializer<T>>();
 
             BuildPropertySerializers();
         }
 
-        public IEnumerable<PropertySerializer> Properties
+        public IEnumerable<IPropertySerializer<T>> SimplePropertySerializers
         {
-            get { return _propertySerializers; }
+            get { return _simplePropertySerializers; }
+        }
+
+        public IEnumerable<IPropertySerializer<T>> ComplexPropertySerializers
+        {
+            get { return _complexPropertySerializers; }
         }
 
         public virtual T ReadObject(XmlReader reader)
         {
-            throw new NotImplementedException();
+            var obj = new T();
+
+            string elementName = Name.LocalName;
+            string namespaceName = Name.NamespaceName;
+
+            while (reader.Read())
+            {
+                if (reader.NodeType == XmlNodeType.Element)
+                {
+                    if (string.Compare(reader.Name, elementName, false) != 0 || string.Compare(reader.NamespaceURI, namespaceName, false) != 0)
+                        throw new FormatException("Expected element '{0}' with namespace '{1}'".FormatWith(elementName, namespaceName).PrefixXmlLineInfo(reader));
+
+                    if (reader.HasAttributes)
+                    {
+                        for (int i = 0; i < reader.AttributeCount; i++)
+                        {
+                            reader.MoveToAttribute(i);
+
+                            IPropertySerializer<T> serializer;
+                            if (_propertySerializersByName.TryGetValue(reader.Name, out serializer))
+                                serializer.ReadProperty(reader, obj);
+                        }
+                    }
+
+                    break;
+                }
+                
+                continue;
+            }
+
+            return obj;
         }
 
         public virtual void WriteObject(XmlWriter writer, T obj)
         {
-            throw new NotImplementedException();
+            writer.WriteStartElement(Name.LocalName, Name.NamespaceName);
+
+            foreach (var serializer in _simplePropertySerializers)
+                serializer.WriteProperty(writer, obj);
+
+            foreach (var serializer in _complexPropertySerializers)
+                serializer.WriteProperty(writer, obj);
+
+            writer.WriteEndElement();
         }
 
         void BuildPropertySerializers()
@@ -73,8 +118,15 @@ namespace ObjectGraph.Xml
             {
                 var serializer = PropertySerializer.Build<T>(info.PropertyType, info);
 
-                _propertySerializers.Add(serializer);
-                _propertySerializersByName.Add(serializer.Name.LocalName, serializer);
+                string xmlName = serializer.Name.LocalName;
+                if (_propertySerializersByName.ContainsKey(xmlName))
+                    throw new ArgumentException("Property '{0}' has name '{1}' already used by another property.".FormatWith(info.Name, xmlName));
+                _propertySerializersByName.Add(xmlName, serializer);
+
+                if (serializer.Type == PropertySerializerType.Simple)
+                    _simplePropertySerializers.Add(serializer);
+                else
+                    _complexPropertySerializers.Add(serializer);
             }
         }
     }
