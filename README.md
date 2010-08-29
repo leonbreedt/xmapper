@@ -22,20 +22,21 @@ Requirements
 Protocol Buffer Serialization
 =============================
 
-I re-use the excellent protobuf-net (http://code.google.com/p/protobuf-net), as it already
-supports serialization of C# types annotated exactly as I want.
+I re-use the excellent [protobuf-net](http://code.google.com/p/protobuf-net), as it already
+supports serialization of C# types annotated as I want.
 
 
 XML Serialization
 =================
 
-Microsoft's options in this area are staggeringly slow, I suspect a lot of reflection is used,
-and they have constraints of having to support every permutation customers may ask for.
+Microsoft's options in this area are staggeringly slow, and they have constraints of having 
+to support every permutation customers may ask for.
 
 So, we hand-craft yet another XML serialization framework, this one primarily convention based
 and making conscious decisions not to support XML features that we will not need or use.
 
-Why not JSON? Well, not ruling it out, if XmlWriter/XmlReader turns out still to be too slow :)
+Why not JSON? Well, not ruling it out, if XmlWriter/XmlReader turns out still to be too slow,
+and the JSON equivalents are suitable fast :)
 
 
 Serializer Design
@@ -46,14 +47,18 @@ make reflection blisteringly fast...
 
 We use generics to pass the type argument to our serializer class, and then use the feature
 of C# where static members are bound to each distinct closed generic class to pre-cache the delegates
-that will be called to read or write data.
+that will be called to read or write data for a particular type.
 
-We never make a reflection call during serialization. 
+We will never make a reflection call during serialization. Instantiation is done using pre-cached
+constructor delegates as well, Activator.CreateInstance() is *slow*.
 
 To read an XML value, we call a pre-cached delegate.
+
 To write an XML value, we call a pre-cached delegate.
-To set an object property, we call a pre-cached delegate, passing through the object instance.
+
 To read an object property, we call a pre-cached delegate, passing through the object instance.
+
+To set an object property, we call a pre-cached delegate, passing through the object instance, and value.
 
 If it turns out that we are prevented from supporting certain features due to this aggressive caching,
 that's too bad.
@@ -150,7 +155,7 @@ It serializes to:
         <PhoneNumber Type='Work' Number='09-555-1234' />
     </Person>
 
-Example 3 (Collection Style 2):
+Example 4 (Collection Style 2):
 -------------------------------
 
 This is an example of a type that inherits from List<T>, used
@@ -200,6 +205,7 @@ collections).
 
 We only serialize public object properties annotated with [DataMember].
 
+No XML validation is performed.
 
 Since Protocol Buffers does not preserve object references within the message
 we'll have some mechanism by which objects with identifiers can be registered 
