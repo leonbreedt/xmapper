@@ -77,8 +77,8 @@ namespace ObjectGraph.Xml
                 var getter = (Func<TDeclaringType, TPropertyType>)Delegate.CreateDelegate(typeof(Func<TDeclaringType, TPropertyType>), info.GetGetMethod());
                 var setter = (Action<TDeclaringType, TPropertyType>)Delegate.CreateDelegate(typeof(Action<TDeclaringType, TPropertyType>), info.GetSetMethod());
 
-                Func<string, TPropertyType> xmlReadFunc;
-                Func<TPropertyType, string> xmlWriteFunc;
+                Func<string, TPropertyType> xmlReadFunc = null;
+                Func<TPropertyType, string> xmlWriteFunc = null;
 
                 if (typeCode != TypeCode.Empty &&
                     typeCode != TypeCode.Object &&
@@ -95,16 +95,8 @@ namespace ObjectGraph.Xml
                         xmlWriteFunc = (Func<TPropertyType, string>)BasicConverter.ForWriting(typeCode);
                     }
                 }
-                else
-                {
-                    if (typeCode == TypeCode.Object)
-                    {
-                        xmlReadFunc = null;
-                        xmlWriteFunc = null;
-                    }
-                    else
-                        throw new InvalidOperationException("Type {0} is not supported".FormatWith(typeCode));
-                }
+                else if (typeCode != TypeCode.Object)
+                    throw new InvalidOperationException("Type {0} is not supported".FormatWith(typeCode));
 
                 if (typeCode == TypeCode.Object)
                 {
