@@ -69,7 +69,7 @@ namespace ObjectGraph.Xml
 
                 XName name = attr.Name ?? info.Name;
 
-                var propertyType = info.PropertyType;
+                var propertyType = typeof(TPropertyType);
 
                 var type = Nullable.GetUnderlyingType(propertyType) ?? propertyType;
                 var typeCode = Type.GetTypeCode(type);
@@ -101,7 +101,7 @@ namespace ObjectGraph.Xml
                 if (typeCode == TypeCode.Object)
                 {
                     var serializerType = typeof(ComplexPropertySerializer<,>).MakeGenericType(typeof(TDeclaringType), propertyType);
-                    var propertyValueSerializerType = typeof(TypeSerializer<>).MakeGenericType(typeof(TPropertyType));
+                    var propertyValueSerializerType = typeof(TypeSerializer<>).MakeGenericType(propertyType);
                     var propertyValueSerializer = TypeSerializer.Build(typeof(TPropertyType), name);
 
                     var constructor = serializerType.GetConstructor(new[]
