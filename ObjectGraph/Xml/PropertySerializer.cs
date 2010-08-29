@@ -50,13 +50,11 @@ namespace ObjectGraph.Xml
         public XName Name { get { return _name; } }
 
         public static IPropertySerializer<TDeclaringType> Build<TDeclaringType>(Type propertyType, PropertyInfo info)
-            where TDeclaringType : new()
         {
             return (IPropertySerializer<TDeclaringType>)_buildMethodT.MakeGenericMethod(typeof(TDeclaringType), propertyType).Invoke(null, new[] { info });
         }
 
         public static IPropertySerializer<TDeclaringType> Build<TDeclaringType, TPropertyType>(PropertyInfo info)
-            where TDeclaringType : new()
         {
             lock (_serializersByPropertyInfo)
             {
@@ -110,14 +108,27 @@ namespace ObjectGraph.Xml
 
                 if (typeCode == TypeCode.Object)
                 {
-                    throw new NotImplementedException();
+                    var serializerType = typeof(ComplexPropertySerializer<,>).MakeGenericType(typeof(TDeclaringType), propertyType);
+                    var propertyValueSerializerType = typeof(TypeSerializer<>).MakeGenericType(typeof(TPropertyType));
+                    var propertyValueSerializer = TypeSerializer.Build(typeof(TPropertyType), name);
+
+                    var constructor = serializerType.GetConstructor(new[]
+                                                            {
+                                                                typeof(XName),
+                                                                typeof(Func<TDeclaringType, TPropertyType>),
+                                                                typeof(Action<TDeclaringType, TPropertyType>),
+                                                                propertyValueSerializerType,
+                                                            });
+
+                    serializer = (PropertySerializer)constructor.Invoke(new object[] {name, getter, setter, propertyValueSerializer});
+                    _serializersByPropertyInfo[info] = serializer;
                 }
                 else
                 {
-                    var closedType = typeof(SimplePropertySerializer<,>).MakeGenericType(typeof(TDeclaringType), propertyType);
+                    var serializerType = typeof(SimplePropertySerializer<,>).MakeGenericType(typeof(TDeclaringType), propertyType);
 
 
-                    var constructor = closedType.GetConstructor(new[]
+                    var constructor = serializerType.GetConstructor(new[]
                                                             {
                                                                 typeof(XName),
                                                                 typeof(Func<TDeclaringType, TPropertyType>),

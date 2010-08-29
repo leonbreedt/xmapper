@@ -18,6 +18,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
+using System.Reflection;
 using System.Runtime.Serialization;
 using System.Xml;
 using System.Xml.Linq;
@@ -37,6 +39,7 @@ namespace ObjectGraph.Xml
         readonly List<IPropertySerializer<T>> _simplePropertySerializers;
         readonly List<IPropertySerializer<T>> _complexPropertySerializers;
         readonly Dictionary<string, IPropertySerializer<T>> _propertySerializersByName;
+        readonly Func<T> _createInstance;
         #endregion
 
         public TypeSerializer(XName name)
@@ -45,6 +48,7 @@ namespace ObjectGraph.Xml
             _simplePropertySerializers = new List<IPropertySerializer<T>>();
             _complexPropertySerializers = new List<IPropertySerializer<T>>();
             _propertySerializersByName = new Dictionary<string, IPropertySerializer<T>>();
+            _createInstance = GetConstructor<T>();
 
             BuildPropertySerializers();
         }
@@ -61,35 +65,60 @@ namespace ObjectGraph.Xml
 
         public virtual T ReadObject(XmlReader reader)
         {
-            var obj = new T();
+            var obj = _createInstance();
 
-            string elementName = Name.LocalName;
-            string namespaceName = Name.NamespaceName;
+            bool seenObjectStart = false;
 
-            while (reader.Read())
+            do
             {
-                if (reader.NodeType == XmlNodeType.Element)
+                var nodeType = reader.NodeType;
+                if (nodeType == XmlNodeType.Element)
                 {
-                    if (string.Compare(reader.Name, elementName, false) != 0 || string.Compare(reader.NamespaceURI, namespaceName, false) != 0)
-                        throw new FormatException("Expected element '{0}' with namespace '{1}'".FormatWith(elementName, namespaceName).PrefixXmlLineInfo(reader));
-
-                    if (reader.HasAttributes)
+                    if (!seenObjectStart)
                     {
-                        for (int i = 0; i < reader.AttributeCount; i++)
-                        {
-                            reader.MoveToAttribute(i);
+                        if (string.Compare(reader.Name, Name.LocalName, false) != 0 && string.Compare(reader.NamespaceURI, Name.NamespaceName, false) != 0)
+                            throw new FormatException("Expected element '{0}' with namespace '{1}'".FormatWith(Name.LocalName,Name.NamespaceName).PrefixXmlLineInfo(reader));
 
-                            IPropertySerializer<T> serializer;
-                            if (_propertySerializersByName.TryGetValue(reader.Name, out serializer))
-                                serializer.ReadProperty(reader, obj);
+                        if (reader.MoveToFirstAttribute())
+                        {
+                            do
+                            {
+                                IPropertySerializer<T> serializer;
+                                if (_propertySerializersByName.TryGetValue(reader.Name, out serializer) &&
+                                    serializer.Type == PropertySerializerType.Simple)
+                                    serializer.ReadProperty(reader, obj);
+                            }
+                            while (reader.MoveToNextAttribute());
+                            reader.MoveToElement();
+                        }
+
+                        seenObjectStart = true;
+                    }
+                    else
+                    {
+                        IPropertySerializer<T> serializer;
+                        if (_propertySerializersByName.TryGetValue(reader.Name, out serializer) &&
+                            serializer.Type == PropertySerializerType.Complex)
+                        {
+                            serializer.ReadProperty(reader, obj);
+                        }
+                        else
+                        {
+                            reader.Skip();
+                            continue;
                         }
                     }
 
+                    if (!reader.IsEmptyElement)
+                        continue;
+                    
                     break;
                 }
-                
-                continue;
-            }
+
+                if (nodeType == XmlNodeType.EndElement)
+                    break;
+
+            } while (reader.Read());
 
             return obj;
         }
@@ -105,6 +134,12 @@ namespace ObjectGraph.Xml
                 serializer.WriteProperty(writer, obj);
 
             writer.WriteEndElement();
+        }
+
+        static Func<TType> GetConstructor<TType>() where TType : new()
+        {
+            var constructorInfo = typeof(TType).GetConstructor(new Type[0]);
+            return Expression.Lambda<Func<TType>>(Expression.New(constructorInfo)).Compile();
         }
 
         void BuildPropertySerializers()
@@ -129,18 +164,32 @@ namespace ObjectGraph.Xml
                     _complexPropertySerializers.Add(serializer);
             }
         }
+
+        class ReadContext
+        {
+            public string ElementName { get; set; }
+            public string NamespaceName { get; set; }
+            public ReadContext ParentContext { get; set; }
+            public Dictionary<string, IPropertySerializer<T>> SerializersByName { get; set; }
+        }
     }
 
     internal class TypeSerializer
     {
         #region Fields
-        static Dictionary<Type, object> _serializersByType;
+        static Dictionary<Tuple<Type,XName>, object> _serializersByTypeAndName;
+        static MethodInfo _buildMethodT;
         readonly XName _name;
         #endregion
 
         static TypeSerializer()
         {
-            _serializersByType = new Dictionary<Type, object>();
+            _serializersByTypeAndName = new Dictionary<Tuple<Type, XName>, object>();
+            _buildMethodT = typeof(TypeSerializer).GetMethod("Build",
+                                                             BindingFlags.Public | BindingFlags.Static,
+                                                             null,
+                                                             new[] {typeof(XName)},
+                                                             null);
         }
 
         protected TypeSerializer(XName name)
@@ -150,27 +199,39 @@ namespace ObjectGraph.Xml
 
         public XName Name { get { return _name; } }
 
+        public static TypeSerializer Build(Type type, XName name)
+        {
+            return (TypeSerializer)_buildMethodT.MakeGenericMethod(type).Invoke(null, new object[] {name});
+        }
+
         public static TypeSerializer<T> Build<T>()
+            where T : new()
+        {
+            return Build<T>(null);
+        }
+
+        public static TypeSerializer<T> Build<T>(XName name)
             where T : new()
         {
             var type = typeof(T);
 
-            lock (_serializersByType)
+            lock (_serializersByTypeAndName)
             {
                 object serializer;
-
-                if (_serializersByType.TryGetValue(type, out serializer))
-                    return (TypeSerializer<T>)serializer;
 
                 var attr = type.GetAttribute<DataContractAttribute>();
                 if (attr == null)
                     throw new NotSupportedException("Type {0} must have a [DataContract] attribute to be serializable".FormatWith(type.Name));
 
-                XName name = attr.Name ?? type.Name;
+                name = name ?? attr.Name ?? type.Name;
+
+                var key = Tuple.Create(typeof(T), name);
+                if (_serializersByTypeAndName.TryGetValue(key, out serializer))
+                    return (TypeSerializer<T>)serializer;
 
                 TypeSerializer<T> ret;
 
-                _serializersByType[type] = ret = new TypeSerializer<T>(name);
+                _serializersByTypeAndName[key] = ret = new TypeSerializer<T>(name);
 
                 return ret;
             }

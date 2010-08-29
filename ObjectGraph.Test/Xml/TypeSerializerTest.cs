@@ -98,6 +98,39 @@ namespace ObjectGraph.Test.Xml
                             new {target.FirstName, target.LastName, target.IsMarried});
         }
 
+        [TestMethod]
+        public void TypeWithUserTypeProperties_Serializes()
+        {
+            var stream = new MemoryStream();
+            var serializer = TypeSerializer.Build<WithUserProperties>();
+            var target = new WithUserProperties
+                         {
+                             FirstName = "John",
+                             LastName = "Smith",
+                             HomeAddress = new Address {StreetNumber = "37", StreetName = "Queen St."}
+                         };
+
+            using (var writer = BuildFragmentWriter(stream))
+                serializer.WriteObject(writer, target);
+
+            Assert.AreEqual("<WithUserProperties FirstName=\"John\" LastName=\"Smith\"><HomeAddress StreetNumber=\"37\" StreetName=\"Queen St.\" /></WithUserProperties>", stream.ToUtf8String());
+        }
+
+        [TestMethod]
+        public void TypeWithUserTypeProperties_Deserializes()
+        {
+            var serializer = TypeSerializer.Build<WithUserProperties>();
+            WithUserProperties target;
+
+            using (var reader = BuildFragmentReader("<WithUserProperties FirstName=\"John\" LastName=\"Smith\"><HomeAddress StreetNumber=\"37\" StreetName=\"Queen St.\" /></WithUserProperties>".ToStream()))
+                target = serializer.ReadObject(reader);
+
+            Assert.AreEqual(new {FirstName = "John", LastName = "Smith"},
+                            new {target.FirstName, target.LastName});
+            Assert.AreEqual(new {StreetNumber = "37", StreetName= "Queen St."},
+                            new {target.HomeAddress.StreetNumber, target.HomeAddress.StreetName});
+        }
+
         #region Helpers
         class MissingDataContract
         {
@@ -125,6 +158,26 @@ namespace ObjectGraph.Test.Xml
 
             public int Age { get; set; }
             bool IsPrivate { get; set; }
+        }
+
+        [DataContract]
+        class WithUserProperties
+        {
+            [DataMember]
+            public string FirstName { get; set; }
+            [DataMember]
+            public string LastName { get; set; }
+            [DataMember]
+            public Address HomeAddress { get; set; }
+        }
+
+        [DataContract]
+        class Address
+        {
+            [DataMember]
+            public string StreetNumber { get; set; }
+            [DataMember]
+            public string StreetName { get; set; }
         }
         #endregion
     }

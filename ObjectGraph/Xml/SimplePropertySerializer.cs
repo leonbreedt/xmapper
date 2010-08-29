@@ -28,7 +28,6 @@ namespace ObjectGraph.Xml
     /// <typeparam name="TDeclaringType">The type that declares the property.</typeparam>
     /// <typeparam name="TPropertyType">The type of the property itself.</typeparam>
     internal class SimplePropertySerializer<TDeclaringType, TPropertyType> : PropertySerializer, IPropertySerializer<TDeclaringType>
-        where TDeclaringType : new()
     {
         public SimplePropertySerializer(XName name,
                                         Func<TDeclaringType, TPropertyType> getter,

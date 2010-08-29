@@ -33,7 +33,7 @@ namespace ObjectGraph.Xml
             return attrs[0] as TAttribute;
         }
 
-        internal static string PrefixXmlLineInfo(this string s, XmlReader reader)
+        public static string PrefixXmlLineInfo(this string s, XmlReader reader)
         {
             var info = reader as IXmlLineInfo;
             if (info != null)

@@ -55,6 +55,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Xml\BasicConverter.cs" />
     <Compile Include="Xml\CollectionTypeSerializer.cs" />
+    <Compile Include="Xml\ComplexPropertySerializer.cs" />
     <Compile Include="Xml\IPropertySerializer.cs" />
     <Compile Include="Xml\SimplePropertySerializer.cs" />
     <Compile Include="Xml\TypeSerializer.cs" />

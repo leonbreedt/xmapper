@@ -47,6 +47,10 @@ namespace ObjectGraph.Xml
             using (var reader = XmlReader.Create(stream, _readerSettings))
             {
                 Debug.Assert(reader != null);
+
+                while (reader.Read() && reader.NodeType != XmlNodeType.Element)
+                    ;
+
                 return _serializer.ReadObject(reader);
             }
         }

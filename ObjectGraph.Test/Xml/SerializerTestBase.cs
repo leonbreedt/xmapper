@@ -38,7 +38,6 @@ namespace ObjectGraph.Test.Xml
         }
 
         internal static IPropertySerializer<TContainingType> BuildPropertySerializerFor<TContainingType, TPropertyType>(Expression<Func<TContainingType, TPropertyType>> expr)
-            where TContainingType : new()
         {
             return PropertySerializer.Build<TContainingType, TPropertyType>((PropertyInfo)((MemberExpression)expr.Body).Member);
         }

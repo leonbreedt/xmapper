@@ -26,19 +26,19 @@ namespace ObjectGraph
     public static class Serialization
     {
         public static T Load<T>(Stream stream)
-            where T : class, new()
+            where T : new()
         {
             return Load<T>(stream, SerializationFormat.ProtocolBuffer, null);
         }
 
         public static T Load<T>(Stream stream, SerializationFormat format)
-            where T : class, new()
+            where T : new()
         {
             return Load<T>(stream, format, null);
         }
 
         public static T Load<T>(Stream stream, SerializationFormat format, IObjectIndex index)
-            where T : class, new()
+            where T : new()
         {
             T result;
 
@@ -60,7 +60,7 @@ namespace ObjectGraph
         }
 
         public static void Save<T>(T obj, Stream stream, SerializationFormat format)
-            where T : class, new()
+            where T : new()
         {
             if (format == SerializationFormat.ProtocolBuffer)
                 Serializer.Serialize(stream, obj);

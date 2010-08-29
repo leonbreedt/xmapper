@@ -33,7 +33,6 @@ namespace ObjectGraph.Xml
     /// Defines the contract for a serializer of properties.
     /// </summary>
     internal interface IPropertySerializer<T>
-        where T : new()
     {
         /// <summary>
         /// Gets the name to use for the property when serializing it.
