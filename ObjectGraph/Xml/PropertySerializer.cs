@@ -102,7 +102,7 @@ namespace ObjectGraph.Xml
                 {
                     var serializerType = typeof(ComplexPropertySerializer<,>).MakeGenericType(typeof(TDeclaringType), propertyType);
                     var propertyValueSerializerType = typeof(TypeSerializer<>).MakeGenericType(propertyType);
-                    var propertyValueSerializer = TypeSerializer.Build(typeof(TPropertyType), name);
+                    var propertyValueSerializer = TypeSerializer.Build(propertyType, name);
 
                     var constructor = serializerType.GetConstructor(new[]
                                                             {
