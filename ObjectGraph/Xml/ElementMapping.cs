@@ -52,6 +52,9 @@ namespace ObjectGraph.Xml
 
         public virtual TTarget CreateInstance()
         {
+            if (_constructor == null)
+                throw new InvalidOperationException(string.Format("No constructor requested for type {0}", typeof(TTarget)));
+
             return _constructor();
         }
 
