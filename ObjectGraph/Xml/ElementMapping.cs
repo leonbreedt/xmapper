@@ -38,9 +38,15 @@ namespace ObjectGraph.Xml
         #endregion
 
         public ElementMapping(XName name)
+            : this(name, true)
+        {
+        }
+
+        public ElementMapping(XName name, bool cacheConstructor)
             : base(typeof(TTarget), name)
         {
-            _constructor = ReflectionHelper.GetTypedConstructorDelegate<TTarget>();
+            if (cacheConstructor)
+                _constructor = ReflectionHelper.GetTypedConstructorDelegate<TTarget>();
             _children = NoChildren;
         }
 

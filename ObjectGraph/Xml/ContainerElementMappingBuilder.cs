@@ -28,11 +28,11 @@ namespace ObjectGraph.Xml
         #region Fields
         readonly TParentBuilder _parentBuilderScope;
         readonly XName _name;
-        readonly Expression<Func<TContainingTarget, ItemCollection<TMemberTarget>>> _propertyInParent;
+        readonly Expression<Func<TContainingTarget, IList<TMemberTarget>>> _propertyInParent;
         readonly List<Func<IMapping>> _memberElements;
         #endregion
 
-        public ContainerElementMappingBuilder(TParentBuilder parentBuilderScope, XName name, Expression<Func<TContainingTarget, ItemCollection<TMemberTarget>>> propertyInParent)
+        public ContainerElementMappingBuilder(TParentBuilder parentBuilderScope, XName name, Expression<Func<TContainingTarget, IList<TMemberTarget>>> propertyInParent)
         {
             _parentBuilderScope = parentBuilderScope;
             _name = name;

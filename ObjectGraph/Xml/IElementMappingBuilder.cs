@@ -16,6 +16,7 @@
 //
 
 using System;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Xml.Linq;
 
@@ -35,7 +36,7 @@ namespace ObjectGraph.Xml
                                                              Func<TProperty, string> customSerializer);
 
         IContainerElementMappingBuilder<TMemberTarget, IElementMappingBuilder<TTarget>> ContainerElement<TMemberTarget>(XName name,
-                                                                                                                    Expression<Func<TTarget,ItemCollection<TMemberTarget>>> propertyInTarget);
+                                                                                                                    Expression<Func<TTarget, IList<TMemberTarget>>> propertyInTarget);
 
         IChildElementMappingBuilder<TChildTarget, IElementMappingBuilder<TTarget>> Element<TChildTarget>(XName name,
                                                                                                          Expression<Func<TTarget, TChildTarget>> propertyInParent);

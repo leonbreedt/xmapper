@@ -50,7 +50,7 @@ namespace ObjectGraph.Xml
             return this;
         }
 
-        public IContainerElementMappingBuilder<TMemberTarget, IElementMappingBuilder<TTarget>> ContainerElement<TMemberTarget>(XName name, Expression<Func<TTarget, ItemCollection<TMemberTarget>>> propertyInTarget)
+        public IContainerElementMappingBuilder<TMemberTarget, IElementMappingBuilder<TTarget>> ContainerElement<TMemberTarget>(XName name, Expression<Func<TTarget, IList<TMemberTarget>>> propertyInTarget)
         {
             var builder = new ContainerElementMappingBuilder<TTarget, TMemberTarget, IElementMappingBuilder<TTarget>>(this, name, propertyInTarget);
             _elements.Add(builder.Build);

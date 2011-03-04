@@ -15,6 +15,8 @@
 // limitations under the License.using System;
 //
 
+using ObjectGraph.Xml;
+
 namespace ObjectGraph.Test.Xml.Model
 {
     internal class Person
@@ -24,5 +26,6 @@ namespace ObjectGraph.Test.Xml.Model
         public string LastName { get; set; }
         public bool IsEnabled { get; set; }
         public Address Address { get; set; }
+        public ItemCollection<ContactMethod> ContactMethods { get; set; }
     }
 }

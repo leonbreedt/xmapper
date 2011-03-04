@@ -15,6 +15,7 @@
 // limitations under the License.using System;
 //
 
+using System.Collections.Generic;
 
 namespace ObjectGraph.Xml
 {
@@ -23,20 +24,20 @@ namespace ObjectGraph.Xml
     /// </summary>
     /// <typeparam name="TContainingTarget">The CLR type that this mapping is contained within.</typeparam>
     /// <typeparam name="TMemberTarget">The CLR type associated with this members of this container mapping.</typeparam>
-    public interface IContainerElementMapping<TContainingTarget, TMemberTarget> : IElementMapping<ItemCollection<TMemberTarget>>
+    public interface IContainerElementMapping<TContainingTarget, TMemberTarget> : IElementMapping<IList<TMemberTarget>>
     {
         /// <summary>
         /// Gets the collection from the specified object.
         /// </summary>
         /// <param name="container">The object containing the collection on a property.</param>
         /// <returns>Returns the collection.</returns>
-        ItemCollection<TMemberTarget> GetCollectionFromTarget(TContainingTarget container);
+        IList<TMemberTarget> GetCollectionFromTarget(TContainingTarget container);
 
         /// <summary>
         /// Sets the collection on the specified object.
         /// </summary>
         /// <param name="container">The object containing the collection on a property.</param>
         /// <param name="collection">The collection to set.</param>
-        void SetCollectionOnTarget(TContainingTarget container, ItemCollection<TMemberTarget> collection);
+        void SetCollectionOnTarget(TContainingTarget container, IList<TMemberTarget> collection);
     }
 }

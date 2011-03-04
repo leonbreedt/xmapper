@@ -26,6 +26,17 @@ namespace ObjectGraph.Util
     /// </summary>
     internal static class ReflectionHelper
     {
+        static readonly MethodInfo GetTypedConstructorDelegateMethodInfo;
+        static readonly MethodInfo GetTypedPropertyGetterDelegateMethodInfo;
+        static readonly MethodInfo GetTypedPropertySetterDelegateMethodInfo;
+
+        static ReflectionHelper()
+        {
+            GetTypedConstructorDelegateMethodInfo = typeof(ReflectionHelper).GetMethod("GetTypedConstructorDelegate", BindingFlags.Static | BindingFlags.NonPublic);
+            GetTypedPropertyGetterDelegateMethodInfo = typeof(ReflectionHelper).GetMethod("GetTypedPropertyGetterDelegate", BindingFlags.Static | BindingFlags.NonPublic);
+            GetTypedPropertySetterDelegateMethodInfo = typeof(ReflectionHelper).GetMethod("GetTypedPropertySetterDelegate", BindingFlags.Static | BindingFlags.NonPublic);
+        }
+
         /// <summary>
         /// Gets strongly typed delegate for quickly creating new instances.
         /// </summary>
@@ -45,6 +56,17 @@ namespace ObjectGraph.Util
                 throw new NotSupportedException(string.Format("Type {0} does not have an empty constructor", type.FullName));
             }
             return Expression.Lambda<Func<T>>(Expression.New(constructorInfo)).Compile();
+        }
+
+        /// <summary>
+        /// Gets a delegate for quickly creating new instances for objects of the specified type.
+        /// </summary>
+        /// <param name="type">The type to get a constructor delegate for.</param>
+        /// <returns></returns>
+        internal static Func<object> GetConstructorDelegate(Type type)
+        {
+            var builder = GetTypedConstructorDelegateMethodInfo.MakeGenericMethod(type);
+            return (Func<object>)builder.Invoke(null, null);
         }
 
         /// <summary>
@@ -74,7 +96,7 @@ namespace ObjectGraph.Util
         /// <typeparam name="TProperty">The type of the property.</typeparam>
         /// <param name="info">The <see cref="PropertyInfo"/> of the property to get the delegate for.</param>
         /// <returns>Returns a delegate for getting the property value from an object instance.</returns>
-        internal static Func<TContainer, TProperty> GetPropertyGetterDelegate<TContainer, TProperty>(PropertyInfo info)
+        internal static Func<TContainer, TProperty> GetTypedPropertyGetterDelegate<TContainer, TProperty>(PropertyInfo info)
         {
             var getMethod = info.GetGetMethod(true);
             if (getMethod == null)
@@ -84,19 +106,50 @@ namespace ObjectGraph.Util
         }
 
         /// <summary>
+        /// Gets a delegate for getting the value of a property, when the type of the property isn't known at compile time.
+        /// </summary>
+        /// <param name="info">The property info of the property.</param>
+        /// <returns></returns>
+        internal static Func<TContainer, object> GetPropertyGetterDelegate<TContainer>(PropertyInfo info)
+        {
+            var builder = GetTypedPropertyGetterDelegateMethodInfo.MakeGenericMethod(typeof(TContainer), info.PropertyType);
+            return (Func<TContainer, object>)builder.Invoke(null, new object[] {info});
+        }
+
+        /// <summary>
         /// Gets a strongly typed delegate for setting the value of a property.
         /// </summary>
         /// <typeparam name="TContainer">The type containing the property.</typeparam>
         /// <typeparam name="TProperty">The type of the property.</typeparam>
         /// <param name="info">The <see cref="PropertyInfo"/> of the property to get the delegate for.</param>
         /// <returns>Returns a delegate for setting the property value on an object instance.</returns>
-        internal static Action<TContainer, TProperty> GetPropertySetterDelegate<TContainer, TProperty>(PropertyInfo info)
+        internal static Action<TContainer, TProperty> GetTypedPropertySetterDelegate<TContainer, TProperty>(PropertyInfo info)
         {
             var setMethod = info.GetSetMethod(true);
             if (setMethod == null)
                 throw new NotSupportedException(string.Format("Property {0} of type {1} does not have a setter", info.Name, typeof(TContainer).FullName));
 
             return (Action<TContainer, TProperty>)Delegate.CreateDelegate(typeof(Action<TContainer, TProperty>), setMethod);
+        }
+
+        /// <summary>
+        /// Gets a delegate for getting the value of a property, when the type of the property isn't known at compile time.
+        /// </summary>
+        /// <param name="info">The property info of the property.</param>
+        /// <returns></returns>
+        internal static Action<TContainer, object> GetPropertySetterDelegate<TContainer>(PropertyInfo info)
+        {
+            // http://stackoverflow.com/questions/4085798/creating-an-performant-open-delegate-for-an-property-setter-or-getter
+            MethodInfo setMethod = info.GetSetMethod();
+            if (setMethod != null && setMethod.GetParameters().Length == 1)
+            {
+                var target = Expression.Parameter(typeof(TContainer));
+                var value = Expression.Parameter(typeof(object));
+                var body = Expression.Call(target, setMethod, Expression.Convert(value, info.PropertyType));
+
+                return Expression.Lambda<Action<TContainer, object>>(body, target, value).Compile();
+            }
+            throw new NotSupportedException(string.Format("Property {0} on type {1} does not have a supported setter", info.Name, typeof(TContainer).FullName));
         }
 
         /// <summary>
@@ -136,6 +189,5 @@ namespace ObjectGraph.Util
                 return (Func<TProperty, string>)XmlConversionDelegate.ForWritingEnum(type);
             return (Func<TProperty, string>)XmlConversionDelegate.ForWriting(type);
         }
-
     }
 }

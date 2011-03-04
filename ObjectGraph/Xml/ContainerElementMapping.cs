@@ -16,6 +16,7 @@
 //
 
 using System;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Xml.Linq;
@@ -28,12 +29,13 @@ namespace ObjectGraph.Xml
     /// </summary>
     /// <typeparam name="TContainingTarget">The CLR type that contains the property this mapping will be associated with.</typeparam>
     /// <typeparam name="TMemberTarget">The CLR type associated with a member of this element mapping.</typeparam>
-    public class ContainerElementMapping<TContainingTarget, TMemberTarget> : ElementMapping<ItemCollection<TMemberTarget>>, IContainerElementMapping<TContainingTarget, TMemberTarget>
+    public class ContainerElementMapping<TContainingTarget, TMemberTarget> : ElementMapping<IList<TMemberTarget>>, IContainerElementMapping<TContainingTarget, TMemberTarget>
     {
         #region Fields
+        readonly Func<object> _constructor;
         readonly PropertyInfo _propertyInfo;
-        readonly Func<TContainingTarget, ItemCollection<TMemberTarget>> _getter;
-        readonly Action<TContainingTarget, ItemCollection<TMemberTarget>> _setter;
+        readonly Func<TContainingTarget, object> _getter;
+        readonly Action<TContainingTarget, object> _setter;
         #endregion
 
         /// <summary>
@@ -41,27 +43,28 @@ namespace ObjectGraph.Xml
         /// </summary>
         /// <param name="name">The name of the element.</param>
         /// <param name="propertyExpression">A simple member expression referencing the property in the container to associate this mapping with.</param>
-        public ContainerElementMapping(XName name, Expression<Func<TContainingTarget, ItemCollection<TMemberTarget>>> propertyExpression)
-            : base(name)
+        public ContainerElementMapping(XName name, Expression<Func<TContainingTarget, IList<TMemberTarget>>> propertyExpression)
+            : base(name, false)
         {
             _propertyInfo = ReflectionHelper.GetPropertyInfoFromExpression(propertyExpression);
-            _getter = ReflectionHelper.GetPropertyGetterDelegate<TContainingTarget, ItemCollection<TMemberTarget>>(_propertyInfo);
-            _setter = ReflectionHelper.GetPropertySetterDelegate<TContainingTarget, ItemCollection<TMemberTarget>>(_propertyInfo);
+            _constructor = ReflectionHelper.GetConstructorDelegate(_propertyInfo.PropertyType);
+            _getter = ReflectionHelper.GetPropertyGetterDelegate<TContainingTarget>(_propertyInfo);
+            _setter = ReflectionHelper.GetPropertySetterDelegate<TContainingTarget>(_propertyInfo);
         }
 
-        public ItemCollection<TMemberTarget> GetCollectionFromTarget(TContainingTarget container)
+        public IList<TMemberTarget> GetCollectionFromTarget(TContainingTarget container)
         {
-            return _getter(container);
+            return (IList<TMemberTarget>)_getter(container);
         }
 
-        public void SetCollectionOnTarget(TContainingTarget container, ItemCollection<TMemberTarget> collection)
+        public void SetCollectionOnTarget(TContainingTarget container, IList<TMemberTarget> collection)
         {
             _setter(container, collection);
         }
 
-        public override ItemCollection<TMemberTarget> CreateInstance()
+        public override IList<TMemberTarget> CreateInstance()
         {
-            return new ItemCollection<TMemberTarget>();
+            return (IList<TMemberTarget>)_constructor();
         }
     }
 }

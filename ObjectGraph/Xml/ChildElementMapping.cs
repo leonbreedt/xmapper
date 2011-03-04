@@ -45,8 +45,8 @@ namespace ObjectGraph.Xml
             : base(name)
         {
             _propertyInfo = ReflectionHelper.GetPropertyInfoFromExpression(propertyExpression);
-            _getter = ReflectionHelper.GetPropertyGetterDelegate<TContainingTarget, TTarget>(_propertyInfo);
-            _setter = ReflectionHelper.GetPropertySetterDelegate<TContainingTarget, TTarget>(_propertyInfo);
+            _getter = ReflectionHelper.GetTypedPropertyGetterDelegate<TContainingTarget, TTarget>(_propertyInfo);
+            _setter = ReflectionHelper.GetTypedPropertySetterDelegate<TContainingTarget, TTarget>(_propertyInfo);
 
         }
 

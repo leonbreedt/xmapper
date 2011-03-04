@@ -64,8 +64,8 @@ namespace ObjectGraph.Xml
             : base(typeof(TContainer), name)
         {
             _propertyInfo = ReflectionHelper.GetPropertyInfoFromExpression(propertyExpression);
-            _getter = ReflectionHelper.GetPropertyGetterDelegate<TContainer, TProperty>(_propertyInfo);
-            _setter = ReflectionHelper.GetPropertySetterDelegate<TContainer, TProperty>(_propertyInfo);
+            _getter = ReflectionHelper.GetTypedPropertyGetterDelegate<TContainer, TProperty>(_propertyInfo);
+            _setter = ReflectionHelper.GetTypedPropertySetterDelegate<TContainer, TProperty>(_propertyInfo);
             _fromXmlToPropertyValue = customDeserializer ?? ReflectionHelper.GetXmlSimpleTypeReaderDelegate<TProperty>();
             _fromPropertyToXmlValue = customSerializer ?? ReflectionHelper.GetXmlSimpleTypeWriterDelegate<TProperty>();
 
