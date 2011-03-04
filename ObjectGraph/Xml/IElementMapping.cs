@@ -1,6 +1,6 @@
 ﻿//
-// Copyright (C) 2010 Leon Breedt
-// bitserf -at- gmail [dot] com
+// Copyright (C) 2010-2011 Leon Breedt
+// ljb -at- bitserf [dot] org
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,11 +15,18 @@
 // limitations under the License.using System;
 //
 
-namespace ObjectGraph
+namespace ObjectGraph.Xml
 {
-    public enum SerializationFormat
+    /// <summary>
+    /// Represents a mapping of an XML element to a CLR type.
+    /// </summary>
+    /// <typeparam name="TTarget">The CLR type that this mapping will be associated with.</typeparam>
+    public interface IElementMapping<TTarget> : IMapping
     {
-        ProtocolBuffer,
-        Xml
+        /// <summary>
+        /// Creates a new instance of the target type.
+        /// </summary>
+        /// <returns>Returns the new instance.</returns>
+        TTarget CreateInstance();
     }
 }

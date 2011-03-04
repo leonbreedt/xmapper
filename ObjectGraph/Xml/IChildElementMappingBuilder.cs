@@ -1,6 +1,6 @@
 ﻿//
-// Copyright (C) 2010 Leon Breedt
-// bitserf -at- gmail [dot] com
+// Copyright (C) 2010-2011 Leon Breedt
+// ljb -at- bitserf [dot] org
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,16 +15,14 @@
 // limitations under the License.using System;
 //
 
-using System.IO;
-using System.Text;
-
-namespace ObjectGraph.Extensions
+namespace ObjectGraph.Xml
 {
-    public static class StreamExtensions
+    /// <summary>
+    /// Fluent interface for building an element mapping for an element contained within another element.
+    /// Adds an additional method for returning to the "parent" builder scope.
+    /// </summary>
+    public interface IChildElementMappingBuilder<TTarget, TParentBuilder> : IElementMappingBuilder<TTarget>
     {
-        public static string ToUtf8String(this MemoryStream stream)
-        {
-            return Encoding.UTF8.GetString(stream.ToArray());
-        }
+        TParentBuilder EndChild();
     }
 }

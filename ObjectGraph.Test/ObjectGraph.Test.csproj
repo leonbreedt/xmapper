@@ -51,13 +51,7 @@
     </CodeAnalysisDependentAssemblyPaths>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ModelClasses.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ProtoBufTest.cs" />
-    <Compile Include="Xml\SerializerTestBase.cs" />
-    <Compile Include="Xml\SimplePropertySerializerTest.cs" />
-    <Compile Include="Xml\PropertySerializerTest.cs" />
-    <Compile Include="Xml\TypeSerializerTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ObjectGraph\ObjectGraph.csproj">

@@ -1,6 +1,6 @@
 ﻿//
-// Copyright (C) 2010 Leon Breedt
-// bitserf -at- gmail [dot] com
+// Copyright (C) 2010-2011 Leon Breedt
+// ljb -at- bitserf [dot] org
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,21 +20,14 @@ using System.Xml.Linq;
 namespace ObjectGraph.Xml
 {
     /// <summary>
-    /// A collection type serializer is responsible for serializing a
-    /// contract type that is itself a collection. It has a containing element,
-    /// and contains zero or more member elements.
+    /// Fluent interface for building an element mapping for an element that represents a container.
+    /// Adds an additional method for returning to the "parent" builder scope.
     /// </summary>
-    internal class CollectionTypeSerializer<T> : TypeSerializer<T>
-        where T : new()
+    public interface IContainerElementMappingBuilder<TTarget, TParentBuilder>
     {
-        #region Fields
-        XName _memberElementName;
-        #endregion
+        IChildElementMappingBuilder<TTarget, IContainerElementMappingBuilder<TTarget, TParentBuilder>> MemberElement(XName name);
+        IChildElementMappingBuilder<TCustomMemberTarget, IContainerElementMappingBuilder<TTarget, TParentBuilder>> MemberElement<TCustomMemberTarget>(XName name);
 
-        public CollectionTypeSerializer(XName elementName, XName memberElementName)
-            : base(elementName)
-        {
-            _memberElementName = memberElementName;
-        }
+        TParentBuilder EndContainer();
     }
 }

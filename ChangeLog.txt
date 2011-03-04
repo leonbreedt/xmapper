@@ -1,0 +1,6 @@
+0.2.0.0
+    - Completely rewrote XML support, changing to a fluent interface for describing mapping from
+      XML onto model classes.
+
+0.1.0.0
+    - First version

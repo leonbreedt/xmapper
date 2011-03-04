@@ -1,6 +1,6 @@
 ﻿//
-// Copyright (C) 2010 Leon Breedt
-// bitserf -at- gmail [dot] com
+// Copyright (C) 2010-2011 Leon Breedt
+// ljb -at- bitserf [dot] org
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,17 +15,13 @@
 // limitations under the License.using System;
 //
 
-using System.Runtime.Serialization;
-
-namespace ObjectGraph.Extensions
+namespace ObjectGraph.Xml
 {
-    public static class StreamingContextExtensions
+    /// <summary>
+    /// Represents an item with an identifier.
+    /// </summary>
+    public interface IItemWithId
     {
-        public static void IndexObject<TKey, TObject>(this StreamingContext context, TKey key, TObject obj)
-        {
-            var idx = context.Context as IObjectIndex;
-            if (idx != null)
-                idx.Put(key, obj);
-        }
+        string Id { get; set; }
     }
 }
