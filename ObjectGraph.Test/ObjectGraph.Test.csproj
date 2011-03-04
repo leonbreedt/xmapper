@@ -62,6 +62,7 @@
     <Compile Include="Xml\ChildElementMappingTest.cs" />
     <Compile Include="Xml\ChildElementMappingBuilderTest.cs" />
     <Compile Include="Xml\ContainerElementMappingTest.cs" />
+    <Compile Include="Xml\ContainerElementMappingBuilderTest.cs" />
     <Compile Include="Xml\Model\Address.cs" />
     <Compile Include="Xml\Model\ContactMethod.cs" />
     <Compile Include="Xml\Model\Person.cs" />
