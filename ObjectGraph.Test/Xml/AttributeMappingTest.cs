@@ -18,6 +18,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ObjectGraph.Test.Xml.Model;
 using ObjectGraph.Xml;
+using Shouldly;
 
 namespace ObjectGraph.Test.Xml
 {
@@ -30,7 +31,7 @@ namespace ObjectGraph.Test.Xml
             var person = new Person {Id = 1};
             var mapping = new AttributeMapping<Person, long?>(Ns + "Person", x => x.Id);
 
-            Assert.AreEqual(1, mapping.GetValue(person));
+            mapping.GetValue(person).ShouldBe(1);
         }
 
         [TestMethod]
@@ -39,7 +40,7 @@ namespace ObjectGraph.Test.Xml
             var person = new Person {IsEnabled = true};
             var mapping = new AttributeMapping<Person, bool>(Ns + "Person", x => x.IsEnabled);
 
-            Assert.AreEqual("true", mapping.GetValueInXmlForm(person));
+            mapping.GetValueInXmlForm(person).ShouldBe("true");
         }
 
         [TestMethod]
@@ -50,7 +51,7 @@ namespace ObjectGraph.Test.Xml
 
             mapping.SetValue(person, "James");
 
-            Assert.AreEqual("James", person.FirstName);
+            person.FirstName.ShouldBe("James");
         }
 
         [TestMethod]
@@ -61,7 +62,7 @@ namespace ObjectGraph.Test.Xml
 
             mapping.SetValueFromXmlForm(person, "true");
 
-            Assert.IsTrue(person.IsEnabled);
+            person.IsEnabled.ShouldBe(true);
         }
 
         [TestMethod]
@@ -72,8 +73,8 @@ namespace ObjectGraph.Test.Xml
 
             mapping.SetValueFromXmlForm(person, "231 Queen Street;Auckland");
 
-            Assert.AreEqual(new {StreetName="231 Queen Street", City="Auckland"},
-                            new {person.Address.StreetName, person.Address.City});
+            person.Address.StreetName.ShouldBe("231 Queen Street");
+            person.Address.City.ShouldBe("Auckland");
         }
 
         [TestMethod]
@@ -84,7 +85,7 @@ namespace ObjectGraph.Test.Xml
 
             var actual = mapping.GetValueInXmlForm(person);
 
-            Assert.AreEqual("231 Queen Street;Auckland", actual);
+            actual.ShouldBe("231 Queen Street;Auckland");
         }
 
         static Address UnpackAddressFromAttribute(string packedAddress)
