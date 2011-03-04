@@ -26,6 +26,10 @@ Design
 * Accordingly, serialization is also decoupled from these objects, the ideal case is being able to serialize
   the same model to multiple outputs.
 
+* When we do any type of serialization, avoid reflection like the plague, and instead, use the tricks from
+  Marc Gravell and Jon Skeet's Protocol Buffer implementations - pre-caching of delegates bound to property
+  accessor methods. 
+
 
 Supported Formats
 =================
