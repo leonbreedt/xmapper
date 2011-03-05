@@ -62,7 +62,6 @@
     <Compile Include="Xml\Fluent\IChildElementMappingBuilder.cs" />
     <Compile Include="Xml\IElementMapping.cs" />
     <Compile Include="Xml\Fluent\IElementMappingBuilder.cs" />
-    <Compile Include="Xml\IItemWithId.cs" />
     <Compile Include="Xml\ItemCollection.cs" />
     <Compile Include="Xml\MappingBase.cs" />
     <Compile Include="Xml\IMapping.cs" />

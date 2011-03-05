@@ -43,13 +43,4 @@ namespace ObjectGraph.Xml
         /// <param name="container">The object containing the collection property.</param>
         IList GetCollection(object container);
     }
-
-    /// <summary>
-    /// Represents a mapping of an XML child element onto a collection property of a containing object.
-    /// </summary>
-    /// <typeparam name="TContainer">The type of the class containing the collection property.</typeparam>
-    /// <typeparam name="TMember">The type of a member of the collection.</typeparam>
-    public interface ICollectionChildElementMapping<TContainer, TMember> : IElementMapping<TMember>, ICollectionChildElementMapping
-    {
-    }
 }

@@ -28,7 +28,7 @@ namespace ObjectGraph.Xml
     /// </summary>
     /// <typeparam name="TContainer">The  type that contains the property that will be read and written.</typeparam>
     /// <typeparam name="TProperty">The type of the property.</typeparam>
-    public class ChildElementMapping<TContainer, TProperty> : ElementMapping<TProperty>, IChildElementMapping<TContainer, TProperty>
+    public class ChildElementMapping<TContainer, TProperty> : ElementMapping<TProperty>, IChildElementMapping
     {
         #region Fields
         readonly PropertyInfo _propertyInfo;

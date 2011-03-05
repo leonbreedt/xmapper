@@ -27,7 +27,7 @@ namespace ObjectGraph.Xml
     /// Represents a mapping of an XML element to a type.
     /// </summary>
     /// <typeparam name="TTarget">The type that this mapping will be associated with.</typeparam>
-    public class ElementMapping<TTarget> : MappingBase, IElementMapping<TTarget>
+    public class ElementMapping<TTarget> : MappingBase, IElementMapping
     {
         #region Fields
         readonly Func<TTarget> _constructor;

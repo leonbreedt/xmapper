@@ -62,12 +62,4 @@ namespace ObjectGraph.Xml
         /// <returns>Returns the child element mapping if found, otherwise <c>null</c>.</returns>
         IChildElementMapping TryFindChildElementMapping(string namespaceUri, string localName);
     }
-
-    /// <summary>
-    /// Represents a mapping of an XML element to a type.
-    /// </summary>
-    /// <typeparam name="TTarget">The type that this mapping will be associated with.</typeparam>
-    public interface IElementMapping<TTarget> : IElementMapping
-    {
-    }
 }

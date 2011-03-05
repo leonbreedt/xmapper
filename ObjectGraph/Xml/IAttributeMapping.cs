@@ -38,13 +38,4 @@ namespace ObjectGraph.Xml
         /// <param name="value">The XML representation of the property.</param>
         void SetValueFromXmlForm(object target, string value);
     }
-
-    /// <summary>
-    /// Represents a mapping of an XML attribute to an object property.
-    /// </summary>
-    /// <typeparam name="TContainer">The type that contains the property this mapping is associated with.</typeparam>
-    /// <typeparam name="TProperty">The type of the property in the type.</typeparam>
-    public interface IAttributeMapping<TContainer, TProperty> : IAttributeMapping
-    {
-    }
 }

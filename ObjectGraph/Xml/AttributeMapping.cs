@@ -28,7 +28,7 @@ namespace ObjectGraph.Xml
     /// </summary>
     /// <typeparam name="TContainer">The type that contains the property this mapping is associated with.</typeparam>
     /// <typeparam name="TProperty">The type of the property in the type.</typeparam>
-    public class AttributeMapping<TContainer, TProperty> : MappingBase, IAttributeMapping<TContainer, TProperty>
+    public class AttributeMapping<TContainer, TProperty> : MappingBase, IAttributeMapping
     {
         #region Fields
         readonly PropertyInfo _propertyInfo;

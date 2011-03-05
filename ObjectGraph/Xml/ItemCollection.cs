@@ -36,7 +36,6 @@ namespace ObjectGraph.Xml
     {
         #region Fields
         readonly List<T> _items;
-        Dictionary<string, T> _itemsById;
         #endregion
 
         public ItemCollection()
@@ -70,39 +69,8 @@ namespace ObjectGraph.Xml
             set { _items[index] = value; }
         }
 
-        public T this[string key]
-        {
-            get
-            {
-                if (_itemsById != null)
-                    return _itemsById[key];
-                throw new KeyNotFoundException(string.Format("No {0} found with key {1}", typeof(T), key));
-            }
-        }
-
-        public bool ContainsItem(string key)
-        {
-            if (_itemsById == null)
-                return false;
-            return _itemsById.ContainsKey(key);
-        }
-
-        public bool TryGetItem(string key, out T item)
-        {
-            item = default(T);
-            if (_itemsById == null)
-                return false;
-            return _itemsById.TryGetValue(key, out item);
-        }
-
         public void Add(T item)
         {
-            if (item is IItemWithId)
-            {
-                if (_itemsById == null)
-                    _itemsById = new Dictionary<string, T>();
-                _itemsById[((IItemWithId)item).Id] = item;
-            }
             _items.Add(item);
         }
 
@@ -117,8 +85,6 @@ namespace ObjectGraph.Xml
 
         public void Clear()
         {
-            if (_itemsById != null)
-                _itemsById.Clear();
             _items.Clear();
         }
 
@@ -143,11 +109,6 @@ namespace ObjectGraph.Xml
         }
         public bool Remove(T item)
         {
-            if (_itemsById != null)
-            {
-                if (item is IItemWithId)
-                    _itemsById.Remove(((IItemWithId)item).Id);
-            }
             return _items.Remove(item);
         }
 

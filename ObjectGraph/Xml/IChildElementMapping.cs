@@ -36,13 +36,4 @@ namespace ObjectGraph.Xml
         /// <param name="item">The CLR object.</param>
         void SetOnContainer(object target, object item);
     }
-
-    /// <summary>
-    /// Represents a mapping of an XML child element to a regular property on a type.
-    /// </summary>
-    /// <typeparam name="TContainer">The type that contains the property that will be read and written.</typeparam>
-    /// <typeparam name="TProperty">The type of the property.</typeparam>
-    public interface IChildElementMapping<TContainer, TProperty> : IElementMapping<TProperty>, IChildElementMapping
-    {
-    }
 }

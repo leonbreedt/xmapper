@@ -31,7 +31,7 @@ namespace ObjectGraph.Xml
     /// </summary>
     /// <typeparam name="TContainer">The type that contains the collection that will be read and written, or the collection itself.</typeparam>
     /// <typeparam name="TMember">The type of a collection member.</typeparam>
-    public class CollectionChildElementMapping<TContainer, TMember> : ElementMapping<TMember>, ICollectionChildElementMapping<TContainer, TMember>
+    public class CollectionChildElementMapping<TContainer, TMember> : ElementMapping<TMember>, ICollectionChildElementMapping
     {
         #region Fields
         readonly PropertyInfo _propertyInfo;
