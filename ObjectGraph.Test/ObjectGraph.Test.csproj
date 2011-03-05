@@ -65,8 +65,10 @@
     <Compile Include="Xml\ContainerElementMappingBuilderTest.cs" />
     <Compile Include="Xml\ElementMappingBuilderTest.cs" />
     <Compile Include="Xml\ElementMappingTest.cs" />
+    <Compile Include="Xml\ItemCollectionTest.cs" />
     <Compile Include="Xml\Model\Address.cs" />
     <Compile Include="Xml\Model\ContactMethod.cs" />
+    <Compile Include="Xml\Model\ItemWithId.cs" />
     <Compile Include="Xml\Model\Person.cs" />
     <Compile Include="Xml\TestBase.cs" />
   </ItemGroup>

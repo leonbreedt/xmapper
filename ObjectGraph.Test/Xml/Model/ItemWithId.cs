@@ -15,25 +15,12 @@
 // limitations under the License.using System;
 //
 
+using ObjectGraph.Xml;
+
 namespace ObjectGraph.Test.Xml.Model
 {
-    internal enum ContactMethodType
+    internal class ItemWithId : IItemWithId
     {
-        HomePhone,
-        MobilePhone,
-        Email,
-        Address,
-    }
-
-    internal class ContactMethod
-    {
-        public ContactMethodType Type { get; set; }
-
-        public string Value { get; set; }
-    }
-
-    internal class AddressContactMethod : ContactMethod
-    {
-        public string StreetName { get; set; }
+        public string Id { get; set; }
     }
 }
