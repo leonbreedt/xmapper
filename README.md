@@ -5,22 +5,23 @@ This library is an extraction of an approach I have been using with some success
 large XML documents at speed.
 
 It also includes a fluent interface for defining mappings from XML attributes and elements to .NET objects,
-which should make consuming and producing arbitrary XML documents from pretty easy and quick.
+which should make consuming and producing arbitrary XML documents pretty easy and quick.
 
 
 Features
 --------
 
 * Don't have to write your own boilerplate to convert from XML DOM (XmlDocument/XDocument) or XMLReader into
-  your .NET model objects. Just describe your mapping from XML onto model objects using the fluent interface.
+  your .NET model objects. Just describe your mapping from XML onto model objects using the fluent interface,
+  and then use the Serializer class to read or write the XML.
 
 * Performance is pretty decent. Specifically, we do not do any reflection at all during serialization or
   deserialization. Instead, we use strongly typed delegates bound to our model object properties to get and set
-  property values, and pre-cache those at the time of you instantiating your schema mapping description.
+  property values, and pre-cache those at the time of you describing your mapping.
 
 * Memory usage should be good. We never load the entire document into memory, since we use XMLReader to 
   traverse the document, and we traverse it only once. Additionally, we only load from XML into .NET model
-  objects the data that you have declared interest in, everything else is ignored.
+  objects the data that you've described in your mapping, and ignore everything else.
 
 * If you keep your object model simple, there is no reason you can't use the same classes to serialize to
   any other output format. I have done this with [protobuf-net](http://code.google.com/p/protobuf-net).
@@ -40,8 +41,8 @@ These are things I'm unlikely to support, to keep the library simple.
 
 * XML schemas where an element contains itself, to arbitrary levels of depth, e.g. for representing
   general purpose tree structures. You could probably hack it by duplicating the same child a couple of
-  times using the fluent interface, but it will be ugly. 
- 
+  times using the fluent interface, but it will be ugly.
+  
 
 Examples (C#)
 =============
