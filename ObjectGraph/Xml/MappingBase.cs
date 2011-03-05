@@ -44,7 +44,7 @@ namespace ObjectGraph.Xml
         /// <summary>
         /// Creates a new XML mapping.
         /// </summary>
-        /// <param name="type">The CLR type this mapping is associated with.</param>
+        /// <param name="type">The type this mapping is associated with.</param>
         /// <param name="name">The XML name of the XML construct being mapped from.</param>
         protected MappingBase(Type type, XName name)
         {

@@ -23,10 +23,10 @@ namespace ObjectGraph.Xml
     public interface IElementMapping : IMapping
     {
         /// <summary>
-        /// Creates an instance of the CLR type that this mapping is associated with.
+        /// Creates an instance of the type that this mapping is associated with.
         /// </summary>
         /// <returns>Returns the new instance</returns>
-        object CreateInstanceUntyped();
+        object CreateInstance();
 
         /// <summary>
         /// Attempts to find an attribute mapping within this element mapping, having the given local name and no
@@ -64,15 +64,10 @@ namespace ObjectGraph.Xml
     }
 
     /// <summary>
-    /// Represents a mapping of an XML element to a CLR type.
+    /// Represents a mapping of an XML element to a type.
     /// </summary>
-    /// <typeparam name="TTarget">The CLR type that this mapping will be associated with.</typeparam>
+    /// <typeparam name="TTarget">The type that this mapping will be associated with.</typeparam>
     public interface IElementMapping<TTarget> : IElementMapping
     {
-        /// <summary>
-        /// Creates a new instance of the target type.
-        /// </summary>
-        /// <returns>Returns the new instance.</returns>
-        TTarget CreateInstance();
     }
 }

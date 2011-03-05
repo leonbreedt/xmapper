@@ -26,32 +26,12 @@ namespace ObjectGraph.Test.Xml
     public class AttributeMappingTest : TestBase
     {
         [TestMethod]
-        public void GetValue_ShouldGetPropertyValue()
-        {
-            var person = new Person {Id = 1};
-            var mapping = new AttributeMapping<Person, long?>(Ns + "Person", x => x.Id);
-
-            mapping.GetValue(person).ShouldBe(1);
-        }
-
-        [TestMethod]
         public void GetValueInXmlForm_ShouldReturnXmlRepresentation()
         {
             var person = new Person {IsEnabled = true};
             var mapping = new AttributeMapping<Person, bool>(Ns + "Person", x => x.IsEnabled);
 
             mapping.GetValueInXmlForm(person).ShouldBe("true");
-        }
-
-        [TestMethod]
-        public void SetValue_ShouldSetPropertyValue()
-        {
-            var person = new Person();
-            var mapping = new AttributeMapping<Person, string>(Ns + "Person", x => x.FirstName);
-
-            mapping.SetValue(person, "James");
-
-            person.FirstName.ShouldBe("James");
         }
 
         [TestMethod]

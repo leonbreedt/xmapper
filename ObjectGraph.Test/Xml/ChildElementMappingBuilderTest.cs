@@ -18,6 +18,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ObjectGraph.Test.Xml.Model;
 using ObjectGraph.Xml;
+using ObjectGraph.Xml.Fluent;
 using Shouldly;
 
 namespace ObjectGraph.Test.Xml

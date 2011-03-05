@@ -31,7 +31,7 @@ namespace ObjectGraph.Xml
         string GetValueInXmlForm(object target);
 
         /// <summary>
-        /// Converts the XML attribute value into the CLR type of the property, and then sets the property value to
+        /// Converts the XML attribute value into the type of the property, and then sets the property value to
         /// this converted value.
         /// </summary>
         /// <param name="target">The target object to set the property value in.</param>
@@ -42,29 +42,9 @@ namespace ObjectGraph.Xml
     /// <summary>
     /// Represents a mapping of an XML attribute to an object property.
     /// </summary>
-    /// <typeparam name="TContainer">The CLR type that contains the property this mapping is associated with.</typeparam>
-    /// <typeparam name="TProperty">The type of the property in the CLR type.</typeparam>
+    /// <typeparam name="TContainer">The type that contains the property this mapping is associated with.</typeparam>
+    /// <typeparam name="TProperty">The type of the property in the type.</typeparam>
     public interface IAttributeMapping<TContainer, TProperty> : IAttributeMapping
     {
-        /// <summary>
-        /// Reads the value of this attribute from the property it is associated with on the target object.
-        /// </summary>
-        /// <param name="target">The target object to read the property from.</param>
-        TProperty GetValue(TContainer target);
-
-        /// <summary>
-        /// Reads a representation of the property value that can be safely written as an XML attribute.
-        /// </summary>
-        /// <param name="target">The target object to read the property value from.</param>
-        /// <returns>Returns an XML-safe representation of the value.</returns>
-        string GetValueInXmlForm(TContainer target);
-
-        /// <summary>
-        /// Converts the XML attribute value into the CLR type of the property, and then sets the property value to
-        /// this converted value.
-        /// </summary>
-        /// <param name="target">The target object to set the property value in.</param>
-        /// <param name="value">The XML representation of the property.</param>
-        void SetValueFromXmlForm(TContainer target, string value);
     }
 }

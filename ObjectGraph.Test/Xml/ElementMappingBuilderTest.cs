@@ -18,6 +18,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ObjectGraph.Test.Xml.Model;
 using ObjectGraph.Xml;
+using ObjectGraph.Xml.Fluent;
 using Shouldly;
 
 namespace ObjectGraph.Test.Xml
@@ -60,19 +61,6 @@ namespace ObjectGraph.Test.Xml
 
             mapping.ChildElements.Length.ShouldBe(1);
             mapping.ChildElements[0].ShouldBeTypeOf(typeof(ElementMapping<Address>));
-        }
-
-        [TestMethod]
-        public void ContainerElements_ShouldBeMapped()
-        {
-            var builder = new ElementMappingBuilder<Person>(Ns + "Person");
-
-            builder.ContainerElement(Ns + "ContactMethods", x => x.ContactMethods);
-
-            var mapping = (ElementMapping<Person>)builder.Build();
-
-            mapping.ChildElements.Length.ShouldBe(1);
-            mapping.ChildElements[0].ShouldBeTypeOf(typeof(ContainerElementMapping<Person, ContactMethod>));
         }
     }
 }

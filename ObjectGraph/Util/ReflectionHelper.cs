@@ -16,6 +16,7 @@
 //
 
 using System;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
 
@@ -113,7 +114,7 @@ namespace ObjectGraph.Util
         internal static Func<TContainer, object> GetPropertyGetterDelegate<TContainer>(PropertyInfo info)
         {
             var builder = GetTypedPropertyGetterDelegateMethodInfo.MakeGenericMethod(typeof(TContainer), info.PropertyType);
-            return (Func<TContainer, object>)builder.Invoke(null, new object[] {info});
+            return (Func<TContainer, object>)builder.Invoke(null, new object[] { info });
         }
 
         /// <summary>
@@ -188,6 +189,20 @@ namespace ObjectGraph.Util
             if (actualType.IsEnum)
                 return (Func<TProperty, string>)XmlConversionDelegate.ForWritingEnum(type);
             return (Func<TProperty, string>)XmlConversionDelegate.ForWriting(type);
+        }
+
+        /// <summary>
+        /// Checks whether the specified type implements IList of the specified type.
+        /// </summary>
+        /// <returns></returns>
+        internal static bool ImplementsList(Type containerType, Type elementType)
+        {
+            foreach (Type iface in containerType.GetInterfaces())
+            {
+                if (iface.IsGenericType && iface.GetGenericTypeDefinition() == typeof(IList<>) && iface.GetGenericArguments()[0] == elementType)
+                    return true;
+            }
+            return false;
         }
     }
 }

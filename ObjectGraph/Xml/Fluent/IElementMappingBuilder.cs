@@ -20,26 +20,24 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Xml.Linq;
 
-namespace ObjectGraph.Xml
+namespace ObjectGraph.Xml.Fluent
 {
     /// <summary>
     /// Fluent interface for building an element mapping.
     /// </summary>
-    public interface IElementMappingBuilder<TTarget>
+    public interface IElementMappingBuilder<TElement>
     {
-        IElementMappingBuilder<TTarget> Attribute<TProperty>(XName name,
-                                                             Expression<Func<TTarget, TProperty>> property);
+        IElementMappingBuilder<TElement> Attribute<TProperty>(XName name,
+                                                             Expression<Func<TElement, TProperty>> property);
 
-        IElementMappingBuilder<TTarget> Attribute<TProperty>(XName name,
-                                                             Expression<Func<TTarget, TProperty>> property,
+        IElementMappingBuilder<TElement> Attribute<TProperty>(XName name,
+                                                             Expression<Func<TElement, TProperty>> property,
                                                              Func<string, TProperty> customDeserializer,
                                                              Func<TProperty, string> customSerializer);
 
-        IContainerElementMappingBuilder<TMemberTarget, IElementMappingBuilder<TTarget>> ContainerElement<TMemberTarget>(XName name,
-                                                                                                                    Expression<Func<TTarget, IList<TMemberTarget>>> propertyInTarget);
+        IChildElementMappingBuilder<TChildTarget, IElementMappingBuilder<TElement>> Element<TChildTarget>(XName name, Expression<Func<TElement, TChildTarget>> propertyInParent);
 
-        IChildElementMappingBuilder<TChildTarget, IElementMappingBuilder<TTarget>> Element<TChildTarget>(XName name,
-                                                                                                         Expression<Func<TTarget, TChildTarget>> propertyInParent);
+        ICollectionChildElementMappingBuilder<TElement, TChildElement, IElementMappingBuilder<TElement>> CollectionElement<TChildElement>(XName name, Expression<Func<TElement, IList<TChildElement>>> propertyInParent);
 
         IElementMapping Build();
     }

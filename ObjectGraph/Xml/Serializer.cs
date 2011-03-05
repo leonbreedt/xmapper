@@ -16,7 +16,6 @@
 //
 
 using System;
-using System.Collections;
 using System.IO;
 using System.Xml;
 using System.Xml.Schema;
@@ -61,7 +60,7 @@ namespace ObjectGraph.Xml
         /// <returns>Returns the deserialized object.</returns>
         public TItem Deserialize<TItem>(XmlReader reader)
         {
-            return (TItem)ReadItem(GetMapping<TItem>(), reader);
+            return (TItem)ReadItem(null, GetMapping<TItem>(), reader);
         }
 
         /// <summary>
@@ -119,14 +118,14 @@ namespace ObjectGraph.Xml
             writer.Flush(); // Don't dispose, we don't own stream, and writer will close it.
         }
 
-        static object ReadItem(IElementMapping mapping, XmlReader reader)
+        static object ReadItem(object parentItem, IElementMapping mapping, XmlReader reader)
         {
             if (!reader.LocalName.Equals(mapping.LocalName))
                 throw new XmlFormatException(string.Format("Expected element <{0}> at this position", mapping.LocalName), reader as IXmlLineInfo);
             if (!string.IsNullOrEmpty(mapping.NamespaceUri) && !reader.NamespaceURI.Equals(mapping.NamespaceUri))
                 throw new XmlFormatException(string.Format("Expected element <{0}> to have a namespace of '{1}' at this position", mapping.LocalName, mapping.NamespaceUri), reader as IXmlLineInfo);
 
-            var obj = mapping.CreateInstanceUntyped();
+            var item = mapping.CreateInstance();
 
             if (reader.MoveToFirstAttribute())
             {
@@ -138,7 +137,7 @@ namespace ObjectGraph.Xml
                             : mapping.TryFindAttributeMapping(reader.NamespaceURI, reader.LocalName);
 
                     if (attributeMapping != null)
-                        attributeMapping.SetValueFromXmlForm(obj, reader.Value);
+                        attributeMapping.SetValueFromXmlForm(item, reader.Value);
 
                 } while (reader.MoveToNextAttribute());
                 reader.MoveToElement();
@@ -161,12 +160,15 @@ namespace ObjectGraph.Xml
 
                         if (childElementMapping != null)
                         {
-                            var child = ReadItem(childElementMapping, reader);
+                            var child = ReadItem(item, childElementMapping, reader);
 
-                            if (mapping is IContainerElementMapping)
-                                ((IList)obj).Add(child); // HACK: Rethink container elements.
+                            if (childElementMapping is ICollectionChildElementMapping)
+                            {
+                                var collectionMapping = (ICollectionChildElementMapping)childElementMapping;
+                                collectionMapping.AddToCollection(item, child);
+                            }
                             else
-                                childElementMapping.SetOnContainer(obj, child);
+                                childElementMapping.SetOnContainer(item, child);
                         }
                         else
                         {
@@ -179,7 +181,7 @@ namespace ObjectGraph.Xml
                 }
             }
 
-            return obj;
+            return item;
         }
 
         static void WriteItem(IElementMapping mapping, XmlWriter writer, object item)
@@ -200,13 +202,11 @@ namespace ObjectGraph.Xml
             {
                 foreach (var childElementMapping in mapping.ChildElements)
                 {
-                    if (childElementMapping is IContainerElementMapping)
+                    if (childElementMapping is ICollectionChildElementMapping)
                     {
-                        var containerMapping = (IContainerElementMapping)childElementMapping;
-                        var childList = (IList)item; // HACK: Rethink container elements.
-
-                        foreach (var child in childList)
-                            WriteItem(containerMapping.GetMemberMapping(child), writer, child);
+                        var collection = ((ICollectionChildElementMapping)childElementMapping).GetCollection(item);
+                        foreach (var child in collection)
+                            WriteItem(childElementMapping, writer, child);
                     }
                     else
                     {

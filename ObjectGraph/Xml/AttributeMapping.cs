@@ -26,11 +26,10 @@ namespace ObjectGraph.Xml
     /// <summary>
     /// Represents a mapping of an XML attribute to an object property.
     /// </summary>
-    /// <typeparam name="TContainer">The CLR type that contains the property this mapping is associated with.</typeparam>
-    /// <typeparam name="TProperty">The type of the property in the CLR type.</typeparam>
+    /// <typeparam name="TContainer">The type that contains the property this mapping is associated with.</typeparam>
+    /// <typeparam name="TProperty">The type of the property in the type.</typeparam>
     public class AttributeMapping<TContainer, TProperty> : MappingBase, IAttributeMapping<TContainer, TProperty>
     {
-
         #region Fields
         readonly PropertyInfo _propertyInfo;
         readonly Func<TContainer, TProperty> _getter;
@@ -71,37 +70,18 @@ namespace ObjectGraph.Xml
                 throw new ArgumentException(string.Format("Unable to determine how to serialize property {0} of {1} into an XML representation.", _propertyInfo.Name, _propertyInfo.DeclaringType));
         }
 
-        public TProperty GetValue(TContainer target)
-        {
-            return _getter(target);
-        }
-
-        public void SetValue(TContainer target, TProperty value)
-        {
-            _setter(target, value);
-        }
-
-        public string GetValueInXmlForm(TContainer target)
-        {
-            return _fromPropertyToXmlValue(_getter(target));
-        }
-
-        public void SetValueFromXmlForm(TContainer target, string value)
-        {
-            _setter(target, _fromXmlToPropertyValue(value));
-        }
-
         public string GetValueInXmlForm(object target)
         {
-            return GetValueInXmlForm((TContainer)target);
+            return _fromPropertyToXmlValue(_getter((TContainer)target));
         }
 
         public void SetValueFromXmlForm(object target, string value)
         {
-            SetValueFromXmlForm((TContainer)target, value);
+            _setter((TContainer)target, _fromXmlToPropertyValue(value));
         }
 
         public override IAttributeMapping[] Attributes { get { return NoAttributes; } internal set { } }
+
         public override IChildElementMapping[] ChildElements { get { return NoChildElements; } internal set { } }
     }
 }

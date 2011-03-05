@@ -24,62 +24,52 @@ using ObjectGraph.Util;
 namespace ObjectGraph.Xml
 {
     /// <summary>
-    /// Represents a mapping of an XML child element to a CLR type.
+    /// Represents a mapping of an XML child element to a regular property on a type.
     /// </summary>
-    /// <typeparam name="TContainingTarget">The CLR type that contains the property this mapping will be associated with.</typeparam>
-    /// <typeparam name="TTarget">The CLR type associated with this element mapping.</typeparam>
-    public class ChildElementMapping<TContainingTarget, TTarget> : ElementMapping<TTarget>, IChildElementMapping<TContainingTarget, TTarget>
+    /// <typeparam name="TContainer">The  type that contains the property that will be read and written.</typeparam>
+    /// <typeparam name="TProperty">The type of the property.</typeparam>
+    public class ChildElementMapping<TContainer, TProperty> : ElementMapping<TProperty>, IChildElementMapping<TContainer, TProperty>
     {
         #region Fields
         readonly PropertyInfo _propertyInfo;
-        readonly Func<TContainingTarget, TTarget> _getter;
-        readonly Action<TContainingTarget, TTarget> _setter;
+        readonly Func<TContainer, TProperty> _getter;
+        readonly Action<TContainer, TProperty> _setter;
         #endregion
 
         /// <summary>
         /// Creates a new child element mapping.
         /// </summary>
         /// <param name="name">The name of the element.</param>
-        /// <param name="propertyExpression">A simple member expression referencing the property in the container to associate this mapping with.</param>
-        public ChildElementMapping(XName name, Expression<Func<TContainingTarget, TTarget>> propertyExpression)
+        /// <param name="propertyExpression">A simple member expression referencing the property that will be read and written.</param>
+        public ChildElementMapping(XName name, Expression<Func<TContainer, TProperty>> propertyExpression)
             : base(name)
         {
             if (propertyExpression != null)
             {
                 _propertyInfo = ReflectionHelper.GetPropertyInfoFromExpression(propertyExpression);
-                _getter = ReflectionHelper.GetTypedPropertyGetterDelegate<TContainingTarget, TTarget>(_propertyInfo);
-                _setter = ReflectionHelper.GetTypedPropertySetterDelegate<TContainingTarget, TTarget>(_propertyInfo);
+                _getter = ReflectionHelper.GetTypedPropertyGetterDelegate<TContainer, TProperty>(_propertyInfo);
+                _setter = ReflectionHelper.GetTypedPropertySetterDelegate<TContainer, TProperty>(_propertyInfo);
             }
-        }
-
-        public TTarget GetFromContainer(TContainingTarget target)
-        {
-            if (_getter == null)
-                throw new InvalidOperationException(
-                    string.Format("Unable to get value for element {0} from container {1}, no getter is available.",
-                                  typeof(TTarget),
-                                  typeof(TContainingTarget)));
-            return _getter(target);
-        }
-
-        public void SetOnContainer(TContainingTarget target, TTarget item)
-        {
-            if (_setter == null)
-                throw new InvalidOperationException(
-                    string.Format("Unable to set value for element {0} on container {1}, no setter is available.",
-                                  typeof(TTarget),
-                                  typeof(TContainingTarget)));
-            _setter(target, item);
         }
 
         public object GetFromContainer(object target)
         {
-            return GetFromContainer((TContainingTarget)target);
+            if (_getter == null)
+                throw new InvalidOperationException(
+                    string.Format("Unable to get value for property {0} from container {1}, no getter is available.",
+                                  typeof(TProperty),
+                                  typeof(TContainer)));
+            return _getter((TContainer)target);
         }
 
         public void SetOnContainer(object target, object item)
         {
-            SetOnContainer((TContainingTarget)target, (TTarget)item);
+            if (_setter == null)
+                throw new InvalidOperationException(
+                    string.Format("Unable to set value for property {0} on container {1}, no setter is available.",
+                                  typeof(TProperty),
+                                  typeof(TContainer)));
+            _setter((TContainer)target, (TProperty)item);
         }
     }
 }

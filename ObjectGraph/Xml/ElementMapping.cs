@@ -24,9 +24,9 @@ using ObjectGraph.Util;
 namespace ObjectGraph.Xml
 {
     /// <summary>
-    /// Represents a mapping of an XML element to a CLR type.
+    /// Represents a mapping of an XML element to a type.
     /// </summary>
-    /// <typeparam name="TTarget">The CLR type that this mapping will be associated with.</typeparam>
+    /// <typeparam name="TTarget">The type that this mapping will be associated with.</typeparam>
     public class ElementMapping<TTarget> : MappingBase, IElementMapping<TTarget>
     {
         #region Fields
@@ -37,21 +37,19 @@ namespace ObjectGraph.Xml
         IDictionary<string, IDictionary<string, IChildElementMapping>> _childElementsByNamespaceAndName;
         #endregion
 
+        /// <summary>
+        /// Creates a new XML element mapping.
+        /// </summary>
+        /// <param name="name">The XML element name.</param>
         public ElementMapping(XName name)
-            : this(name, true, typeof(TTarget))
+            : base(typeof(TTarget), name)
         {
-        }
-
-        public ElementMapping(XName name, bool cacheConstructor, Type type)
-            : base(type, name)
-        {
-            if (cacheConstructor)
-                _constructor = ReflectionHelper.GetTypedConstructorDelegate<TTarget>();
+            _constructor = ReflectionHelper.GetTypedConstructorDelegate<TTarget>();
             _attributes = NoAttributes;
             _childElements = NoChildElements;
         }
 
-        public virtual TTarget CreateInstance()
+        public virtual object CreateInstance()
         {
             if (_constructor == null)
                 throw new InvalidOperationException(string.Format("No constructor requested for type {0}", typeof(TTarget)));
@@ -77,11 +75,6 @@ namespace ObjectGraph.Xml
                 _childElements = value;
                 _childElementsByNamespaceAndName = BuildMappingLookupTableByNamespaceAndName(_childElements);
             }
-        }
-
-        public object CreateInstanceUntyped()
-        {
-            return CreateInstance();
         }
 
         public IAttributeMapping TryFindAttributeMapping(string localName)

@@ -20,7 +20,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
 
-namespace ObjectGraph.Xml
+namespace ObjectGraph.Xml.Fluent
 {
     /// <summary>
     /// Fluent interface for building a schema description.

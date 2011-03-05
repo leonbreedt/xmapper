@@ -40,7 +40,7 @@ namespace ObjectGraph.Xml
         /// <summary>
         /// Looks up an XML element mapping.
         /// </summary>
-        /// <typeparam name="T">The CLR type to look up a mapping for.</typeparam>
+        /// <typeparam name="T">The type to look up a mapping for.</typeparam>
         /// <returns>Returns the mapping for the type, or <c>null</c> if no mapping exists.</returns>
         public IElementMapping TryFindMappingForType<T>()
         {

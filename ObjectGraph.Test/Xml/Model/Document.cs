@@ -15,27 +15,12 @@
 // limitations under the License.using System;
 //
 
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ObjectGraph.Test.Xml.Model;
 using ObjectGraph.Xml;
-using Shouldly;
 
-namespace ObjectGraph.Test.Xml
+namespace ObjectGraph.Test.Xml.Model
 {
-    [TestClass]
-    public class ElementMappingTest : TestBase
+    internal class Document
     {
-        [TestMethod]
-        public void NewMapping_ShouldCreateInstances()
-        {
-            var mapping = new ElementMapping<Person>(Ns + "Person");
-
-            mapping.NamespaceUri.ShouldBe(Ns.NamespaceName);
-            mapping.LocalName.ShouldBe("Person");
-
-            var actual = mapping.CreateInstance();
-
-            actual.ShouldBeTypeOf(typeof(Person));
-        }
+        public ItemCollection<Person> Persons { get; set; }
     }
 }

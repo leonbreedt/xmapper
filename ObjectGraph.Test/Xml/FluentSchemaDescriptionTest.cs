@@ -19,6 +19,7 @@ using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ObjectGraph.Test.Xml.Model;
 using ObjectGraph.Xml;
+using ObjectGraph.Xml.Fluent;
 using Shouldly;
 
 namespace ObjectGraph.Test.Xml
@@ -40,24 +41,21 @@ namespace ObjectGraph.Test.Xml
                         .Attribute(Ns + "StreetName", x => x.StreetName)
                         .Attribute(Ns + "City", x => x.City)
                     .EndElement()
-                    .ContainerElement(Ns + "ContactMethods", x => x.ContactMethods)
-                        .MemberElement(Ns + "ContactMethod")
+                    .Element(Ns + "ContactMethods", x => x.ContactMethods)
+                        .CollectionElement<ContactMethod>(Ns + "ContactMethod")
                             .Attribute(Ns + "Type", x => x.Type)
                             .Attribute(Ns + "Value", x => x.Value)
                         .EndElement()
-                        .MemberElement<AddressContactMethod>(Ns + "AddressContactMethod")
-                            .Attribute(Ns + "Type", x => x.Type)
-                            .Attribute(Ns + "Value", x => x.Value)
-                            .Attribute(Ns + "StreetName", x => x.StreetName)
+                        .CollectionElement<AddressContactMethod>(Ns + "AddressContactMethod")
                         .EndElement()
-                    .EndContainerElement();
+                    .EndElement();
 
             var schema = builder.Build();
 
             schema.Mappings.Count().ShouldBe(5);
             schema.TryFindMappingForType<Person>().ShouldBeTypeOf(typeof(ElementMapping<Person>));
             schema.TryFindMappingForType<Address>().ShouldBeTypeOf(typeof(ChildElementMapping<Person, Address>));
-            schema.TryFindMappingForType<ItemCollection<ContactMethod>>().ShouldBeTypeOf(typeof(ContainerElementMapping<Person, ContactMethod>));
+            schema.TryFindMappingForType<ItemCollection<ContactMethod>>().ShouldBeTypeOf(typeof(ChildElementMapping<Person, ItemCollection<ContactMethod>>));
             schema.TryFindMappingForType<ContactMethod>().ShouldBeTypeOf(typeof(ElementMapping<ContactMethod>));
             schema.TryFindMappingForType<AddressContactMethod>().ShouldBeTypeOf(typeof(ElementMapping<AddressContactMethod>));
         }

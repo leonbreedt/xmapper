@@ -18,6 +18,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ObjectGraph.Test.Xml.Model;
 using ObjectGraph.Xml;
+using ObjectGraph.Xml.Fluent;
 using Shouldly;
 
 namespace ObjectGraph.Test.Xml
@@ -60,56 +61,68 @@ namespace ObjectGraph.Test.Xml
         [TestMethod]
         public void DeserializeDocument_ShouldSucceed()
         {
-            const string document = @"<Person Id='123' FirstName='James' LastName='Jefferson' IsEnabled='true' xmlns='http://test.com'>
+            const string document = @"<Document xmlns='http://test.com'>
+                                        <Person Id='123' FirstName='James' LastName='Jefferson' IsEnabled='true'>
                                           <Address StreetName='231 Queen Street' City='Auckland' />
                                           <ContactMethods>
                                               <ContactMethod Type='Email' Value='james@jefferson.com' />
                                               <AddressContactMethod Type='Address' Value='Auckland City' StreetName='232 Queen Street' />
                                               <ContactMethod Type='HomePhone' Value='555-1234' />
                                           </ContactMethods>
-                                      </Person>";
+                                        </Person>
+                                        <Person Id='124' FirstName='Paul' LastName='Jefferson' IsEnabled='false'>
+                                          <Address StreetName='500 Dominion Road' City='Auckland' />
+                                        </Person>
+                                      </Document>";
             var serializer = new Serializer(FullSchema());
 
-            var actual = serializer.Deserialize<Person>(document.ToStream());
+            var actual = serializer.Deserialize<Document>(document.ToStream());
 
-            actual.Id.ShouldBe(123);
-            actual.Address.StreetName.ShouldBe("231 Queen Street");
-            actual.Address.City.ShouldBe("Auckland");
-            actual.ContactMethods.Count.ShouldBe(3);
-            actual.ContactMethods[0].Type.ShouldBe(ContactMethodType.Email);
-            actual.ContactMethods[0].Value.ShouldBe("james@jefferson.com");
-            actual.ContactMethods[1].Type.ShouldBe(ContactMethodType.Address);
-            actual.ContactMethods[1].Value.ShouldBe("Auckland City");
-            actual.ContactMethods[1].ShouldBeTypeOf(typeof(AddressContactMethod));
-            actual.ContactMethods[1].As<AddressContactMethod>().StreetName.ShouldBe("232 Queen Street");
-            actual.ContactMethods[2].Type.ShouldBe(ContactMethodType.HomePhone);
-            actual.ContactMethods[2].Value.ShouldBe("555-1234");
+            actual.Persons.Count.ShouldBe(2);
+
+            var person1 = actual.Persons[0];
+            var person2 = actual.Persons[1];
+
+            person1.Id.ShouldBe(123);
+            person1.Address.StreetName.ShouldBe("231 Queen Street");
+            person1.Address.City.ShouldBe("Auckland");
+            person1.ContactMethods.Count.ShouldBe(3);
+            person1.ContactMethods[0].Type.ShouldBe(ContactMethodType.Email);
+            person1.ContactMethods[0].Value.ShouldBe("james@jefferson.com");
+            person1.ContactMethods[1].Type.ShouldBe(ContactMethodType.Address);
+            person1.ContactMethods[1].Value.ShouldBe("Auckland City");
+            person1.ContactMethods[1].ShouldBeTypeOf(typeof(AddressContactMethod));
+            person1.ContactMethods[1].As<AddressContactMethod>().StreetName.ShouldBe("232 Queen Street");
+            person1.ContactMethods[2].Type.ShouldBe(ContactMethodType.HomePhone);
+            person1.ContactMethods[2].Value.ShouldBe("555-1234");
         }
 
         static SchemaDescription FullSchema()
         {
             var description = new FluentSchemaDescription();
 
-            description.Element<Person>(Ns + "Person")
-                       .Attribute("Id", x => x.Id)
-                       .Attribute("FirstName", x => x.FirstName)
-                       .Attribute("LastName", x => x.LastName)
-                       .Attribute("IsEnabled", x => x.IsEnabled)
-                       .Element(Ns + "Address", x => x.Address)
-                           .Attribute("StreetName", x => x.StreetName)
-                           .Attribute("City", x => x.City)
-                       .EndElement()
-                       .ContainerElement(Ns + "ContactMethods", x => x.ContactMethods)
-                           .MemberElement(Ns + "ContactMethod")
-                               .Attribute("Type", x => x.Type)
-                               .Attribute("Value", x => x.Value)
-                           .EndElement()
-                           .MemberElement<AddressContactMethod>(Ns + "AddressContactMethod")
-                               .Attribute("Type", x => x.Type)
-                               .Attribute("Value", x => x.Value)
-                               .Attribute("StreetName", x => x.StreetName)
-                           .EndElement()
-                       .EndContainerElement();
+            description.Element<Document>(Ns + "Document")
+                           .CollectionElement(Ns + "Person", x => x.Persons)
+                               .Attribute("Id", x => x.Id)
+                               .Attribute("FirstName", x => x.FirstName)
+                               .Attribute("LastName", x => x.LastName)
+                               .Attribute("IsEnabled", x => x.IsEnabled)
+                               .Element(Ns + "Address", x => x.Address)
+                                   .Attribute("StreetName", x => x.StreetName)
+                                   .Attribute("City", x => x.City)
+                               .EndElement()
+                               .Element(Ns + "ContactMethods", x => x.ContactMethods)
+                                   .CollectionElement<ContactMethod>(Ns + "ContactMethod")
+                                       .Attribute("Type", x => x.Type)
+                                       .Attribute("Value", x => x.Value)
+                                   .EndElement()
+                                   .CollectionElement<AddressContactMethod>(Ns + "AddressContactMethod")
+                                       .Attribute("Type", x => x.Type)
+                                       .Attribute("Value", x => x.Value)
+                                       .Attribute("StreetName", x => x.StreetName)
+                                   .EndElement()
+                               .EndElement()
+                           .EndElement();
 
             return description.Build();
         }

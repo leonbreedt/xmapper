@@ -25,7 +25,7 @@ namespace ObjectGraph.Xml
     public interface IMapping
     {
         /// <summary>
-        /// Gets the CLR type associated with this mapping.
+        /// Gets the type associated with this mapping.
         /// </summary>
         Type Type { get; }
 

@@ -38,24 +38,11 @@ namespace ObjectGraph.Xml
     }
 
     /// <summary>
-    /// Represents a mapping of an XML child element to a CLR type.
+    /// Represents a mapping of an XML child element to a regular property on a type.
     /// </summary>
-    /// <typeparam name="TContainingTarget">The CLR type that this child mapping is contained within.</typeparam>
-    /// <typeparam name="TChildTarget">The CLR type associated with this child element mapping.</typeparam>
-    public interface IChildElementMapping<TContainingTarget, TChildTarget> : IElementMapping<TChildTarget>, IChildElementMapping
+    /// <typeparam name="TContainer">The type that contains the property that will be read and written.</typeparam>
+    /// <typeparam name="TProperty">The type of the property.</typeparam>
+    public interface IChildElementMapping<TContainer, TProperty> : IElementMapping<TProperty>, IChildElementMapping
     {
-        /// <summary>
-        /// Reads the object from the property on the target that contains this object.
-        /// </summary>
-        /// <param name="target">The target.</param>
-        /// <returns>Returns the CLR object.</returns>
-        TChildTarget GetFromContainer(TContainingTarget target);
-
-        /// <summary>
-        /// Sets the property on the target to the specified CLR object.
-        /// </summary>
-        /// <param name="target">The target.</param>
-        /// <param name="item">The CLR object.</param>
-        void SetOnContainer(TContainingTarget target, TChildTarget item);
     }
 }
