@@ -14,7 +14,9 @@ Features
 * Don't have to write your own boilerplate to convert from XML DOM (XmlDocument/XDocument) or XMLReader into
   your .NET model objects. Just describe your mapping from XML onto model objects using the fluent interface.
 
-* Performance is pretty decent.
+* Performance is pretty decent. Specifically, we do not do any reflection at all during serialization or
+  deserialization. Instead, we use strongly typed delegates bound to our model object properties to get and set
+  property values, and pre-cache those at the time of you instantiating your schema mapping description.
 
 * Memory usage should be good. We never load the entire document into memory, since we use XMLReader to 
   traverse the document, and we traverse it only once. Additionally, we only load from XML into .NET model
