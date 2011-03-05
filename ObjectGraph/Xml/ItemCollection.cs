@@ -15,6 +15,7 @@
 // limitations under the License.using System;
 //
 
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -31,7 +32,7 @@ namespace ObjectGraph.Xml
     /// Item collection for implementing collections of objects with the XML model.
     /// </summary>
     /// <typeparam name="T">The item type.</typeparam>
-    public class ItemCollection<T> : ItemCollection, IList<T>
+    public class ItemCollection<T> : ItemCollection, IList<T>, IList
     {
         #region Fields
         readonly List<T> _items;
@@ -140,7 +141,6 @@ namespace ObjectGraph.Xml
         {
             get { return false; }
         }
-
         public bool Remove(T item)
         {
             if (_itemsById != null)
@@ -155,6 +155,45 @@ namespace ObjectGraph.Xml
         {
             return _items.GetEnumerator();
         }
+
+        object ICollection.SyncRoot { get { return ((ICollection)_items).SyncRoot; } }
+
+        bool ICollection.IsSynchronized { get { return ((ICollection)_items).IsSynchronized; } }
+
+        void ICollection.CopyTo(Array array, int index)
+        {
+            _items.CopyTo((T[])array, index);
+        }
+
+        int IList.Add(object value)
+        {
+            _items.Add((T)value);
+            return _items.Count;
+        }
+
+        bool IList.Contains(object value)
+        {
+            return _items.Contains((T)value);
+        }
+
+        int IList.IndexOf(object value)
+        {
+            return _items.IndexOf((T)value);
+        }
+
+        void IList.Insert(int index, object value)
+        {
+            _items.Insert(index, (T)value);
+        }
+
+        bool IList.IsFixedSize { get { return ((IList)_items).IsFixedSize; } }
+
+        void IList.Remove(object value)
+        {
+            _items.Remove((T)value);
+        }
+
+        object IList.this[int index] { get { return _items[index]; } set { _items[index] = (T)value; } }
 
         IEnumerator IEnumerable.GetEnumerator()
         {

@@ -16,6 +16,7 @@
 //
 
 using System;
+using System.Collections;
 using System.IO;
 using System.Xml;
 using System.Xml.Schema;
@@ -121,9 +122,9 @@ namespace ObjectGraph.Xml
         static object ReadItem(IElementMapping mapping, XmlReader reader)
         {
             if (!reader.LocalName.Equals(mapping.LocalName))
-                throw new XmlFormatException(string.Format("Expected element '{0}'", mapping.LocalName), reader as IXmlLineInfo);
+                throw new XmlFormatException(string.Format("Expected element <{0}> at this position", mapping.LocalName), reader as IXmlLineInfo);
             if (!string.IsNullOrEmpty(mapping.NamespaceUri) && !reader.NamespaceURI.Equals(mapping.NamespaceUri))
-                throw new XmlFormatException(string.Format("Expected element '{0}' to have namespace URI '{1}'", mapping.LocalName, mapping.NamespaceUri), reader as IXmlLineInfo);
+                throw new XmlFormatException(string.Format("Expected element <{0}> to have a namespace of '{1}' at this position", mapping.LocalName, mapping.NamespaceUri), reader as IXmlLineInfo);
 
             var obj = mapping.CreateInstanceUntyped();
 
@@ -162,7 +163,10 @@ namespace ObjectGraph.Xml
                         {
                             var child = ReadItem(childElementMapping, reader);
 
-                            childElementMapping.SetOnContainer(obj, child);
+                            if (mapping is IContainerElementMapping)
+                                ((IList)obj).Add(child); // HACK: Rethink container elements.
+                            else
+                                childElementMapping.SetOnContainer(obj, child);
                         }
                         else
                         {
@@ -199,7 +203,7 @@ namespace ObjectGraph.Xml
                     if (childElementMapping is IContainerElementMapping)
                     {
                         var containerMapping = (IContainerElementMapping)childElementMapping;
-                        var childList = containerMapping.GetCollectionFromTarget(item);
+                        var childList = (IList)item; // HACK: Rethink container elements.
 
                         foreach (var child in childList)
                             WriteItem(containerMapping.GetMemberMapping(child), writer, child);

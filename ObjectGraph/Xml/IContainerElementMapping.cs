@@ -15,7 +15,6 @@
 // limitations under the License.using System;
 //
 
-using System.Collections;
 using System.Collections.Generic;
 
 namespace ObjectGraph.Xml
@@ -25,20 +24,6 @@ namespace ObjectGraph.Xml
     /// </summary>
     public interface IContainerElementMapping : IChildElementMapping
     {
-        /// <summary>
-        /// Gets the collection from the specified object.
-        /// </summary>
-        /// <param name="target">The object containing the collection on a property.</param>
-        /// <returns>Returns the collection.</returns>
-        IList GetCollectionFromTarget(object target);
-
-        /// <summary>
-        /// Sets the collection on the specified object.
-        /// </summary>
-        /// <param name="target">The object containing the collection on a property.</param>
-        /// <param name="collection">The collection to set.</param>
-        void SetCollectionOnTarget(object target, IList collection);
-
         /// <summary>
         /// Gets the mapping for the specified child.
         /// </summary>

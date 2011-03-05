@@ -16,7 +16,6 @@
 //
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -78,22 +77,12 @@ namespace ObjectGraph.Xml
 
         public object GetFromContainer(object target)
         {
-            return GetCollectionFromTarget(target);
+            return GetCollectionFromTarget((TContainingTarget)target);
         }
 
         public void SetOnContainer(object target, object item)
         {
-            SetCollectionOnTarget(target, (IList)item);
-        }
-
-        public IList GetCollectionFromTarget(object target)
-        {
-            return (IList)GetCollectionFromTarget((TContainingTarget)target);
-        }
-
-        public void SetCollectionOnTarget(object target, IList collection)
-        {
-            SetCollectionOnTarget((TContainingTarget)target, (IList<TMemberTarget>)collection);
+            SetCollectionOnTarget((TContainingTarget)target, (IList<TMemberTarget>)item);
         }
 
         public IElementMapping GetMemberMapping(object child)

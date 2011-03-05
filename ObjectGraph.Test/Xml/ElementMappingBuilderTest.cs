@@ -42,11 +42,11 @@ namespace ObjectGraph.Test.Xml
 
             mapping.LocalName.ShouldBe("Person");
             mapping.NamespaceUri.ShouldBe(Ns.NamespaceName);
-            mapping.ChildElements.Length.ShouldBe(4);
-            mapping.ChildElements[0].ShouldBeTypeOf(typeof(AttributeMapping<Person, long?>));
-            mapping.ChildElements[1].ShouldBeTypeOf(typeof(AttributeMapping<Person, string>));
-            mapping.ChildElements[2].ShouldBeTypeOf(typeof(AttributeMapping<Person, string>));
-            mapping.ChildElements[3].ShouldBeTypeOf(typeof(AttributeMapping<Person, bool>));
+            mapping.Attributes.Length.ShouldBe(4);
+            mapping.Attributes[0].ShouldBeTypeOf(typeof(AttributeMapping<Person, long?>));
+            mapping.Attributes[1].ShouldBeTypeOf(typeof(AttributeMapping<Person, string>));
+            mapping.Attributes[2].ShouldBeTypeOf(typeof(AttributeMapping<Person, string>));
+            mapping.Attributes[3].ShouldBeTypeOf(typeof(AttributeMapping<Person, bool>));
         }
 
         [TestMethod]

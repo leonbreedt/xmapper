@@ -44,19 +44,31 @@ namespace ObjectGraph.Xml
         public ChildElementMapping(XName name, Expression<Func<TContainingTarget, TTarget>> propertyExpression)
             : base(name)
         {
-            _propertyInfo = ReflectionHelper.GetPropertyInfoFromExpression(propertyExpression);
-            _getter = ReflectionHelper.GetTypedPropertyGetterDelegate<TContainingTarget, TTarget>(_propertyInfo);
-            _setter = ReflectionHelper.GetTypedPropertySetterDelegate<TContainingTarget, TTarget>(_propertyInfo);
-
+            if (propertyExpression != null)
+            {
+                _propertyInfo = ReflectionHelper.GetPropertyInfoFromExpression(propertyExpression);
+                _getter = ReflectionHelper.GetTypedPropertyGetterDelegate<TContainingTarget, TTarget>(_propertyInfo);
+                _setter = ReflectionHelper.GetTypedPropertySetterDelegate<TContainingTarget, TTarget>(_propertyInfo);
+            }
         }
 
         public TTarget GetFromContainer(TContainingTarget target)
         {
+            if (_getter == null)
+                throw new InvalidOperationException(
+                    string.Format("Unable to get value for element {0} from container {1}, no getter is available.",
+                                  typeof(TTarget),
+                                  typeof(TContainingTarget)));
             return _getter(target);
         }
 
         public void SetOnContainer(TContainingTarget target, TTarget item)
         {
+            if (_setter == null)
+                throw new InvalidOperationException(
+                    string.Format("Unable to set value for element {0} on container {1}, no setter is available.",
+                                  typeof(TTarget),
+                                  typeof(TContainingTarget)));
             _setter(target, item);
         }
 
@@ -67,7 +79,7 @@ namespace ObjectGraph.Xml
 
         public void SetOnContainer(object target, object item)
         {
-            SetOnContainer((TContainingTarget)target, item);
+            SetOnContainer((TContainingTarget)target, (TTarget)item);
         }
     }
 }

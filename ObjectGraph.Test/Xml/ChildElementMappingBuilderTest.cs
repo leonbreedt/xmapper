@@ -38,7 +38,7 @@ namespace ObjectGraph.Test.Xml
 
             actual.SetOnContainer(person, address);
             actual.GetFromContainer(person).ShouldBe(address);
-            actual.ChildElements.Length.ShouldBe(1);
+            actual.Attributes.Length.ShouldBe(1);
         }
 
         [TestMethod]

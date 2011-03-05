@@ -72,6 +72,7 @@
     <Compile Include="Xml\Model\ContactMethod.cs" />
     <Compile Include="Xml\Model\ItemWithId.cs" />
     <Compile Include="Xml\Model\Person.cs" />
+    <Compile Include="Xml\SerializerTest.cs" />
     <Compile Include="Xml\TestBase.cs" />
   </ItemGroup>
   <ItemGroup>

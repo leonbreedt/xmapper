@@ -15,6 +15,8 @@
 // limitations under the License.using System;
 //
 
+using System.IO;
+using System.Text;
 using System.Xml.Linq;
 
 namespace ObjectGraph.Test.Xml
@@ -22,5 +24,13 @@ namespace ObjectGraph.Test.Xml
     public class TestBase
     {
         protected static readonly XNamespace Ns = "http://test.com";
+    }
+
+    internal static class StringExtensions
+    {
+        public static Stream ToStream(this string s)
+        {
+            return new MemoryStream(Encoding.UTF8.GetBytes(s));
+        }
     }
 }
