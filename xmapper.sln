@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "xmapper", "xmapper\xmapper.csproj", "{8DD6CA4B-D497-47BA-BB6F-24F62C646A6F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "xmapper.test", "xmapper.test\xmapper.Test.csproj", "{ADDB3B14-0B50-4257-9789-B6104B7FA9D1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "xmapper.test", "xmapper.test\xmapper.test.csproj", "{ADDB3B14-0B50-4257-9789-B6104B7FA9D1}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{253B31F2-14C7-40A3-9D26-32A939592484}"
 	ProjectSection(SolutionItems) = preProject
