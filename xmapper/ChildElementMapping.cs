@@ -54,21 +54,11 @@ namespace XMapper
 
         public object GetFromContainer(object target)
         {
-            if (_getter == null)
-                throw new InvalidOperationException(
-                    string.Format("Unable to get value for property {0} from container {1}, no getter is available.",
-                                  typeof(TProperty),
-                                  typeof(TContainer)));
             return _getter((TContainer)target);
         }
 
         public void SetOnContainer(object target, object item)
         {
-            if (_setter == null)
-                throw new InvalidOperationException(
-                    string.Format("Unable to set value for property {0} on container {1}, no setter is available.",
-                                  typeof(TProperty),
-                                  typeof(TContainer)));
             _setter((TContainer)target, (TProperty)item);
         }
     }

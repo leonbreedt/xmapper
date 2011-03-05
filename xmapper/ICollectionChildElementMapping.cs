@@ -25,11 +25,6 @@ namespace XMapper
     public interface ICollectionChildElementMapping : IChildElementMapping
     {
         /// <summary>
-        /// Whether or not the associated container is a collection itself.
-        /// </summary>
-        bool IsContainerCollection { get; }
-
-        /// <summary>
         /// Adds the specified member to the collection property of the containing object. If the property
         /// is not initialized, a new collection will be created.
         /// </summary>

@@ -58,20 +58,20 @@ namespace XMapper
             }
         }
 
-        public bool IsContainerCollection { get { return _propertyInfo == null; } }
-
         public void AddToCollection(object container, object member)
         {
             IList collection;
 
-            if (IsContainerCollection)
+            bool isContainerTheCollection = _propertyInfo == null;
+
+            if (isContainerTheCollection)
                 collection = (IList)container;
             else
                 collection = (IList)_collectionGetter((TContainer)container);
 
             if (collection == null)
             {
-                if (!IsContainerCollection)
+                if (!isContainerTheCollection)
                 {
                     collection = (IList)_collectionConstructor();
                     _collectionSetter((TContainer)container, collection);
@@ -85,7 +85,7 @@ namespace XMapper
 
         public IList GetCollection(object container)
         {
-            if (IsContainerCollection)
+            if (_propertyInfo == null)
                 return (IList)container;
             return (IList)_collectionGetter((TContainer)container);
         }

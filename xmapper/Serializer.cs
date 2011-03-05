@@ -16,6 +16,8 @@
 //
 
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Xml;
 using System.Xml.Schema;
@@ -198,20 +200,32 @@ namespace XMapper
                 }
             }
 
-            if (mapping.ChildElements != null)
+            if (mapping.ChildElements != null && mapping.ChildElements.Length > 0)
             {
+                // This is a HACK. We need to instead have a lookup table we can use to look up the element type of
+                // a collection element, and then use the appropriate descriptor, on a PER-ELEMENT basis.
+                // to allow things like <Address /><CustomAddress /> in the same list.
+
+                var seenCollections = new HashSet<IList>();
+
                 foreach (var childElementMapping in mapping.ChildElements)
                 {
                     if (childElementMapping is ICollectionChildElementMapping)
                     {
                         var collection = ((ICollectionChildElementMapping)childElementMapping).GetCollection(item);
-                        foreach (var child in collection)
-                            WriteItem(childElementMapping, writer, child);
+                        if (!seenCollections.Contains(collection))
+                        {
+                            foreach (var child in collection)
+                                WriteItem(childElementMapping, writer, child);
+                        }
+                        seenCollections.Add(collection);
+
                     }
                     else
                     {
                         var child = childElementMapping.GetFromContainer(item);
-                        WriteItem(childElementMapping, writer, child);
+                        if (child != null)
+                            WriteItem(childElementMapping, writer, child);
                     }
                 }
             }

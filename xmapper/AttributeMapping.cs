@@ -72,12 +72,16 @@ namespace XMapper
 
         public string GetValueInXmlForm(object target)
         {
-            return _fromPropertyToXmlValue(_getter((TContainer)target));
+            var value = _getter((TContainer)target);
+            if (value != null)
+                return _fromPropertyToXmlValue(value);
+            return null;
         }
 
         public void SetValueFromXmlForm(object target, string value)
         {
-            _setter((TContainer)target, _fromXmlToPropertyValue(value));
+            if (value != null)
+                _setter((TContainer)target, _fromXmlToPropertyValue(value));
         }
 
         public override IAttributeMapping[] Attributes { get { return NoAttributes; } internal set { } }
