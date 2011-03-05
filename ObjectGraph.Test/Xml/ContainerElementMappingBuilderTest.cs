@@ -55,9 +55,9 @@ namespace ObjectGraph.Test.Xml
 
             var actual = builder.Build();
 
-            actual.Children.Length.ShouldBe(2);
-            actual.Children[0].ShouldBeTypeOf(typeof(ElementMapping<ContactMethod>));
-            actual.Children[1].ShouldBeTypeOf(typeof(ElementMapping<AddressContactMethod>));
+            actual.ChildElements.Length.ShouldBe(2);
+            actual.ChildElements[0].ShouldBeTypeOf(typeof(ElementMapping<ContactMethod>));
+            actual.ChildElements[1].ShouldBeTypeOf(typeof(ElementMapping<AddressContactMethod>));
         }
 
         [TestMethod]

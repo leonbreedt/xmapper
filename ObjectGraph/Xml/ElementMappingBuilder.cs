@@ -27,15 +27,15 @@ namespace ObjectGraph.Xml
     {
         #region Fields
         readonly XName _name;
-        readonly List<IMapping> _attrs;
-        readonly List<Func<IMapping>> _elements;
+        readonly List<IAttributeMapping> _attrs;
+        readonly List<Func<IChildElementMapping>> _elements;
         #endregion
 
         public ElementMappingBuilder(XName name)
         {
             _name = name;
-            _attrs = new List<IMapping>();
-            _elements = new List<Func<IMapping>>();
+            _attrs = new List<IAttributeMapping>();
+            _elements = new List<Func<IChildElementMapping>>();
         }
 
         public IElementMappingBuilder<TTarget> Attribute<TProperty>(XName name, Expression<Func<TTarget, TProperty>> property)
@@ -64,16 +64,17 @@ namespace ObjectGraph.Xml
             return builder;
         }
 
-        public virtual IMapping Build()
+        public virtual IElementMapping Build()
         {
             return new ElementMapping<TTarget>(_name)
                    {
-                       Children = Attributes.Union(Elements.Select(f => f())).ToArray()
+                       Attributes = Attributes.ToArray(),
+                       ChildElements = Elements.Select(f => f()).ToArray()
                    };
         }
 
         protected XName Name { get { return _name; } }
-        protected List<IMapping> Attributes { get { return _attrs; } }
-        protected List<Func<IMapping>> Elements { get { return _elements; } }
+        protected List<IAttributeMapping> Attributes { get { return _attrs; } }
+        protected List<Func<IChildElementMapping>> Elements { get { return _elements; } }
     }
 }

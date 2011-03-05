@@ -16,6 +16,8 @@
 //
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Xml.Linq;
 using ObjectGraph.Util;
 
@@ -27,14 +29,12 @@ namespace ObjectGraph.Xml
     /// <typeparam name="TTarget">The CLR type that this mapping will be associated with.</typeparam>
     public class ElementMapping<TTarget> : MappingBase, IElementMapping<TTarget>
     {
-        /// <summary>
-        /// Pre-cached empty list of children.
-        /// </summary>
-        static readonly IMapping[] NoChildren = new IMapping[0];
-
         #region Fields
         readonly Func<TTarget> _constructor;
-        IMapping[] _children;
+        IAttributeMapping[] _attributes;
+        IChildElementMapping[] _childElements;
+        IDictionary<string, IDictionary<string, IAttributeMapping>> _attributesByNamespaceAndName;
+        IDictionary<string, IDictionary<string, IChildElementMapping>> _childElementsByNamespaceAndName;
         #endregion
 
         public ElementMapping(XName name)
@@ -47,7 +47,8 @@ namespace ObjectGraph.Xml
         {
             if (cacheConstructor)
                 _constructor = ReflectionHelper.GetTypedConstructorDelegate<TTarget>();
-            _children = NoChildren;
+            _attributes = NoAttributes;
+            _childElements = NoChildElements;
         }
 
         public virtual TTarget CreateInstance()
@@ -58,12 +59,99 @@ namespace ObjectGraph.Xml
             return _constructor();
         }
 
-        public override bool IsElement { get { return true; } }
-
-        public override IMapping[] Children
+        public override IAttributeMapping[] Attributes
         {
-            get { return _children; } 
-            internal set { _children = value; }
+            get { return _attributes; }
+            internal set
+            {
+                _attributes = value;
+                _attributesByNamespaceAndName = BuildMappingLookupTableByNamespaceAndName(_attributes);
+            }
         }
+
+        public override IChildElementMapping[] ChildElements
+        {
+            get { return _childElements; }
+            internal set
+            {
+                _childElements = value;
+                _childElementsByNamespaceAndName = BuildMappingLookupTableByNamespaceAndName(_childElements);
+            }
+        }
+
+        public object CreateInstanceUntyped()
+        {
+            return CreateInstance();
+        }
+
+        public IAttributeMapping TryFindAttributeMapping(string localName)
+        {
+            return TryFindAttributeMapping("", localName);
+        }
+
+        public IAttributeMapping TryFindAttributeMapping(string namespaceUri, string localName)
+        {
+            if (_attributesByNamespaceAndName == null)
+                return null;
+
+            IDictionary<string, IAttributeMapping> propertiesByName;
+            if (!_attributesByNamespaceAndName.TryGetValue(namespaceUri, out propertiesByName))
+                return null;
+
+            IAttributeMapping attributeMapping;
+            if (!propertiesByName.TryGetValue(localName, out attributeMapping))
+                return null;
+
+            return attributeMapping;
+        }
+
+        public IChildElementMapping TryFindChildElementMapping(string localName)
+        {
+            return TryFindChildElementMapping("", localName);
+        }
+
+        public IChildElementMapping TryFindChildElementMapping(string namespaceUri, string localName)
+        {
+            if (_childElementsByNamespaceAndName == null)
+                return null;
+
+            IDictionary<string, IChildElementMapping> childrenByName;
+            if (!_childElementsByNamespaceAndName.TryGetValue(namespaceUri, out childrenByName))
+                return null;
+
+            IChildElementMapping childElementMapping;
+            if (!childrenByName.TryGetValue(localName, out childElementMapping))
+                return null;
+
+            return childElementMapping;
+        }
+
+        Dictionary<string, IDictionary<string, T>> BuildMappingLookupTableByNamespaceAndName<T>(IEnumerable<T> mappings)
+            where T : IMapping
+        {
+            var mappingsByNamespace = from mapping in mappings
+                                      let ns = mapping.NamespaceUri ?? ""
+                                      group mapping by ns into g
+                                      select new {Namespace = g.Key, Items = g};
+
+            var mappingsByNamespaceAndName = new Dictionary<string, IDictionary<string, T>>();
+
+            foreach (var mappingGrouping in mappingsByNamespace)
+            {
+                IDictionary<string, T> mappingsByName;
+                if (!mappingsByNamespaceAndName.TryGetValue(mappingGrouping.Namespace, out mappingsByName))
+                    mappingsByNamespaceAndName[mappingGrouping.Namespace] = mappingsByName = new Dictionary<string, T>();
+
+                foreach (var groupedDescriptor in mappingGrouping.Items)
+                {
+                    if (mappingsByName.ContainsKey(groupedDescriptor.LocalName))
+                        throw new ArgumentException(string.Format("'{0}' contains multiple mappings with name '{1}'", LocalName, groupedDescriptor.LocalName));
+                    mappingsByName[groupedDescriptor.LocalName] = groupedDescriptor;
+                }
+            }
+
+            return mappingsByNamespaceAndName;
+        }
+
     }
 }

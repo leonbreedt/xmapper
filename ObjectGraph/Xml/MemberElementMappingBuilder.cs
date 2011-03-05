@@ -15,6 +15,7 @@
 // limitations under the License.using System;
 //
 
+using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
 
@@ -27,11 +28,12 @@ namespace ObjectGraph.Xml
         {
         }
 
-        public override IMapping Build()
+        public override IChildElementMapping Build()
         {
-            return new ElementMapping<TMemberTarget>(Name)
+            return new ChildElementMapping<IList<TMemberTarget>, TMemberTarget>(Name, null)
                    {
-                       Children = Attributes.Union(Elements.Select(f => f())).ToArray()
+                       Attributes = Attributes.ToArray(),
+                       ChildElements = Elements.Select(f => f()).ToArray()
                    };
         }
     }

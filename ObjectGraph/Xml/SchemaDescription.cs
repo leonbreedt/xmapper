@@ -26,7 +26,7 @@ namespace ObjectGraph.Xml
     public class SchemaDescription
     {
         #region Fields
-        readonly Dictionary<Type, IMapping> _elementMappingsByType;
+        readonly Dictionary<Type, IElementMapping> _elementMappingsByType;
         #endregion
 
         /// <summary>
@@ -34,7 +34,7 @@ namespace ObjectGraph.Xml
         /// </summary>
         internal SchemaDescription()
         {
-            _elementMappingsByType = new Dictionary<Type, IMapping>();
+            _elementMappingsByType = new Dictionary<Type, IElementMapping>();
         }
 
         /// <summary>
@@ -42,9 +42,9 @@ namespace ObjectGraph.Xml
         /// </summary>
         /// <typeparam name="T">The CLR type to look up a mapping for.</typeparam>
         /// <returns>Returns the mapping for the type, or <c>null</c> if no mapping exists.</returns>
-        public IMapping TryFindMappingForType<T>()
+        public IElementMapping TryFindMappingForType<T>()
         {
-            IMapping mapping;
+            IElementMapping mapping;
             if (_elementMappingsByType.TryGetValue(typeof(T), out mapping))
                 return mapping;
             return null;
@@ -58,9 +58,9 @@ namespace ObjectGraph.Xml
             get { return _elementMappingsByType.Values; }
         }
 
-        internal void Add(IMapping mapping)
+        internal void Add(IElementMapping mapping)
         {
-            IMapping existingMapping;
+            IElementMapping existingMapping;
             if (_elementMappingsByType.TryGetValue(mapping.Type, out existingMapping))
                 throw new ArgumentException(string.Format("A mapping for {0} already exists to {1}, but an attempt was made to add a mapping from {2} to {3} as well.",
                                                           existingMapping.Type.Name,

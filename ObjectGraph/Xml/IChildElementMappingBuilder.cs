@@ -36,5 +36,7 @@ namespace ObjectGraph.Xml
                                                                                       Func<TProperty, string> customSerializer);
 
         TParentBuilder EndElement();
+
+        new IChildElementMapping Build();
     }
 }

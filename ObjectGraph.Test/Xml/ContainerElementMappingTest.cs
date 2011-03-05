@@ -31,7 +31,7 @@ namespace ObjectGraph.Test.Xml
         public void GetCollectionFromTarget_ShouldReadFromContainer()
         {
             var person = new Person {ContactMethods = new ItemCollection<ContactMethod>()};
-            var mapping = new ContainerElementMapping<Person, ContactMethod>(Ns + "ContactMethods", x => x.ContactMethods);
+            var mapping = new ContainerElementMapping<Person, ContactMethod>(Ns + "ContactMethods", x => x.ContactMethods, null);
 
             mapping.NamespaceUri.ShouldBe(Ns.NamespaceName);
             mapping.LocalName.ShouldBe("ContactMethods");
@@ -43,7 +43,7 @@ namespace ObjectGraph.Test.Xml
         {
             var person = new Person();
             var expected = new ItemCollection<ContactMethod>();
-            var mapping = new ContainerElementMapping<Person, ContactMethod>(Ns + "ContactMethods", x => x.ContactMethods);
+            var mapping = new ContainerElementMapping<Person, ContactMethod>(Ns + "ContactMethods", x => x.ContactMethods, null);
 
             mapping.SetCollectionOnTarget(person, expected);
             mapping.GetCollectionFromTarget(person).ShouldBe(expected);
@@ -52,7 +52,7 @@ namespace ObjectGraph.Test.Xml
         [TestMethod]
         public void CreateInstance_ShouldCreateInstanceOfPropertyType()
         {
-            var mapping = new ContainerElementMapping<Person, ContactMethod>(Ns + "ContactMethods", x => x.ContactMethods);
+            var mapping = new ContainerElementMapping<Person, ContactMethod>(Ns + "ContactMethods", x => x.ContactMethods, null);
 
             var actual = mapping.CreateInstance();
 
@@ -64,7 +64,7 @@ namespace ObjectGraph.Test.Xml
         public void SetCollectionOnTarget_PropertyTypeMismatch_ShouldThrowCastException()
         {
             var person = new Person();
-            var mapping = new ContainerElementMapping<Person, ContactMethod>(Ns + "ContactMethods", x => x.ContactMethods);
+            var mapping = new ContainerElementMapping<Person, ContactMethod>(Ns + "ContactMethods", x => x.ContactMethods, null);
 
             mapping.SetCollectionOnTarget(person, new List<ContactMethod>());
         }

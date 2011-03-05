@@ -41,6 +41,6 @@ namespace ObjectGraph.Xml
         IChildElementMappingBuilder<TChildTarget, IElementMappingBuilder<TTarget>> Element<TChildTarget>(XName name,
                                                                                                          Expression<Func<TTarget, TChildTarget>> propertyInParent);
 
-        IMapping Build();
+        IElementMapping Build();
     }
 }

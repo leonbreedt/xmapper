@@ -15,16 +15,44 @@
 // limitations under the License.using System;
 //
 
+using System.Collections;
 using System.Collections.Generic;
 
 namespace ObjectGraph.Xml
 {
     /// <summary>
+    /// Base interface for container element mappings.
+    /// </summary>
+    public interface IContainerElementMapping : IChildElementMapping
+    {
+        /// <summary>
+        /// Gets the collection from the specified object.
+        /// </summary>
+        /// <param name="target">The object containing the collection on a property.</param>
+        /// <returns>Returns the collection.</returns>
+        IList GetCollectionFromTarget(object target);
+
+        /// <summary>
+        /// Sets the collection on the specified object.
+        /// </summary>
+        /// <param name="target">The object containing the collection on a property.</param>
+        /// <param name="collection">The collection to set.</param>
+        void SetCollectionOnTarget(object target, IList collection);
+
+        /// <summary>
+        /// Gets the mapping for the specified child.
+        /// </summary>
+        /// <param name="child"></param>
+        /// <returns></returns>
+        IElementMapping GetMemberMapping(object child);
+    }
+
+    /// <summary>
     /// Represents a mapping of an XML container element to a CLR type.
     /// </summary>
     /// <typeparam name="TContainingTarget">The CLR type that this mapping is contained within.</typeparam>
     /// <typeparam name="TMemberTarget">The CLR type associated with this members of this container mapping.</typeparam>
-    public interface IContainerElementMapping<TContainingTarget, TMemberTarget> : IElementMapping<IList<TMemberTarget>>
+    public interface IContainerElementMapping<TContainingTarget, TMemberTarget> : IContainerElementMapping, IChildElementMapping<TContainingTarget, IList<TMemberTarget>>
     {
         /// <summary>
         /// Gets the collection from the specified object.
@@ -39,5 +67,12 @@ namespace ObjectGraph.Xml
         /// <param name="container">The object containing the collection on a property.</param>
         /// <param name="collection">The collection to set.</param>
         void SetCollectionOnTarget(TContainingTarget container, IList<TMemberTarget> collection);
+
+        /// <summary>
+        /// Gets the mapping for the specified child item.
+        /// </summary>
+        /// <param name="child">The child item to get the mapping for.</param>
+        /// <returns></returns>
+        IElementMapping<TMemberTarget> GetMemberMapping(TMemberTarget child);
     }
 }

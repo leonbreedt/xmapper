@@ -42,11 +42,11 @@ namespace ObjectGraph.Test.Xml
 
             mapping.LocalName.ShouldBe("Person");
             mapping.NamespaceUri.ShouldBe(Ns.NamespaceName);
-            mapping.Children.Length.ShouldBe(4);
-            mapping.Children[0].ShouldBeTypeOf(typeof(AttributeMapping<Person, long?>));
-            mapping.Children[1].ShouldBeTypeOf(typeof(AttributeMapping<Person, string>));
-            mapping.Children[2].ShouldBeTypeOf(typeof(AttributeMapping<Person, string>));
-            mapping.Children[3].ShouldBeTypeOf(typeof(AttributeMapping<Person, bool>));
+            mapping.ChildElements.Length.ShouldBe(4);
+            mapping.ChildElements[0].ShouldBeTypeOf(typeof(AttributeMapping<Person, long?>));
+            mapping.ChildElements[1].ShouldBeTypeOf(typeof(AttributeMapping<Person, string>));
+            mapping.ChildElements[2].ShouldBeTypeOf(typeof(AttributeMapping<Person, string>));
+            mapping.ChildElements[3].ShouldBeTypeOf(typeof(AttributeMapping<Person, bool>));
         }
 
         [TestMethod]
@@ -58,8 +58,8 @@ namespace ObjectGraph.Test.Xml
 
             var mapping = (ElementMapping<Person>)builder.Build();
 
-            mapping.Children.Length.ShouldBe(1);
-            mapping.Children[0].ShouldBeTypeOf(typeof(ElementMapping<Address>));
+            mapping.ChildElements.Length.ShouldBe(1);
+            mapping.ChildElements[0].ShouldBeTypeOf(typeof(ElementMapping<Address>));
         }
 
         [TestMethod]
@@ -71,8 +71,8 @@ namespace ObjectGraph.Test.Xml
 
             var mapping = (ElementMapping<Person>)builder.Build();
 
-            mapping.Children.Length.ShouldBe(1);
-            mapping.Children[0].ShouldBeTypeOf(typeof(ContainerElementMapping<Person, ContactMethod>));
+            mapping.ChildElements.Length.ShouldBe(1);
+            mapping.ChildElements[0].ShouldBeTypeOf(typeof(ContainerElementMapping<Person, ContactMethod>));
         }
     }
 }

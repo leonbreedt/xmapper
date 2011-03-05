@@ -33,7 +33,7 @@ namespace ObjectGraph.Test.Xml
             var actual = (ElementMapping<Person>)builder.Build();
 
             actual.CreateInstance().ShouldBeTypeOf(typeof(Person));
-            actual.Children.Length.ShouldBe(0);
+            actual.ChildElements.Length.ShouldBe(0);
             actual.NamespaceUri.ShouldBe(Ns.NamespaceName);
             actual.LocalName.ShouldBe("Person");
         }

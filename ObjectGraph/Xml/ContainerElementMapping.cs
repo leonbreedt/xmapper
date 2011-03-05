@@ -16,6 +16,7 @@
 //
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -36,6 +37,7 @@ namespace ObjectGraph.Xml
         readonly PropertyInfo _propertyInfo;
         readonly Func<TContainingTarget, object> _getter;
         readonly Action<TContainingTarget, object> _setter;
+        readonly Func<TMemberTarget, IElementMapping> _getMappingForMember;
         #endregion
 
         /// <summary>
@@ -43,13 +45,15 @@ namespace ObjectGraph.Xml
         /// </summary>
         /// <param name="name">The name of the element.</param>
         /// <param name="propertyExpression">A simple member expression referencing the property in the container to associate this mapping with.</param>
-        public ContainerElementMapping(XName name, Expression<Func<TContainingTarget, IList<TMemberTarget>>> propertyExpression)
+        /// <param name="getMappingForMember">Function that returns the mapping for a specified member.</param>
+        public ContainerElementMapping(XName name, Expression<Func<TContainingTarget, IList<TMemberTarget>>> propertyExpression, Func<TMemberTarget, IElementMapping> getMappingForMember)
             : base(name, false, ReflectionHelper.GetPropertyInfoFromExpression(propertyExpression).PropertyType)
         {
             _propertyInfo = ReflectionHelper.GetPropertyInfoFromExpression(propertyExpression);
             _constructor = ReflectionHelper.GetConstructorDelegate(_propertyInfo.PropertyType);
             _getter = ReflectionHelper.GetPropertyGetterDelegate<TContainingTarget>(_propertyInfo);
             _setter = ReflectionHelper.GetPropertySetterDelegate<TContainingTarget>(_propertyInfo);
+            _getMappingForMember = getMappingForMember;
         }
 
         public IList<TMemberTarget> GetCollectionFromTarget(TContainingTarget container)
@@ -62,9 +66,49 @@ namespace ObjectGraph.Xml
             _setter(container, collection);
         }
 
+        public IElementMapping<TMemberTarget> GetMemberMapping(TMemberTarget child)
+        {
+            throw new NotImplementedException();
+        }
+
         public override IList<TMemberTarget> CreateInstance()
         {
             return (IList<TMemberTarget>)_constructor();
+        }
+
+        public object GetFromContainer(object target)
+        {
+            return GetCollectionFromTarget(target);
+        }
+
+        public void SetOnContainer(object target, object item)
+        {
+            SetCollectionOnTarget(target, (IList)item);
+        }
+
+        public IList GetCollectionFromTarget(object target)
+        {
+            return (IList)GetCollectionFromTarget((TContainingTarget)target);
+        }
+
+        public void SetCollectionOnTarget(object target, IList collection)
+        {
+            SetCollectionOnTarget((TContainingTarget)target, (IList<TMemberTarget>)collection);
+        }
+
+        public IElementMapping GetMemberMapping(object child)
+        {
+            return _getMappingForMember((TMemberTarget)child);
+        }
+
+        public IList<TMemberTarget> GetFromContainer(TContainingTarget target)
+        {
+            return GetCollectionFromTarget(target);
+        }
+
+        public void SetOnContainer(TContainingTarget target, IList<TMemberTarget> item)
+        {
+            SetCollectionOnTarget(target, item);
         }
     }
 }

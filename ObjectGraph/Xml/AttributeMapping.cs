@@ -30,10 +30,6 @@ namespace ObjectGraph.Xml
     /// <typeparam name="TProperty">The type of the property in the CLR type.</typeparam>
     public class AttributeMapping<TContainer, TProperty> : MappingBase, IAttributeMapping<TContainer, TProperty>
     {
-        /// <summary>
-        /// Pre-cached empty list of children.
-        /// </summary>
-        static readonly IMapping[] NoChildren = new IMapping[0];
 
         #region Fields
         readonly PropertyInfo _propertyInfo;
@@ -75,8 +71,6 @@ namespace ObjectGraph.Xml
                 throw new ArgumentException(string.Format("Unable to determine how to serialize property {0} of {1} into an XML representation.", _propertyInfo.Name, _propertyInfo.DeclaringType));
         }
 
-        public override bool IsElement { get { return false; } }
-
         public TProperty GetValue(TContainer target)
         {
             return _getter(target);
@@ -97,6 +91,17 @@ namespace ObjectGraph.Xml
             _setter(target, _fromXmlToPropertyValue(value));
         }
 
-        public override IMapping[] Children { get { return NoChildren; } internal set { } }
+        public string GetValueInXmlForm(object target)
+        {
+            return GetValueInXmlForm((TContainer)target);
+        }
+
+        public void SetValueFromXmlForm(object target, string value)
+        {
+            SetValueFromXmlForm((TContainer)target, value);
+        }
+
+        public override IAttributeMapping[] Attributes { get { return NoAttributes; } internal set { } }
+        public override IChildElementMapping[] ChildElements { get { return NoChildElements; } internal set { } }
     }
 }

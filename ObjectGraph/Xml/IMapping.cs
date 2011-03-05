@@ -30,11 +30,6 @@ namespace ObjectGraph.Xml
         Type Type { get; }
 
         /// <summary>
-        /// Whether or not this is an element mapping.
-        /// </summary>
-        bool IsElement { get; }
-
-        /// <summary>
         /// Gets the XML namespace URI associated with the XML construct being mapped from.
         /// </summary>
         string NamespaceUri { get; }
@@ -45,8 +40,13 @@ namespace ObjectGraph.Xml
         string LocalName { get; }
 
         /// <summary>
-        /// Gets the child mappings contained within this mapping, if any.
+        /// Gets the attribute mappings contained within this mapping, if any.
         /// </summary>
-        IMapping[] Children { get; }
+        IAttributeMapping[] Attributes { get; }
+
+        /// <summary>
+        /// Gets the mappings for the child elements contained within this mapping, if any.
+        /// </summary>
+        IChildElementMapping[] ChildElements { get; }
     }
 }

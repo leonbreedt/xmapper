@@ -18,10 +18,56 @@
 namespace ObjectGraph.Xml
 {
     /// <summary>
+    /// Base interface for element mappings.
+    /// </summary>
+    public interface IElementMapping : IMapping
+    {
+        /// <summary>
+        /// Creates an instance of the CLR type that this mapping is associated with.
+        /// </summary>
+        /// <returns>Returns the new instance</returns>
+        object CreateInstanceUntyped();
+
+        /// <summary>
+        /// Attempts to find an attribute mapping within this element mapping, having the given local name and no
+        /// namespace.
+        /// </summary>
+        /// <param name="localName">The local name of the attribute.</param>
+        /// <returns>Returns the attribute mapping if found, otherwise <c>null</c>.</returns>
+        IAttributeMapping TryFindAttributeMapping(string localName);
+
+        /// <summary>
+        /// Attempts to find an attribute mapping within this element mapping, having the given local name and a
+        /// namespace.
+        /// </summary>
+        /// <param name="namespaceUri">The namespace of the attribute.</param>
+        /// <param name="localName">The local name of the attribute.</param>
+        /// <returns>Returns the attribute mapping if found, otherwise <c>null</c>.</returns>
+        IAttributeMapping TryFindAttributeMapping(string namespaceUri, string localName);
+
+        /// <summary>
+        /// Attempts to find a child element mapping within this element mapping, having the given local name and a
+        /// namespace.
+        /// </summary>
+        /// <param name="localName">The local name of the child element.</param>
+        /// <returns>Returns the child element mapping if found, otherwise <c>null</c>.</returns>
+        IChildElementMapping TryFindChildElementMapping(string localName);
+
+        /// <summary>
+        /// Attempts to find a child element mapping within this element mapping, having the given local name and a
+        /// namespace.
+        /// </summary>
+        /// <param name="namespaceUri">The namespace of the child element.</param>
+        /// <param name="localName">The local name of the child element.</param>
+        /// <returns>Returns the child element mapping if found, otherwise <c>null</c>.</returns>
+        IChildElementMapping TryFindChildElementMapping(string namespaceUri, string localName);
+    }
+
+    /// <summary>
     /// Represents a mapping of an XML element to a CLR type.
     /// </summary>
     /// <typeparam name="TTarget">The CLR type that this mapping will be associated with.</typeparam>
-    public interface IElementMapping<TTarget> : IMapping
+    public interface IElementMapping<TTarget> : IElementMapping
     {
         /// <summary>
         /// Creates a new instance of the target type.

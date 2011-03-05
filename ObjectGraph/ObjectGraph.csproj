@@ -69,6 +69,8 @@
     <Compile Include="Xml\FluentSchemaDescription.cs" />
     <Compile Include="Xml\MemberElementMappingBuilder.cs" />
     <Compile Include="Xml\SchemaDescription.cs" />
+    <Compile Include="Xml\Serializer.cs" />
+    <Compile Include="Xml\XmlFormatException.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

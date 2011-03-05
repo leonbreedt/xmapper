@@ -29,7 +29,7 @@ namespace ObjectGraph.Xml
         readonly TParentBuilder _parentBuilderScope;
         readonly XName _name;
         readonly Expression<Func<TContainingTarget, IList<TMemberTarget>>> _propertyInParent;
-        readonly List<Func<IMapping>> _memberElements;
+        readonly List<Func<IChildElementMapping>> _memberElements;
         #endregion
 
         public ContainerElementMappingBuilder(TParentBuilder parentBuilderScope, XName name, Expression<Func<TContainingTarget, IList<TMemberTarget>>> propertyInParent)
@@ -37,14 +37,14 @@ namespace ObjectGraph.Xml
             _parentBuilderScope = parentBuilderScope;
             _name = name;
             _propertyInParent = propertyInParent;
-            _memberElements = new List<Func<IMapping>>();
+            _memberElements = new List<Func<IChildElementMapping>>();
         }
 
-        public IMapping Build()
+        public IChildElementMapping Build()
         {
-            return new ContainerElementMapping<TContainingTarget, TMemberTarget>(_name, _propertyInParent)
+            return new ContainerElementMapping<TContainingTarget, TMemberTarget>(_name, _propertyInParent, null /* FIXME */)
                    {
-                       Children = _memberElements.Select(f => f()).ToArray()
+                       ChildElements = _memberElements.Select(f => f()).ToArray()
                    };
         }
 

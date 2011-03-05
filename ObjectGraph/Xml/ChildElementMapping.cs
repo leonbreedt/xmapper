@@ -59,5 +59,15 @@ namespace ObjectGraph.Xml
         {
             _setter(target, item);
         }
+
+        public object GetFromContainer(object target)
+        {
+            return GetFromContainer((TContainingTarget)target);
+        }
+
+        public void SetOnContainer(object target, object item)
+        {
+            SetOnContainer((TContainingTarget)target, item);
+        }
     }
 }

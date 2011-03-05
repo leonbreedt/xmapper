@@ -36,11 +36,12 @@ namespace ObjectGraph.Xml
             _propertyInParent = propertyInParent;
         }
 
-        public override IMapping Build()
+        public virtual new IChildElementMapping Build()
         {
             return new ChildElementMapping<TContainingTarget, TTarget>(Name, _propertyInParent)
                    {
-                       Children = Attributes.Union(Elements.Select(f => f())).ToArray()
+                       Attributes = Attributes.ToArray(),
+                       ChildElements = Elements.Select(f => f()).ToArray()
                    };
         }
 

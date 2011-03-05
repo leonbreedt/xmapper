@@ -28,7 +28,7 @@ namespace ObjectGraph.Xml
     public class FluentSchemaDescription
     {
         #region Fields
-        readonly List<Func<IMapping>> _rootMappingBuilders;
+        readonly List<Func<IElementMapping>> _rootMappingBuilders;
         #endregion
 
         /// <summary>
@@ -36,9 +36,15 @@ namespace ObjectGraph.Xml
         /// </summary>
         public FluentSchemaDescription()
         {
-            _rootMappingBuilders = new List<Func<IMapping>>();
+            _rootMappingBuilders = new List<Func<IElementMapping>>();
         }
 
+        /// <summary>
+        /// Defines a root element.
+        /// </summary>
+        /// <typeparam name="TTarget">The element type.</typeparam>
+        /// <param name="name">The element XML name.</param>
+        /// <returns></returns>
         public IElementMappingBuilder<TTarget> Element<TTarget>(XName name)
         {
             var builder = new ElementMappingBuilder<TTarget>(name);
@@ -60,10 +66,10 @@ namespace ObjectGraph.Xml
             return description;
         }
 
-        static void AddToDescriptionRecursive(SchemaDescription description, IMapping mapping)
+        static void AddToDescriptionRecursive(SchemaDescription description, IElementMapping mapping)
         {
             description.Add(mapping);
-            foreach (var childMapping in mapping.Children.Where(m => m.IsElement))
+            foreach (var childMapping in mapping.ChildElements)
                 AddToDescriptionRecursive(description, childMapping);
         }
     }

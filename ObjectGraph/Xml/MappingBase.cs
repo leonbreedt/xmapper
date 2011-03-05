@@ -25,6 +25,16 @@ namespace ObjectGraph.Xml
     /// </summary>
     public abstract class MappingBase : IMapping
     {
+        /// <summary>
+        /// Pre-cached empty list of attributes.
+        /// </summary>
+        protected static readonly IAttributeMapping[] NoAttributes = new IAttributeMapping[0];
+
+        /// <summary>
+        /// Pre-cached empty list of child elements.
+        /// </summary>
+        protected static readonly IChildElementMapping[] NoChildElements = new IChildElementMapping[0];
+
         #region Fields
         readonly Type _type;
         readonly string _namespaceUri;
@@ -44,9 +54,9 @@ namespace ObjectGraph.Xml
         }
 
         public Type Type { get { return _type; } }
-        public abstract bool IsElement { get; }
         public string NamespaceUri { get { return _namespaceUri; } }
         public string LocalName { get { return _localName; } }
-        public abstract IMapping[] Children { get; internal set; }
+        public abstract IAttributeMapping[] Attributes { get; internal set; }
+        public abstract IChildElementMapping[] ChildElements { get; internal set; }
     }
 }
