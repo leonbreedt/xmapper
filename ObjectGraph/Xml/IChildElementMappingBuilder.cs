@@ -15,6 +15,10 @@
 // limitations under the License.using System;
 //
 
+using System;
+using System.Linq.Expressions;
+using System.Xml.Linq;
+
 namespace ObjectGraph.Xml
 {
     /// <summary>
@@ -23,6 +27,14 @@ namespace ObjectGraph.Xml
     /// </summary>
     public interface IChildElementMappingBuilder<TTarget, TParentBuilder> : IElementMappingBuilder<TTarget>
     {
+        new IChildElementMappingBuilder<TTarget, TParentBuilder> Attribute<TProperty>(XName name,
+                                                                                      Expression <Func<TTarget, TProperty>> property);
+
+        new IChildElementMappingBuilder<TTarget, TParentBuilder> Attribute<TProperty>(XName name,
+                                                                                      Expression<Func<TTarget, TProperty>> property,
+                                                                                      Func<string, TProperty> customDeserializer,
+                                                                                      Func<TProperty, string> customSerializer);
+
         TParentBuilder EndChild();
     }
 }

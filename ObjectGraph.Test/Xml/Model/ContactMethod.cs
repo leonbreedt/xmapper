@@ -6,6 +6,7 @@ namespace ObjectGraph.Test.Xml.Model
         HomePhone,
         MobilePhone,
         Email,
+        Address,
     }
 
     public class ContactMethod
@@ -13,5 +14,10 @@ namespace ObjectGraph.Test.Xml.Model
         public ContactMethodType Type { get; set; }
 
         public string Value { get; set; }
+    }
+
+    public class AddressContactMethod : ContactMethod
+    {
+        public string StreetName { get; set; }
     }
 }

@@ -44,6 +44,18 @@ namespace ObjectGraph.Xml
                    };
         }
 
+        public new IChildElementMappingBuilder<TTarget, TParentBuilder> Attribute<TProperty>(XName name, Expression<Func<TTarget, TProperty>> property)
+        {
+            base.Attribute(name, property);
+            return this;
+        }
+
+        public new IChildElementMappingBuilder<TTarget, TParentBuilder> Attribute<TProperty>(XName name, Expression<Func<TTarget, TProperty>> property, Func<string, TProperty> customDeserializer, Func<TProperty, string> customSerializer)
+        {
+            base.Attribute(name, property, customDeserializer, customSerializer);
+            return this;
+        }
+
         public TParentBuilder EndChild()
         {
             return _parentBuilderScope;

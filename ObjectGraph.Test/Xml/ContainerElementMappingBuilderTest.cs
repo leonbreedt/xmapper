@@ -42,6 +42,28 @@ namespace ObjectGraph.Test.Xml
         }
 
         [TestMethod]
+        public void MemberElement_ShouldAddMemberElementMapping()
+        {
+            var builder = new ContainerElementMappingBuilder<Person, ContactMethod, object>(null, Ns + "ContactMethods", x => x.ContactMethods);
+
+            builder.MemberElement(Ns + "ContactMethod")
+                       .Attribute(Ns + "Type", x => x.Type)
+                       .Attribute(Ns + "Value", x => x.Value)
+                   .EndChild()
+                   .MemberElement<AddressContactMethod>(Ns + "Address")
+                       .Attribute(Ns + "Type", x => x.Type)
+                       .Attribute(Ns + "Value", x => x.Value)
+                       .Attribute(Ns + "StreetName", x => x.StreetName)
+                   .EndChild();
+
+            var actual = builder.Build();
+
+            actual.Children.Length.ShouldBe(2);
+            actual.Children[0].ShouldBeTypeOf(typeof(ElementMapping<ContactMethod>));
+            actual.Children[1].ShouldBeTypeOf(typeof(ElementMapping<AddressContactMethod>));
+        }
+
+        [TestMethod]
         public void EndContainer_ShouldReturnParentScope()
         {
             var parentScope = new object();
