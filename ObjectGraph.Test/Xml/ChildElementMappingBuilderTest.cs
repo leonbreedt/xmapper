@@ -32,10 +32,13 @@ namespace ObjectGraph.Test.Xml
             var address = new Address {StreetName = "231 Queen Street", City = "Auckland"};
             var builder = new ChildElementMappingBuilder<Person, Address, object>(null, Ns + "Address", x => x.Address);
 
+            builder.Attribute(Ns + "City", x => x.City, x => x, x => x);
+
             var actual = (ChildElementMapping<Person, Address>)builder.Build();
 
             actual.SetOnContainer(person, address);
             actual.GetFromContainer(person).ShouldBe(address);
+            actual.Children.Length.ShouldBe(1);
         }
 
         [TestMethod]
