@@ -15,7 +15,7 @@
           <Configuration>
             <CodeCoverage xmlns="">
               <Regular>
-                <CodeCoverageItem binaryFile="ObjectGraph\bin\Debug\ObjectGraph.dll" pdbFile="ObjectGraph\bin\Debug\ObjectGraph.pdb" instrumentInPlace="true" />
+                <CodeCoverageItem binaryFile="xmapper\bin\Debug\xmapper.dll" pdbFile="xmapper\bin\Debug\xmapper.pdb" instrumentInPlace="true" />
               </Regular>
             </CodeCoverage>
           </Configuration>

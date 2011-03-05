@@ -26,11 +26,18 @@ namespace XMapper.Test
         protected static readonly XNamespace Ns = "http://test.com";
     }
 
-    internal static class StringExtensions
+    internal static class TestExtensions
     {
         public static Stream ToStream(this string s)
         {
             return new MemoryStream(Encoding.UTF8.GetBytes(s));
+        }
+
+        public static XDocument ToXDocument(this MemoryStream stream)
+        {
+            if (stream.Position != 0)
+                stream.Seek(0, SeekOrigin.Begin);
+            return XDocument.Parse(new StreamReader(stream).ReadToEnd());
         }
     }
 }

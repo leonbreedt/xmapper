@@ -15,6 +15,7 @@
 // limitations under the License.using System;
 //
 
+using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Shouldly;
 using XMapper.Test.Model;
@@ -65,6 +66,29 @@ namespace XMapper.Test
             var actual = mapping.GetValueInXmlForm(person);
 
             actual.ShouldBe("231 Queen Street;Auckland");
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void UnsupportedGetterDataType_ThrowsException()
+        {
+            new AttributeMapping<Test, UnsupportedDataType>("Test", x => x.Unsupported);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void UnsupportedSetterDataType_ThrowsException()
+        {
+            new AttributeMapping<Test, UnsupportedDataType>("Test", x => x.Unsupported, x => new UnsupportedDataType(), null);
+        }
+
+        class Test
+        {
+            public UnsupportedDataType Unsupported { get; set; }
+        }
+
+        class UnsupportedDataType
+        {
         }
 
         static Address UnpackAddressFromAttribute(string packedAddress)

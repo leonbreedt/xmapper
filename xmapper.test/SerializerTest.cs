@@ -15,6 +15,9 @@
 // limitations under the License.using System;
 //
 
+using System.Collections.Generic;
+using System.IO;
+using System.Xml.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Shouldly;
 using XMapper.Fluent;
@@ -101,6 +104,58 @@ namespace XMapper.Test
             person2.IsEnabled.ShouldBe(false);
             person2.Address.StreetName.ShouldBe("500 Dominion Road");
             person2.Address.City.ShouldBe("Auckland");
+        }
+
+        [TestMethod]
+        public void SerializeFragment_ShouldSucceed()
+        {
+            var stream = new MemoryStream();
+            var address = new Address {StreetName = "231 Queen Street", City = "Auckland"};
+            var serializer = new Serializer(FullSchema());
+
+            serializer.Serialize(stream, address);
+
+            var expected = XDocument.Parse(@"<Address StreetName='231 Queen Street' City='Auckland' xmlns='http://test.com' />");
+
+            XNode.DeepEquals(expected, stream.ToXDocument()).ShouldBe(true);
+        }
+
+        [TestMethod]
+        public void SerializeDocument_ShouldSucceed()
+        {
+            var stream = new MemoryStream();
+            var document = new Document
+                           {
+                               Persons = new List<Person>
+                                         {
+                                             new Person
+                                             {
+                                                 Id = 123,
+                                                 FirstName = "James",
+                                                 LastName = "Jefferson",
+                                                 IsEnabled = true,
+                                                 ContactMethods =
+                                                     new List<ContactMethod>
+                                                     {
+                                                         new ContactMethod {Type = ContactMethodType.Email, Value = "james@jefferson.com"},
+                                                         new AddressContactMethod
+                                                         {
+                                                             Type = ContactMethodType.Address,
+                                                             Value = "Auckland City",
+                                                             StreetName = "232 Queen Street"
+                                                         },
+                                                         new ContactMethod {Type = ContactMethodType.HomePhone, Value = "555-1234"}
+                                                     }
+                                             },
+                                             new Person
+                                             {Id = 124, FirstName = "Paul", LastName = "Jefferson", IsEnabled = false}
+                                         }
+                           };
+            var serializer = new Serializer(FullSchema());
+
+            serializer.Serialize(stream, document);
+
+            // TODO: Fix Assert.AreEqual("", stream.ToXDocument().ToString());
         }
 
         static SchemaDescription FullSchema()
