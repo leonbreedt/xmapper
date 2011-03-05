@@ -62,7 +62,7 @@ namespace XMapper
         /// <returns>Returns the deserialized object.</returns>
         public TItem Deserialize<TItem>(XmlReader reader)
         {
-            return (TItem)ReadItem(null, GetMapping<TItem>(), reader);
+            return (TItem)ReadItem(GetMapping<TItem>(), reader);
         }
 
         /// <summary>
@@ -101,8 +101,7 @@ namespace XMapper
             // Skip over leading non-elements.
             while (reader.Read() && reader.NodeType != XmlNodeType.Element) { }
 
-            // Don't dispose of reader, we don't own stream, and writer will close it.
-
+            // Don't dispose of reader, we don't own stream.
             return Deserialize<TItem>(reader);
         }
 
@@ -117,10 +116,11 @@ namespace XMapper
 
             Serialize(writer, item);
 
-            writer.Flush(); // Don't dispose, we don't own stream, and writer will close it.
+            // Don't dispose of writer, we don't own stream.
+            writer.Flush(); 
         }
 
-        static object ReadItem(object parentItem, IElementMapping mapping, XmlReader reader)
+        static object ReadItem(IElementMapping mapping, XmlReader reader)
         {
             if (!reader.LocalName.Equals(mapping.LocalName))
                 throw new XmlFormatException(string.Format("Expected element <{0}> at this position", mapping.LocalName), reader as IXmlLineInfo);
@@ -162,7 +162,7 @@ namespace XMapper
 
                         if (childElementMapping != null)
                         {
-                            var child = ReadItem(item, childElementMapping, reader);
+                            var child = ReadItem(childElementMapping, reader);
 
                             if (childElementMapping is ICollectionChildElementMapping)
                             {
