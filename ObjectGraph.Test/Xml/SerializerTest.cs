@@ -95,6 +95,13 @@ namespace ObjectGraph.Test.Xml
             person1.ContactMethods[1].As<AddressContactMethod>().StreetName.ShouldBe("232 Queen Street");
             person1.ContactMethods[2].Type.ShouldBe(ContactMethodType.HomePhone);
             person1.ContactMethods[2].Value.ShouldBe("555-1234");
+
+            person2.Id.ShouldBe(124);
+            person2.FirstName.ShouldBe("Paul");
+            person2.LastName.ShouldBe("Jefferson");
+            person2.IsEnabled.ShouldBe(false);
+            person2.Address.StreetName.ShouldBe("500 Dominion Road");
+            person2.Address.City.ShouldBe("Auckland");
         }
 
         static SchemaDescription FullSchema()
