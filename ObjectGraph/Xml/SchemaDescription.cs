@@ -50,8 +50,23 @@ namespace ObjectGraph.Xml
             return null;
         }
 
+        /// <summary>
+        /// Gets the mappings contained within this description.
+        /// </summary>
+        public IEnumerable<IMapping> Mappings
+        {
+            get { return _elementMappingsByType.Values; }
+        }
+
         internal void Add(IMapping mapping)
         {
+            IMapping existingMapping;
+            if (_elementMappingsByType.TryGetValue(mapping.Type, out existingMapping))
+                throw new ArgumentException(string.Format("A mapping for {0} already exists to {1}, but an attempt was made to add a mapping from {2} to {3} as well.",
+                                                          existingMapping.Type.Name,
+                                                          existingMapping.GetType().Name,
+                                                          mapping.Type.Name,
+                                                          mapping.GetType().Name));
             _elementMappingsByType[mapping.Type] = mapping;
         }
     }

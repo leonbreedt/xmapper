@@ -31,6 +31,10 @@ namespace ObjectGraph.Test.Xml
             var person = new Person {Address = new Address {StreetName = "231 Queen Street", City = "Auckland"}};
             var mapping = new ChildElementMapping<Person, Address>(Ns + "Address", x => x.Address);
 
+            mapping.CreateInstance().ShouldBeTypeOf(typeof(Address));
+            mapping.NamespaceUri.ShouldBe(Ns.NamespaceName);
+            mapping.LocalName.ShouldBe("Address");
+
             var actual = mapping.GetFromContainer(person);
 
             actual.ShouldBe(person.Address);

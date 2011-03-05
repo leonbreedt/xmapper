@@ -38,12 +38,12 @@ namespace ObjectGraph.Xml
         #endregion
 
         public ElementMapping(XName name)
-            : this(name, true)
+            : this(name, true, typeof(TTarget))
         {
         }
 
-        public ElementMapping(XName name, bool cacheConstructor)
-            : base(typeof(TTarget), name)
+        public ElementMapping(XName name, bool cacheConstructor, Type type)
+            : base(type, name)
         {
             if (cacheConstructor)
                 _constructor = ReflectionHelper.GetTypedConstructorDelegate<TTarget>();
@@ -57,6 +57,8 @@ namespace ObjectGraph.Xml
 
             return _constructor();
         }
+
+        public override bool IsElement { get { return true; } }
 
         public override IMapping[] Children
         {

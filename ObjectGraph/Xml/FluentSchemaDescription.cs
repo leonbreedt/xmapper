@@ -63,7 +63,7 @@ namespace ObjectGraph.Xml
         static void AddToDescriptionRecursive(SchemaDescription description, IMapping mapping)
         {
             description.Add(mapping);
-            foreach (var childMapping in mapping.Children)
+            foreach (var childMapping in mapping.Children.Where(m => m.IsElement))
                 AddToDescriptionRecursive(description, childMapping);
         }
     }

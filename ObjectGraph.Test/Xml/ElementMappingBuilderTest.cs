@@ -40,6 +40,8 @@ namespace ObjectGraph.Test.Xml
 
             var mapping = (ElementMapping<Person>)builder.Build();
 
+            mapping.LocalName.ShouldBe("Person");
+            mapping.NamespaceUri.ShouldBe(Ns.NamespaceName);
             mapping.Children.Length.ShouldBe(4);
             mapping.Children[0].ShouldBeTypeOf(typeof(AttributeMapping<Person, long?>));
             mapping.Children[1].ShouldBeTypeOf(typeof(AttributeMapping<Person, string>));

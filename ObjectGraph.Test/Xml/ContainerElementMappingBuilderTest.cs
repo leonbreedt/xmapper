@@ -35,10 +35,7 @@ namespace ObjectGraph.Test.Xml
             var actual = (ContainerElementMapping<Person, ContactMethod>)builder.Build();
 
             actual.SetCollectionOnTarget(person, contactMethods);
-
             actual.GetCollectionFromTarget(person).ShouldBe(contactMethods);
-            actual.NamespaceUri.ShouldBe(Ns.NamespaceName);
-            actual.LocalName.ShouldBe("ContactMethods");
         }
 
         [TestMethod]
@@ -49,12 +46,12 @@ namespace ObjectGraph.Test.Xml
             builder.MemberElement(Ns + "ContactMethod")
                        .Attribute(Ns + "Type", x => x.Type)
                        .Attribute(Ns + "Value", x => x.Value)
-                   .EndChild()
+                   .EndElement()
                    .MemberElement<AddressContactMethod>(Ns + "Address")
                        .Attribute(Ns + "Type", x => x.Type)
                        .Attribute(Ns + "Value", x => x.Value)
                        .Attribute(Ns + "StreetName", x => x.StreetName)
-                   .EndChild();
+                   .EndElement();
 
             var actual = builder.Build();
 
@@ -64,12 +61,12 @@ namespace ObjectGraph.Test.Xml
         }
 
         [TestMethod]
-        public void EndContainer_ShouldReturnParentScope()
+        public void EndContainerElement_ShouldReturnParentScope()
         {
             var parentScope = new object();
             var builder = new ContainerElementMappingBuilder<Person, ContactMethod, object>(parentScope, Ns + "ContactMethods", x => x.ContactMethods);
 
-            builder.EndContainer().ShouldBe(parentScope);
+            builder.EndContainerElement().ShouldBe(parentScope);
         }
     }
 }

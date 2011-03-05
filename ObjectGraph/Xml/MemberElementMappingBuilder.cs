@@ -20,7 +20,7 @@ using System.Xml.Linq;
 
 namespace ObjectGraph.Xml
 {
-    internal class MemberElementMappingBuilder<TCustomMemberTarget, TParentBuilder> : ChildElementMappingBuilder<TCustomMemberTarget, TCustomMemberTarget, TParentBuilder>
+    internal class MemberElementMappingBuilder<TMemberTarget, TParentBuilder> : ChildElementMappingBuilder<TMemberTarget, TMemberTarget, TParentBuilder>
     {
         public MemberElementMappingBuilder(TParentBuilder parentBuilderScope, XName name)
             : base(parentBuilderScope, name, null)
@@ -29,7 +29,7 @@ namespace ObjectGraph.Xml
 
         public override IMapping Build()
         {
-            return new ElementMapping<TCustomMemberTarget>(Name)
+            return new ElementMapping<TMemberTarget>(Name)
                    {
                        Children = Attributes.Union(Elements.Select(f => f())).ToArray()
                    };

@@ -44,6 +44,7 @@ namespace ObjectGraph.Xml
         }
 
         public Type Type { get { return _type; } }
+        public abstract bool IsElement { get; }
         public string NamespaceUri { get { return _namespaceUri; } }
         public string LocalName { get { return _localName; } }
         public abstract IMapping[] Children { get; internal set; }

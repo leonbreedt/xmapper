@@ -15,7 +15,6 @@
 // limitations under the License.using System;
 //
 
-using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ObjectGraph.Test.Xml.Model;
 using ObjectGraph.Xml;
@@ -24,28 +23,28 @@ using Shouldly;
 namespace ObjectGraph.Test.Xml
 {
     [TestClass]
-    public class ElementMappingTest : TestBase
+    public class MemberElementMappingBuilderTest : TestBase
     {
         [TestMethod]
-        public void NewMapping_ShouldCreateInstances()
+        public void Build_ShouldCreateElementMapping()
         {
-            var mapping = new ElementMapping<Person>(Ns + "Person");
+            var builder = new MemberElementMappingBuilder<Person, object>(null, Ns + "Person");
 
-            mapping.NamespaceUri.ShouldBe(Ns.NamespaceName);
-            mapping.LocalName.ShouldBe("Person");
+            var actual = (ElementMapping<Person>)builder.Build();
 
-            var actual = mapping.CreateInstance();
-
-            actual.ShouldBeTypeOf(typeof(Person));
+            actual.CreateInstance().ShouldBeTypeOf(typeof(Person));
+            actual.Children.Length.ShouldBe(0);
+            actual.NamespaceUri.ShouldBe(Ns.NamespaceName);
+            actual.LocalName.ShouldBe("Person");
         }
 
         [TestMethod]
-        [ExpectedException(typeof(InvalidOperationException))]
-        public void NewMapping_ConstructorDisabled_ShouldNotCreateInstance()
+        public void EndElement_ShouldReturnParentScope()
         {
-            var mapping = new ElementMapping<Person>(Ns + "Person", false, null);
+            var parentScope = new object();
+            var builder = new MemberElementMappingBuilder<Person, object>(parentScope, Ns + "Person");
 
-            mapping.CreateInstance();
+            builder.EndElement().ShouldBe(parentScope);
         }
     }
 }

@@ -32,22 +32,19 @@ namespace ObjectGraph.Test.Xml
             var address = new Address {StreetName = "231 Queen Street", City = "Auckland"};
             var builder = new ChildElementMappingBuilder<Person, Address, object>(null, Ns + "Address", x => x.Address);
 
-            var actual = (ChildElementMapping<Person,Address>)builder.Build();
+            var actual = (ChildElementMapping<Person, Address>)builder.Build();
 
             actual.SetOnContainer(person, address);
-
             actual.GetFromContainer(person).ShouldBe(address);
-            actual.NamespaceUri.ShouldBe(Ns.NamespaceName);
-            actual.LocalName.ShouldBe("Address");
         }
 
         [TestMethod]
-        public void EndChild_ShouldReturnParentScope()
+        public void EndElement_ShouldReturnParentScope()
         {
             var parentScope = new object();
             var builder = new ChildElementMappingBuilder<Person, Address, object>(parentScope, Ns + "Address", x => x.Address);
 
-            builder.EndChild().ShouldBe(parentScope);
+            builder.EndElement().ShouldBe(parentScope);
         }
     }
 }

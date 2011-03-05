@@ -33,6 +33,8 @@ namespace ObjectGraph.Test.Xml
             var person = new Person {ContactMethods = new ItemCollection<ContactMethod>()};
             var mapping = new ContainerElementMapping<Person, ContactMethod>(Ns + "ContactMethods", x => x.ContactMethods);
 
+            mapping.NamespaceUri.ShouldBe(Ns.NamespaceName);
+            mapping.LocalName.ShouldBe("ContactMethods");
             mapping.GetCollectionFromTarget(person).ShouldBe(person.ContactMethods);
         }
 

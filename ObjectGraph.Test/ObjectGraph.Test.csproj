@@ -65,7 +65,9 @@
     <Compile Include="Xml\ContainerElementMappingBuilderTest.cs" />
     <Compile Include="Xml\ElementMappingBuilderTest.cs" />
     <Compile Include="Xml\ElementMappingTest.cs" />
+    <Compile Include="Xml\FluentSchemaDescriptionTest.cs" />
     <Compile Include="Xml\ItemCollectionTest.cs" />
+    <Compile Include="Xml\MemberElementMappingBuilderTest.cs" />
     <Compile Include="Xml\Model\Address.cs" />
     <Compile Include="Xml\Model\ContactMethod.cs" />
     <Compile Include="Xml\Model\ItemWithId.cs" />

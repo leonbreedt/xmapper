@@ -35,6 +35,6 @@ namespace ObjectGraph.Xml
                                                                                       Func<string, TProperty> customDeserializer,
                                                                                       Func<TProperty, string> customSerializer);
 
-        TParentBuilder EndChild();
+        TParentBuilder EndElement();
     }
 }

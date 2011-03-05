@@ -30,6 +30,11 @@ namespace ObjectGraph.Xml
         Type Type { get; }
 
         /// <summary>
+        /// Whether or not this is an element mapping.
+        /// </summary>
+        bool IsElement { get; }
+
+        /// <summary>
         /// Gets the XML namespace URI associated with the XML construct being mapped from.
         /// </summary>
         string NamespaceUri { get; }

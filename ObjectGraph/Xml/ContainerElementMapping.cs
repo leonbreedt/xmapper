@@ -44,7 +44,7 @@ namespace ObjectGraph.Xml
         /// <param name="name">The name of the element.</param>
         /// <param name="propertyExpression">A simple member expression referencing the property in the container to associate this mapping with.</param>
         public ContainerElementMapping(XName name, Expression<Func<TContainingTarget, IList<TMemberTarget>>> propertyExpression)
-            : base(name, false)
+            : base(name, false, ReflectionHelper.GetPropertyInfoFromExpression(propertyExpression).PropertyType)
         {
             _propertyInfo = ReflectionHelper.GetPropertyInfoFromExpression(propertyExpression);
             _constructor = ReflectionHelper.GetConstructorDelegate(_propertyInfo.PropertyType);

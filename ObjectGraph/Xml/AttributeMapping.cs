@@ -75,6 +75,8 @@ namespace ObjectGraph.Xml
                 throw new ArgumentException(string.Format("Unable to determine how to serialize property {0} of {1} into an XML representation.", _propertyInfo.Name, _propertyInfo.DeclaringType));
         }
 
+        public override bool IsElement { get { return false; } }
+
         public TProperty GetValue(TContainer target)
         {
             return _getter(target);

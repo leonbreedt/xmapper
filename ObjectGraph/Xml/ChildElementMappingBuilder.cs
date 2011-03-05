@@ -56,7 +56,7 @@ namespace ObjectGraph.Xml
             return this;
         }
 
-        public TParentBuilder EndChild()
+        public TParentBuilder EndElement()
         {
             return _parentBuilderScope;
         }

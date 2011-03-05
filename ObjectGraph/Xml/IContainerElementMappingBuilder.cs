@@ -28,6 +28,6 @@ namespace ObjectGraph.Xml
         IChildElementMappingBuilder<TTarget, IContainerElementMappingBuilder<TTarget, TParentBuilder>> MemberElement(XName name);
         IChildElementMappingBuilder<TCustomMemberTarget, IContainerElementMappingBuilder<TTarget, TParentBuilder>> MemberElement<TCustomMemberTarget>(XName name);
 
-        TParentBuilder EndContainer();
+        TParentBuilder EndContainerElement();
     }
 }
