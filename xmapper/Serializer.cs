@@ -19,6 +19,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Xml;
 using System.Xml.Schema;
 
@@ -202,24 +203,44 @@ namespace XMapper
 
             if (mapping.ChildElements != null && mapping.ChildElements.Length > 0)
             {
-                // This is a HACK. We need to instead have a lookup table we can use to look up the element type of
-                // a collection element, and then use the appropriate descriptor, on a PER-ELEMENT basis.
-                // to allow things like <Address /><CustomAddress /> in the same list.
-
-                var seenCollections = new HashSet<IList>();
+                Dictionary<Type, ICollectionChildElementMapping> collectionMappingsByElementType = null;
+                HashSet<IList> collectionsWritten = null;
 
                 foreach (var childElementMapping in mapping.ChildElements)
                 {
                     if (childElementMapping is ICollectionChildElementMapping)
                     {
+                        if (collectionMappingsByElementType == null)
+                        {
+                            collectionMappingsByElementType = mapping.ChildElements.Where(m => m is ICollectionChildElementMapping)
+                                                                                   .Cast<ICollectionChildElementMapping>()
+                                                                                   .GroupBy(i => i.Type)
+                                                                                   .Select(g => new { Type = g.Key, Mapping = g.FirstOrDefault() })
+                                                                                   .ToDictionary(i => i.Type, i => i.Mapping);
+                        }
+
+                        if (collectionsWritten == null)
+                            collectionsWritten = new HashSet<IList>();
+
                         var collection = ((ICollectionChildElementMapping)childElementMapping).GetCollection(item);
-                        if (!seenCollections.Contains(collection))
+
+                        // Multiple child element mappings may target the same collection, so we shouldn't write it out twice.
+                        if (!collectionsWritten.Contains(collection))
                         {
                             foreach (var child in collection)
-                                WriteItem(childElementMapping, writer, child);
+                            {
+                                if (child != null)
+                                {
+                                    // Since multiple mappings may exist for the same collection, we can't use the same mapping for each 
+                                    // element.
+                                    ICollectionChildElementMapping actualMappingToUse;
+                                    if (!collectionMappingsByElementType.TryGetValue(child.GetType(), out actualMappingToUse))
+                                        throw new FormatException(string.Format("Unable to determine how to serialize collection member of type {0}", child.GetType()));
+                                    WriteItem(actualMappingToUse, writer, child);
+                                }
+                            }
                         }
-                        seenCollections.Add(collection);
-
+                        collectionsWritten.Add(collection);
                     }
                     else
                     {

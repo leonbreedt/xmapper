@@ -23,29 +23,32 @@ using XMapper.Test.Model;
 namespace XMapper.Test
 {
     [TestClass]
-    public class ChildElementMappingBuilderTest : TestBase
+    public class CollectionChildElementMappingBuilderTest : TestBase
     {
         [TestMethod]
         public void Build_ShouldCreateValidMapping()
         {
             var person = new Person();
-            var address = new Address {StreetName = "231 Queen Street", City = "Auckland"};
-            var builder = new ChildElementMappingBuilder<Person, Address, object>(null, Ns + "Address", x => x.Address);
+            var method = new ContactMethod {Type = ContactMethodType.HomePhone, Value = "555-1234"};
+            var builder = new CollectionChildElementMappingBuilder<Person, ContactMethod, object>(null, Ns + "ContactMethod", x => x.ContactMethods);
 
-            builder.Attribute(Ns + "City", x => x.City, x => x, x => x);
+            builder.Attribute(Ns + "Value", x => x.Value);
+            builder.CollectionElement<string>(Ns + "Value1");
+            builder.CollectionElement(Ns + "Value2", x => x.AdditionalValues);
 
-            var actual = (ChildElementMapping<Person, Address>)builder.Build();
+            var actual = (CollectionChildElementMapping<Person, ContactMethod>)builder.Build();
 
-            actual.SetOnContainer(person, address);
-            actual.GetFromContainer(person).ShouldBe(address);
+            actual.AddToCollection(person, method);
+            person.ContactMethods[0].ShouldBe(method);
             actual.Attributes.Length.ShouldBe(1);
+            actual.ChildElements.Length.ShouldBe(2);
         }
 
         [TestMethod]
         public void EndElement_ShouldReturnParentScope()
         {
             var parentScope = new object();
-            var builder = new ChildElementMappingBuilder<Person, Address, object>(parentScope, Ns + "Address", x => x.Address);
+            var builder = new CollectionChildElementMappingBuilder<Person, ContactMethod, object>(parentScope, Ns + "ContactMethod", x => x.ContactMethods);
 
             builder.EndElement().ShouldBe(parentScope);
         }

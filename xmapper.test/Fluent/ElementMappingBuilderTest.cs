@@ -30,13 +30,16 @@ namespace XMapper.Test
         {
             var builder = new ElementMappingBuilder<Person>(Ns + "Person");
 
-            builder.Attribute(Ns + "Id", x => x.Id);
-            builder.Attribute(Ns + "FirstName", x => x.FirstName);
-            builder.Attribute(Ns + "LastName", x => x.LastName);
-            builder.Attribute(Ns + "IsEnabled",
+            builder.Attribute("Id", x => x.Id);
+            builder.Attribute("FirstName", x => x.FirstName);
+            builder.Attribute("LastName", x => x.LastName);
+            builder.Attribute("IsEnabled",
                               x => x.IsEnabled,
                               x => bool.Parse(x),
                               x => x.ToString().ToLowerInvariant());
+            builder.CollectionElement(Ns + "ContactMethod", x => x.ContactMethods)
+                       .Attribute("Type", x => x.Type)
+                       .Attribute("Value", x => x.Value);
 
             var mapping = (ElementMapping<Person>)builder.Build();
 
@@ -47,6 +50,8 @@ namespace XMapper.Test
             mapping.Attributes[1].ShouldBeTypeOf(typeof(AttributeMapping<Person, string>));
             mapping.Attributes[2].ShouldBeTypeOf(typeof(AttributeMapping<Person, string>));
             mapping.Attributes[3].ShouldBeTypeOf(typeof(AttributeMapping<Person, bool>));
+            mapping.ChildElements.Length.ShouldBe(1);
+            mapping.ChildElements[0].ShouldBeTypeOf(typeof(CollectionChildElementMapping<Person, ContactMethod>));
         }
 
         [TestMethod]

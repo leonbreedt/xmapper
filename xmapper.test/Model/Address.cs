@@ -15,11 +15,26 @@
 // limitations under the License.using System;
 //
 
+using System.Collections.Generic;
+
 namespace XMapper.Test.Model
 {
     internal class Address
     {
         public string StreetName { get; set; }
         public string City { get; set; }
+        public PostCode PostCode { get; set; }
+        public List<AreaCode> AreaCodes { get; set; }
     }
+
+    internal class PostCode
+    {
+        public string Code { get; set; }
+    }
+
+    internal class AreaCode
+    {
+        public string Code { get; set; }
+    }
+
 }

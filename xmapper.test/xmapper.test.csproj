@@ -57,13 +57,15 @@
     </CodeAnalysisDependentAssemblyPaths>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CollectionChildElementMappingTest.cs" />
+    <Compile Include="Fluent\CollectionChildElementMappingBuilderTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="AttributeMappingTest.cs" />
     <Compile Include="ChildElementMappingTest.cs" />
-    <Compile Include="ChildElementMappingBuilderTest.cs" />
-    <Compile Include="ElementMappingBuilderTest.cs" />
+    <Compile Include="Fluent\ChildElementMappingBuilderTest.cs" />
+    <Compile Include="Fluent\ElementMappingBuilderTest.cs" />
     <Compile Include="ElementMappingTest.cs" />
-    <Compile Include="FluentSchemaDescriptionTest.cs" />
+    <Compile Include="Fluent\FluentSchemaDescriptionTest.cs" />
     <Compile Include="Model\Address.cs" />
     <Compile Include="Model\ContactMethod.cs" />
     <Compile Include="Model\Document.cs" />

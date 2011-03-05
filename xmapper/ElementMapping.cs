@@ -44,7 +44,10 @@ namespace XMapper
         public ElementMapping(XName name)
             : base(typeof(TTarget), name)
         {
-            _constructor = ReflectionHelper.GetTypedConstructorDelegate<TTarget>();
+            // HACK
+            if (typeof(TTarget) != typeof(string))
+                _constructor = ReflectionHelper.GetTypedConstructorDelegate<TTarget>();
+
             _attributes = NoAttributes;
             _childElements = NoChildElements;
         }
@@ -52,7 +55,7 @@ namespace XMapper
         public virtual object CreateInstance()
         {
             if (_constructor == null)
-                throw new InvalidOperationException(string.Format("No constructor requested for type {0}", typeof(TTarget)));
+                throw new InvalidOperationException(string.Format("No constructor available for type {0}", typeof(TTarget)));
 
             return _constructor();
         }

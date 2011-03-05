@@ -15,6 +15,8 @@
 // limitations under the License.using System;
 //
 
+using System.Collections.Generic;
+
 namespace XMapper.Test.Model
 {
     internal enum ContactMethodType
@@ -28,8 +30,8 @@ namespace XMapper.Test.Model
     internal class ContactMethod
     {
         public ContactMethodType Type { get; set; }
-
         public string Value { get; set; }
+        public List<string> AdditionalValues { get; set; }
     }
 
     internal class AddressContactMethod : ContactMethod

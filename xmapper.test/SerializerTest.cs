@@ -15,7 +15,9 @@
 // limitations under the License.using System;
 //
 
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Xml.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -64,7 +66,7 @@ namespace XMapper.Test
         public void DeserializeDocument_ShouldSucceed()
         {
             const string document = @"<Document xmlns='http://test.com'>
-                                        <Person Id='123' FirstName='James' LastName='Jefferson' IsEnabled='true'>
+                                        <Person Id='123' FirstName='James' LastName='Jefferson' IsEnabled='true' DateOfBirth='2010-02-12T23:59:59' TimeSinceLastLogin='00:20:00'>
                                           <Address StreetName='231 Queen Street' City='Auckland' />
                                           <ContactMethods>
                                               <ContactMethod Type='Email' Value='james@jefferson.com' />
@@ -86,6 +88,8 @@ namespace XMapper.Test
             var person2 = actual.Persons[1];
 
             person1.Id.ShouldBe(123);
+            person1.DateOfBirth.ShouldBe(new DateTime(2010, 02, 12, 23, 59, 59));
+            person1.TimeSinceLastLogin.ShouldBe(TimeSpan.FromMinutes(20));
             person1.Address.StreetName.ShouldBe("231 Queen Street");
             person1.Address.City.ShouldBe("Auckland");
             person1.ContactMethods.Count.ShouldBe(3);
@@ -134,6 +138,9 @@ namespace XMapper.Test
                                                  FirstName = "James",
                                                  LastName = "Jefferson",
                                                  IsEnabled = true,
+                                                 DateOfBirth = new DateTime(2010, 02, 12, 23, 59, 59),
+                                                 TimeSinceLastLogin = TimeSpan.FromMinutes(20),
+                                                 Address = new Address {StreetName = "231 Queen Street", City = "Auckland"},
                                                  ContactMethods =
                                                      new List<ContactMethod>
                                                      {
@@ -148,14 +155,36 @@ namespace XMapper.Test
                                                      }
                                              },
                                              new Person
-                                             {Id = 124, FirstName = "Paul", LastName = "Jefferson", IsEnabled = false}
+                                             {
+                                                 Id = 124,
+                                                 FirstName = "Paul",
+                                                 LastName = "Jefferson",
+                                                 IsEnabled = false,
+                                                 Address = new Address {StreetName = "500 Dominion Road", City = "Auckland"},
+                                             }
                                          }
                            };
             var serializer = new Serializer(FullSchema());
 
             serializer.Serialize(stream, document);
 
-            // TODO: Fix Assert.AreEqual("", stream.ToXDocument().ToString());
+            var expected = XDocument.Parse(@"<Document xmlns='http://test.com'>
+                                               <Person Id='123' FirstName='James' LastName='Jefferson' IsEnabled='true' DateOfBirth='2010-02-12T23:59:59' TimeSinceLastLogin='00:20:00'>
+                                                 <Address StreetName='231 Queen Street' City='Auckland' />
+                                                 <ContactMethods>
+                                                     <ContactMethod Type='Email' Value='james@jefferson.com' />
+                                                     <AddressContactMethod Type='Address' Value='Auckland City' StreetName='232 Queen Street' />
+                                                     <ContactMethod Type='HomePhone' Value='555-1234' />
+                                                 </ContactMethods>
+                                               </Person>
+                                               <Person Id='124' FirstName='Paul' LastName='Jefferson' IsEnabled='false'>
+                                                 <Address StreetName='500 Dominion Road' City='Auckland' />
+                                               </Person>
+                                             </Document>");
+
+            Debug.WriteLine(stream.ToXDocument());
+
+            XNode.DeepEquals(expected, stream.ToXDocument()).ShouldBe(true);
         }
 
         static SchemaDescription FullSchema()
@@ -168,6 +197,10 @@ namespace XMapper.Test
                                .Attribute("FirstName", x => x.FirstName)
                                .Attribute("LastName", x => x.LastName)
                                .Attribute("IsEnabled", x => x.IsEnabled)
+                               .Attribute("DateOfBirth", x => x.DateOfBirth)
+                               .Attribute("TimeSinceLastLogin", x => x.TimeSinceLastLogin, 
+                                                                x => x != null ? TimeSpan.Parse(x) : (TimeSpan?)null, 
+                                                                x => x != null ? x.ToString() : (string)null)
                                .Element(Ns + "Address", x => x.Address)
                                    .Attribute("StreetName", x => x.StreetName)
                                    .Attribute("City", x => x.City)

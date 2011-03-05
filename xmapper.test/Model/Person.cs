@@ -15,6 +15,7 @@
 // limitations under the License.using System;
 //
 
+using System;
 using System.Collections.Generic;
 
 namespace XMapper.Test.Model
@@ -26,6 +27,8 @@ namespace XMapper.Test.Model
         public string LastName { get; set; }
         public bool IsEnabled { get; set; }
         public Address Address { get; set; }
+        public DateTime? DateOfBirth { get; set; }
+        public TimeSpan? TimeSinceLastLogin { get; set; }
         public List<ContactMethod> ContactMethods { get; set; }
     }
 }

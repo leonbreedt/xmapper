@@ -10,15 +10,6 @@ using System.Linq.Expressions;
 
 namespace XMapper.Util
 {
-    public static class EnumComparer
-    {
-        public static EnumComparer<TEnum> For<TEnum>()
-            where TEnum : struct, IComparable, IConvertible, IFormattable
-        {
-            return EnumComparer<TEnum>.Instance;
-        }
-    }
-
     /// <summary>
     /// A fast and efficient implementation of <see cref="IEqualityComparer{T}"/> for Enum types.
     /// Useful for dictionaries that use Enums as their keys.
@@ -95,7 +86,7 @@ namespace XMapper.Util
                 return;
 
             var message =
-                string.Format("The type parameter {0} is not an Enum. LcgEnumComparer supports Enums only.",
+                string.Format("The type parameter {0} is not an Enum. EnumComparer supports Enums only.",
                               typeof(TEnum));
             throw new NotSupportedException(message);
         }
@@ -115,7 +106,7 @@ namespace XMapper.Util
 
             var message =
                 string.Format("The underlying type of the type parameter {0} is {1}. " +
-                              "LcgEnumComparer only supports Enums with underlying type of " +
+                              "EnumComparer only supports Enums with underlying type of " +
                               "byte, sbyte, short, ushort, int, uint, long, or ulong.",
                               typeof(TEnum), underlyingType);
             throw new NotSupportedException(message);
