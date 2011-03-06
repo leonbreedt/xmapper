@@ -189,10 +189,11 @@ namespace XMapper
                                 childTextElementMapping.SetValueFromXmlForm(item, text);
                             }
                             else
-                            {
                                 reader.Skip();
-                                skipped = true;
-                            }
+
+                            // If we read text content, we also have to avoid doing a Read() again, as we may 
+                            // will positioned on the next thing we have to look at (e.g. whitespace or the next element).
+                            skipped = true;
                         }
                     }
                     else if (mapping.TextContent != null &&

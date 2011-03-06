@@ -1,0 +1,125 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<VSPerformanceSession Version="1.00">
+  <Options>
+    <Solution>D:\Dev\Personal\xmapper\xmapper.sln</Solution>
+    <CollectionMethod>Instrumentation</CollectionMethod>
+    <AllocationMethod>None</AllocationMethod>
+    <LaunchRuntimeControl>true</LaunchRuntimeControl>
+    <AddReport>true</AddReport>
+    <ResourceBasedAnalysisSelected>false</ResourceBasedAnalysisSelected>
+    <ThreadBasedAnalysisSelected>false</ThreadBasedAnalysisSelected>
+    <UniqueReport>Timestamp</UniqueReport>
+    <SamplingMethod>Cycles</SamplingMethod>
+    <CycleCount>10000000</CycleCount>
+    <PageFaultCount>10</PageFaultCount>
+    <SysCallCount>10</SysCallCount>
+    <SamplingCounter Name="" ReloadValue="00000000000f4240" DisplayName="" />
+    <RelocateBinaries>false</RelocateBinaries>
+    <CollectOnHpcCluster>false</CollectOnHpcCluster>
+    <HPCSettings>
+      <NumberOfProcesses>0</NumberOfProcesses>
+      <TargetSelection>UnknownDisabled</TargetSelection>
+      <ProfileOnRank>0</ProfileOnRank>
+      <AdvancedProperties>
+        <Project>Deserialization_PerformanceTest</Project>
+        <CleanUp>true</CleanUp>
+        <MpiexecCommand>mpiexec.exe</MpiexecCommand>
+        <DeployCRT>true</DeployCRT>
+      </AdvancedProperties>
+    </HPCSettings>
+    <HardwareCounters EnableHWCounters="false" />
+    <EtwSettings />
+    <PdhSettings>
+      <PdhCountersEnabled>false</PdhCountersEnabled>
+      <PdhCountersRate>500</PdhCountersRate>
+      <PdhCounters>
+        <PdhCounter>\Memory\Pages/sec</PdhCounter>
+        <PdhCounter>\PhysicalDisk(_Total)\Avg. Disk Queue Length</PdhCounter>
+        <PdhCounter>\Processor(_Total)\% Processor Time</PdhCounter>
+      </PdhCounters>
+    </PdhSettings>
+  </Options>
+  <ExcludeSmallFuncs>true</ExcludeSmallFuncs>
+  <JScriptProfilingEnabled>false</JScriptProfilingEnabled>
+  <PreinstrumentEvent>
+    <InstrEventExclude>false</InstrEventExclude>
+  </PreinstrumentEvent>
+  <PostinstrumentEvent>
+    <InstrEventExclude>false</InstrEventExclude>
+  </PostinstrumentEvent>
+  <Binaries>
+    <TestBinary>
+      <Path>D:\Dev\Personal\xmapper\xmapper.test\obj\Debug\xmapper.test.dll</Path>
+      <ArgumentTimestamp>01/01/0001 00:00:00</ArgumentTimestamp>
+      <Instrument>false</Instrument>
+      <Sample>true</Sample>
+      <ExternalWebsite>false</ExternalWebsite>
+      <InteractionProfilingEnabled>false</InteractionProfilingEnabled>
+      <IsLocalJavascript>false</IsLocalJavascript>
+      <LaunchProject>true</LaunchProject>
+      <OverrideProjectSettings>false</OverrideProjectSettings>
+      <LaunchMethod>Test</LaunchMethod>
+      <StartupDirectory>D:\Dev\Personal\xmapper\xmapper.test\bin\Debug\</StartupDirectory>
+      <Arguments />
+      <NetAppHost>IIS</NetAppHost>
+      <NetBrowser>InternetExplorer</NetBrowser>
+      <ExcludeSmallFuncs>true</ExcludeSmallFuncs>
+      <JScriptProfilingEnabled>false</JScriptProfilingEnabled>
+      <PreinstrumentEvent>
+        <InstrEventExclude>false</InstrEventExclude>
+      </PreinstrumentEvent>
+      <PostinstrumentEvent>
+        <InstrEventExclude>false</InstrEventExclude>
+      </PostinstrumentEvent>
+      <ProjRef>{ADDB3B14-0B50-4257-9789-B6104B7FA9D1}|xmapper.test\xmapper.test.csproj</ProjRef>
+      <ProjPath>D:\Dev\Personal\xmapper\xmapper.test\xmapper.test.csproj</ProjPath>
+      <ProjName>Deserialization_PerformanceTest</ProjName>
+      <TestId>{ced387de-4e74-c111-c2a4-9c9fdde083f2}</TestId>
+      <TestName>Deserialization_PerformanceTest</TestName>
+    </TestBinary>
+    <ProjBinary>
+      <Path>D:\Dev\Personal\xmapper\xmapper\obj\Debug\xmapper.dll</Path>
+      <ArgumentTimestamp>01/01/0001 00:00:00</ArgumentTimestamp>
+      <Instrument>true</Instrument>
+      <Sample>true</Sample>
+      <ExternalWebsite>false</ExternalWebsite>
+      <InteractionProfilingEnabled>false</InteractionProfilingEnabled>
+      <IsLocalJavascript>false</IsLocalJavascript>
+      <LaunchProject>true</LaunchProject>
+      <OverrideProjectSettings>false</OverrideProjectSettings>
+      <LaunchMethod>Executable</LaunchMethod>
+      <StartupDirectory>D:\Dev\Personal\xmapper\xmapper\bin\Debug\</StartupDirectory>
+      <Arguments />
+      <NetAppHost>IIS</NetAppHost>
+      <NetBrowser>InternetExplorer</NetBrowser>
+      <ExcludeSmallFuncs>true</ExcludeSmallFuncs>
+      <JScriptProfilingEnabled>false</JScriptProfilingEnabled>
+      <PreinstrumentEvent>
+        <InstrEventExclude>false</InstrEventExclude>
+      </PreinstrumentEvent>
+      <PostinstrumentEvent>
+        <InstrEventExclude>false</InstrEventExclude>
+      </PostinstrumentEvent>
+      <ProjRef>{8DD6CA4B-D497-47BA-BB6F-24F62C646A6F}|xmapper\xmapper.csproj</ProjRef>
+      <ProjPath>D:\Dev\Personal\xmapper\xmapper\xmapper.csproj</ProjPath>
+      <ProjName>xmapper</ProjName>
+    </ProjBinary>
+  </Binaries>
+  <Launches>
+    <TestBinary>
+      <Path>:TB:{ced387de-4e74-c111-c2a4-9c9fdde083f2}:Deserialization_PerformanceTest:{ADDB3B14-0B50-4257-9789-B6104B7FA9D1}|xmapper.test\xmapper.test.csproj</Path>
+    </TestBinary>
+  </Launches>
+  <RuntimeMarks>
+    <MarkName>Mark One</MarkName>
+    <MarkName>Mark Two</MarkName>
+    <MarkName>Mark Three</MarkName>
+    <MarkName>Mark Four</MarkName>
+    <MarkName>Mark Five</MarkName>
+    <MarkName>Mark Six</MarkName>
+    <MarkName>Mark Seven</MarkName>
+    <MarkName>Mark Eight</MarkName>
+    <MarkName>Mark Nine</MarkName>
+    <MarkName>Mark Ten</MarkName>
+  </RuntimeMarks>
+</VSPerformanceSession>

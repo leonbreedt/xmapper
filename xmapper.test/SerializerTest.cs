@@ -192,7 +192,7 @@ namespace XMapper.Test
             XNode.DeepEquals(expected, stream.ToXDocument()).ShouldBe(true);
         }
 
-        static SchemaDescription FullSchema()
+        internal static SchemaDescription FullSchema()
         {
             var description = new FluentSchemaDescription();
 
