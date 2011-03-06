@@ -238,6 +238,18 @@ namespace XMapper
                     writer.WriteString(value);
             }
 
+            if (mapping.ChildTextElements != null)
+            {
+                foreach (var childTextElementMapping in mapping.ChildTextElements)
+                {
+                    var value = childTextElementMapping.GetValueInXmlForm(item);
+                    if (value != null)
+                        writer.WriteElementString(childTextElementMapping.LocalName,
+                                                  childTextElementMapping.NamespaceUri,
+                                                  value);
+                }
+            }
+
             if (mapping.ChildElements != null)
             {
                 Dictionary<Type, ICollectionChildElementMapping> collectionMappingsByElementType = null;

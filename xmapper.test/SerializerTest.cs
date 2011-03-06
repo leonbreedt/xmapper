@@ -143,7 +143,7 @@ namespace XMapper.Test
                                                  IsEnabled = true,
                                                  DateOfBirth = new DateTime(2010, 02, 12, 23, 59, 59),
                                                  TimeSinceLastLogin = TimeSpan.FromMinutes(20),
-                                                 Address = new Address {StreetName = "231 Queen Street", City = "Auckland"},
+                                                 Address = new Address {StreetName = "231 Queen Street", City = "Auckland", Comments = "Some comments"},
                                                  ContactMethods =
                                                      new List<ContactMethod>
                                                      {
@@ -172,18 +172,20 @@ namespace XMapper.Test
             serializer.Serialize(stream, document);
 
             var expected = XDocument.Parse(@"<Document xmlns='http://test.com'>
-                                               <Person Id='123' FirstName='James' LastName='Jefferson' IsEnabled='true' DateOfBirth='2010-02-12T23:59:59' TimeSinceLastLogin='00:20:00'>
-                                                 <Address StreetName='231 Queen Street' City='Auckland' />
-                                                 <ContactMethods>
-                                                     <ContactMethod Type='Email' Value='james@jefferson.com' />
-                                                     <AddressContactMethod Type='Address' Value='Auckland City' StreetName='232 Queen Street' />
-                                                     <ContactMethod Type='HomePhone' Value='555-1234' />
-                                                 </ContactMethods>
-                                               </Person>
-                                               <Person Id='124' FirstName='Paul' LastName='Jefferson' IsEnabled='false'>
-                                                 <Address StreetName='500 Dominion Road' City='Auckland' />
-                                               </Person>
-                                             </Document>");
+                                              <Person Id='123' FirstName='James' LastName='Jefferson' DateOfBirth='2010-02-12T23:59:59' TimeSinceLastLogin='00:20:00'>
+                                                <IsEnabled>true</IsEnabled>
+                                                <Address StreetName='231 Queen Street' City='Auckland'>Some comments</Address>
+                                                <ContactMethods>
+                                                    <ContactMethod Type='Email' Value='james@jefferson.com' />
+                                                    <AddressContactMethod Type='Address' Value='Auckland City' StreetName='232 Queen Street' />
+                                                    <ContactMethod Type='HomePhone' Value='555-1234' />
+                                                </ContactMethods>
+                                              </Person>
+                                              <Person Id='124' FirstName='Paul' LastName='Jefferson'>
+                                                <IsEnabled>false</IsEnabled>
+                                                <Address StreetName='500 Dominion Road' City='Auckland' />
+                                              </Person>
+                                            </Document>");
 
             Debug.WriteLine(stream.ToXDocument());
 
