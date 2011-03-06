@@ -24,11 +24,11 @@ using XMapper.Util;
 namespace XMapper
 {
     /// <summary>
-    /// Represents a mapping of an XML attribute to an object property.
+    /// Represents a mapping of the XML text content of an element to an object property on a container.
     /// </summary>
-    /// <typeparam name="TContainer">The type that contains the property this mapping is associated with.</typeparam>
+    /// <typeparam name="TContainer">The type that contains the property the text content will be written to.</typeparam>
     /// <typeparam name="TProperty">The type of the property in the type.</typeparam>
-    public class AttributeMapping<TContainer, TProperty> : MappingBase, IAttributeMapping
+    public class TextContentMapping<TContainer, TProperty> : MappingBase, ITextContentMapping
     {
         #region Fields
         readonly PropertyInfo _propertyInfo;
@@ -39,23 +39,43 @@ namespace XMapper
         #endregion
 
         /// <summary>
-        /// Creates a new XML attribute mapping.
+        /// Creates a new XML text content mapping bound to the container element.
+        /// </summary>
+        /// <param name="propertyExpression">A simple member expression referencing the property to associate this mapping with.</param>
+        public TextContentMapping(Expression<Func<TContainer, TProperty>> propertyExpression)
+            : this(null, propertyExpression, null, null)
+        {
+        }
+
+        /// <summary>
+        /// Creates a new XML text content mapping bound to a container element.
+        /// </summary>
+        /// <param name="propertyExpression">A simple member expression referencing the property to associate this mapping with.</param>
+        /// <param name="customDeserializer">If not <c>null</c>, a custom function to use to deserialize the XML representation of the text content into the property type.</param>
+        /// <param name="customSerializer">If not <c>null</c>, a custom function to use to serialize a property value into its XML representation.</param>
+        public TextContentMapping(Expression<Func<TContainer, TProperty>> propertyExpression, Func<string, TProperty> customDeserializer, Func<TProperty, string> customSerializer)
+            : this(null, propertyExpression, customDeserializer, customSerializer)
+        {
+        }
+
+        /// <summary>
+        /// Creates a new XML text content mapping.
         /// </summary>
         /// <param name="name">The XML name of the attribute.</param>
         /// <param name="propertyExpression">A simple member expression referencing the property to associate this mapping with.</param>
-        public AttributeMapping(XName name, Expression<Func<TContainer, TProperty>> propertyExpression)
+        public TextContentMapping(XName name, Expression<Func<TContainer, TProperty>> propertyExpression)
             : this(name, propertyExpression, null, null)
         {
         }
 
         /// <summary>
-        /// Creates a new XML attribute mapping.
+        /// Creates a new XML text content mapping.
         /// </summary>
         /// <param name="name">The XML name of the attribute.</param>
         /// <param name="propertyExpression">A simple member expression referencing the property to associate this mapping with.</param>
-        /// <param name="customDeserializer">If not <c>null</c>, a custom function to use to deserialize the XML representation of the attribute value into the property type.</param>
+        /// <param name="customDeserializer">If not <c>null</c>, a custom function to use to deserialize the XML representation of the text content into the property type.</param>
         /// <param name="customSerializer">If not <c>null</c>, a custom function to use to serialize a property value into its XML representation.</param>
-        public AttributeMapping(XName name, Expression<Func<TContainer, TProperty>> propertyExpression, Func<string, TProperty> customDeserializer, Func<TProperty, string> customSerializer)
+        public TextContentMapping(XName name, Expression<Func<TContainer, TProperty>> propertyExpression, Func<string, TProperty> customDeserializer, Func<TProperty, string> customSerializer)
             : base(typeof(TContainer), name)
         {
             _propertyInfo = ReflectionHelper.GetPropertyInfoFromExpression(propertyExpression);

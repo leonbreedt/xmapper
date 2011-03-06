@@ -48,5 +48,15 @@ namespace XMapper
         /// Gets the mappings for the child elements contained within this mapping, if any.
         /// </summary>
         IChildElementMapping[] ChildElements { get; }
+
+        /// <summary>
+        /// Gets the text content mapping for this element.
+        /// </summary>
+        ITextContentMapping TextContent { get; }
+
+        /// <summary>
+        /// Gets the any child text element mappings for this element.
+        /// </summary>
+        ITextContentMapping[] ChildTextElements { get; }
     }
 }

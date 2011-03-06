@@ -27,21 +27,13 @@ Features
   any other output format. I have done this with [protobuf-net](http://code.google.com/p/protobuf-net).
 
 
-Todo
-----
-
-* Support for mapping XML text content onto .NET properties. Believe it or not, for the type of schemas I've
-  used this for (quite large, and quite complex), this hasn't been an issue.
-
-
 Unsupported Features
 --------------------
 
-These are things I'm unlikely to support, to keep the library simple.
-
 * XML schemas where an element contains itself, to arbitrary levels of depth, e.g. for representing
   general purpose tree structures. You could probably hack it by duplicating the same child a couple of
-  times using the fluent interface, but it will be ugly.
+  times using the fluent interface, but it will be ugly. Not quite sure how I want to represent this
+  with mappings.
   
 
 Examples (C#)
@@ -53,8 +45,9 @@ Simple object with nested object
 
 XML:
 
-    <Person Id='123' FirstName='John' LastName='Doe'>
-        <Address StreetName='32 Quay Street' City='Auckland' />
+    <Person Id='123' FirstName='John'>
+        <LastName>Doe</LastName>
+        <Address StreetName='32 Quay Street' City='Auckland'>1010</Address>
     </Person>
 
 C#:
@@ -71,6 +64,7 @@ C#:
     {
         public string StreetName { get; set; }
         public string City { get; set; }
+        public string PostCode { get; set; }
     }
 
 Mapping:
@@ -80,10 +74,11 @@ Mapping:
     desc.Element<Person>("Person")
             .Attribute("Id", x => x.Id)
             .Attribute("FirstName", x => x.FirstName)
-            .Attribute("LastName", x => x.LastName)
+            .TextElement("LastName", x => x.LastName)
             .Element("Address", x => x.Address)
                 .Attribute("StreetName", x => x.StreetName)
                 .Attribute("City", x => x.City)
+                .TextContent(x => x.PostCode)
             .EndElement()
 
 

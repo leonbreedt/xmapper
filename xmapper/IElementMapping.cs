@@ -61,5 +61,22 @@ namespace XMapper
         /// <param name="localName">The local name of the child element.</param>
         /// <returns>Returns the child element mapping if found, otherwise <c>null</c>.</returns>
         IChildElementMapping TryFindChildElementMapping(string namespaceUri, string localName);
+
+        /// <summary>
+        /// Attempts to find a child text element mapping within this element mapping, having the given local name and no
+        /// namespace.
+        /// </summary>
+        /// <param name="localName">The local name of the child element.</param>
+        /// <returns>Returns the child element mapping if found, otherwise <c>null</c>.</returns>
+        ITextContentMapping TryFindChildTextElementMapping(string localName);
+
+        /// <summary>
+        /// Attempts to find a child text element mapping within this element mapping, having the given local name and a
+        /// namespace.
+        /// </summary>
+        /// <param name="namespaceUri">The namespace of the child element.</param>
+        /// <param name="localName">The local name of the child element.</param>
+        /// <returns>Returns the child element mapping if found, otherwise <c>null</c>.</returns>
+        ITextContentMapping TryFindChildTextElementMapping(string namespaceUri, string localName);
     }
 }

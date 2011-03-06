@@ -31,6 +31,8 @@ namespace XMapper.Fluent
         readonly Expression<Func<TContainer, IList<TMember>>> _propertyInParent;
         readonly List<IAttributeMapping> _attrs;
         readonly List<Func<IChildElementMapping>> _elements;
+        ITextContentMapping _textContent;
+        readonly List<ITextContentMapping> _childTextElements;
         #endregion
 
         public CollectionChildElementMappingBuilder(TParentBuilder parentBuilderScope, XName name, Expression<Func<TContainer, IList<TMember>>> propertyInParent)
@@ -40,6 +42,7 @@ namespace XMapper.Fluent
             _propertyInParent = propertyInParent;
             _attrs = new List<IAttributeMapping>();
             _elements = new List<Func<IChildElementMapping>>();
+            _childTextElements = new List<ITextContentMapping>();
         }
 
         public CollectionChildElementMappingBuilder(TParentBuilder parentBuilderScope, XName name)
@@ -56,6 +59,20 @@ namespace XMapper.Fluent
         public ICollectionChildElementMappingBuilder<TContainer, TMember, TParentBuilder> Attribute<TAttributeProperty>(XName name, Expression<Func<TMember, TAttributeProperty>> property, Func<string, TAttributeProperty> customDeserializer, Func<TAttributeProperty, string> customSerializer)
         {
             _attrs.Add(new AttributeMapping<TMember, TAttributeProperty>(name, property, customDeserializer, customSerializer));
+            return this;
+        }
+
+        public ICollectionChildElementMappingBuilder<TContainer, TMember, TParentBuilder> TextContent<TProperty>(Expression<Func<TMember, TProperty>> property)
+        {
+            if (_textContent != null)
+                throw new ArgumentException("Only one TextContent() is allowed for a particular element.");
+            _textContent = new TextContentMapping<TMember, TProperty>(property);
+            return this;
+        }
+
+        public ICollectionChildElementMappingBuilder<TContainer, TMember, TParentBuilder> TextElement<TChildElement>(XName name, Expression<Func<TMember, TChildElement>> property)
+        {
+            _childTextElements.Add(new TextContentMapping<TMember, TChildElement>(name, property));
             return this;
         }
 
@@ -90,7 +107,9 @@ namespace XMapper.Fluent
             return new CollectionChildElementMapping<TContainer, TMember>(_name, _propertyInParent)
                        {
                            Attributes = _attrs.ToArray(),
-                           ChildElements = _elements.Select(f => f()).ToArray()
+                           ChildElements = _elements.Select(f => f()).ToArray(),
+                           TextContent = _textContent,
+                           ChildTextElements = _childTextElements.ToArray(),
                        };
         }
     }

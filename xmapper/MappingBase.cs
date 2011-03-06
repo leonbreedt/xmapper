@@ -35,6 +35,11 @@ namespace XMapper
         /// </summary>
         protected static readonly IChildElementMapping[] NoChildElements = new IChildElementMapping[0];
 
+        /// <summary>
+        /// Pre-cached empty list of child text elements.
+        /// </summary>
+        protected static readonly ITextContentMapping[] NoChildTextElements = new ITextContentMapping[0];
+
         #region Fields
         readonly Type _type;
         readonly string _namespaceUri;
@@ -49,8 +54,11 @@ namespace XMapper
         protected MappingBase(Type type, XName name)
         {
             _type = type;
-            _namespaceUri = name.NamespaceName;
-            _localName = name.LocalName;
+            if (name != null)
+            {
+                _namespaceUri = name.NamespaceName;
+                _localName = name.LocalName;
+            }
         }
 
         public Type Type { get { return _type; } }
@@ -58,5 +66,7 @@ namespace XMapper
         public string LocalName { get { return _localName; } }
         public abstract IAttributeMapping[] Attributes { get; internal set; }
         public abstract IChildElementMapping[] ChildElements { get; internal set; }
+        public abstract ITextContentMapping TextContent { get; internal set; }
+        public abstract ITextContentMapping[] ChildTextElements { get; internal set; }
     }
 }

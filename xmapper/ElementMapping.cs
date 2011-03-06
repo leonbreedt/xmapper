@@ -33,8 +33,11 @@ namespace XMapper
         readonly Func<TTarget> _constructor;
         IAttributeMapping[] _attributes;
         IChildElementMapping[] _childElements;
+        ITextContentMapping _textContent;
+        ITextContentMapping[] _childTextElements;
         IDictionary<string, IDictionary<string, IAttributeMapping>> _attributesByNamespaceAndName;
         IDictionary<string, IDictionary<string, IChildElementMapping>> _childElementsByNamespaceAndName;
+        IDictionary<string, IDictionary<string, ITextContentMapping>> _childTextElementsByNamespaceAndName;
         #endregion
 
         /// <summary>
@@ -80,6 +83,18 @@ namespace XMapper
             }
         }
 
+        public override ITextContentMapping TextContent { get { return _textContent; } internal set { _textContent = value; } }
+
+        public override ITextContentMapping[] ChildTextElements
+        {
+            get { return _childTextElements; }
+            internal set
+            {
+                _childTextElements = value;
+                _childTextElementsByNamespaceAndName = BuildMappingLookupTableByNamespaceAndName(_childTextElements);
+            }
+        }
+
         public IAttributeMapping TryFindAttributeMapping(string localName)
         {
             return TryFindAttributeMapping("", localName);
@@ -120,6 +135,27 @@ namespace XMapper
                 return null;
 
             return childElementMapping;
+        }
+
+        public ITextContentMapping TryFindChildTextElementMapping(string localName)
+        {
+            return TryFindChildTextElementMapping("", localName);
+        }
+
+        public ITextContentMapping TryFindChildTextElementMapping(string namespaceUri, string localName)
+        {
+            if (_childTextElementsByNamespaceAndName == null)
+                return null;
+
+            IDictionary<string, ITextContentMapping> childrenByName;
+            if (!_childTextElementsByNamespaceAndName.TryGetValue(namespaceUri, out childrenByName))
+                return null;
+
+            ITextContentMapping childTextElementMapping;
+            if (!childrenByName.TryGetValue(localName, out childTextElementMapping))
+                return null;
+
+            return childTextElementMapping;
         }
 
         Dictionary<string, IDictionary<string, T>> BuildMappingLookupTableByNamespaceAndName<T>(IEnumerable<T> mappings)

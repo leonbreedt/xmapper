@@ -31,6 +31,8 @@ namespace XMapper.Fluent
         readonly Expression<Func<TContainer, TElement>> _propertyInParent;
         readonly List<IAttributeMapping> _attrs;
         readonly List<Func<IChildElementMapping>> _elements;
+        ITextContentMapping _textContent;
+        readonly List<ITextContentMapping> _childTextElements;
         #endregion
 
         public ChildElementMappingBuilder(TParentBuilder parentBuilderScope, XName name, Expression<Func<TContainer, TElement>> propertyInParent)
@@ -40,6 +42,7 @@ namespace XMapper.Fluent
             _propertyInParent = propertyInParent;
             _attrs = new List<IAttributeMapping>();
             _elements = new List<Func<IChildElementMapping>>();
+            _childTextElements = new List<ITextContentMapping>();
         }
 
         public virtual IChildElementMapping Build()
@@ -47,7 +50,9 @@ namespace XMapper.Fluent
             return new ChildElementMapping<TContainer, TElement>(_name, _propertyInParent)
                    {
                        Attributes = _attrs.ToArray(),
-                       ChildElements = _elements.Select(f => f()).ToArray()
+                       ChildElements = _elements.Select(f => f()).ToArray(),
+                       TextContent = _textContent,
+                       ChildTextElements = _childTextElements.ToArray(),
                    };
         }
 
@@ -60,6 +65,20 @@ namespace XMapper.Fluent
         public IChildElementMappingBuilder<TElement, TParentBuilder> Attribute<TProperty>(XName name, Expression<Func<TElement, TProperty>> property, Func<string, TProperty> customDeserializer, Func<TProperty, string> customSerializer)
         {
             _attrs.Add(new AttributeMapping<TElement, TProperty>(name, property, customDeserializer, customSerializer));
+            return this;
+        }
+
+        public IChildElementMappingBuilder<TElement, TParentBuilder> TextContent<TProperty>(Expression<Func<TElement, TProperty>> property)
+        {
+            if (_textContent != null)
+                throw new ArgumentException("Only one TextContent() is allowed for a particular element.");
+            _textContent = new TextContentMapping<TElement, TProperty>(property);
+            return this;
+        }
+
+        public IChildElementMappingBuilder<TElement, TParentBuilder> TextElement<TChildElement>(XName name, Expression<Func<TElement, TChildElement>> property)
+        {
+            _childTextElements.Add(new TextContentMapping<TElement, TChildElement>(name, property));
             return this;
         }
 

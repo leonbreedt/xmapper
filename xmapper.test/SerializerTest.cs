@@ -66,8 +66,9 @@ namespace XMapper.Test
         public void DeserializeDocument_ShouldSucceed()
         {
             const string document = @"<Document xmlns='http://test.com'>
-                                        <Person Id='123' FirstName='James' LastName='Jefferson' IsEnabled='true' DateOfBirth='2010-02-12T23:59:59' TimeSinceLastLogin='00:20:00'>
-                                          <Address StreetName='231 Queen Street' City='Auckland' />
+                                        <Person Id='123' FirstName='James' LastName='Jefferson' DateOfBirth='2010-02-12T23:59:59' TimeSinceLastLogin='00:20:00'>
+                                          <IsEnabled>true</IsEnabled>
+                                          <Address StreetName='231 Queen Street' City='Auckland'>Some comments</Address>
                                           <ContactMethods>
                                               <ContactMethod Type='Email' Value='james@jefferson.com' />
                                               <AddressContactMethod Type='Address' Value='Auckland City' StreetName='232 Queen Street' />
@@ -90,8 +91,10 @@ namespace XMapper.Test
             person1.Id.ShouldBe(123);
             person1.DateOfBirth.ShouldBe(new DateTime(2010, 02, 12, 23, 59, 59));
             person1.TimeSinceLastLogin.ShouldBe(TimeSpan.FromMinutes(20));
+            person1.IsEnabled.ShouldBe(true);
             person1.Address.StreetName.ShouldBe("231 Queen Street");
             person1.Address.City.ShouldBe("Auckland");
+            person1.Address.Comments.ShouldBe("Some comments");
             person1.ContactMethods.Count.ShouldBe(3);
             person1.ContactMethods[0].Type.ShouldBe(ContactMethodType.Email);
             person1.ContactMethods[0].Value.ShouldBe("james@jefferson.com");
@@ -196,14 +199,15 @@ namespace XMapper.Test
                                .Attribute("Id", x => x.Id)
                                .Attribute("FirstName", x => x.FirstName)
                                .Attribute("LastName", x => x.LastName)
-                               .Attribute("IsEnabled", x => x.IsEnabled)
                                .Attribute("DateOfBirth", x => x.DateOfBirth)
                                .Attribute("TimeSinceLastLogin", x => x.TimeSinceLastLogin, 
                                                                 x => x != null ? TimeSpan.Parse(x) : (TimeSpan?)null, 
                                                                 x => x != null ? x.ToString() : (string)null)
+                               .TextElement(Ns + "IsEnabled", x => x.IsEnabled)
                                .Element(Ns + "Address", x => x.Address)
                                    .Attribute("StreetName", x => x.StreetName)
                                    .Attribute("City", x => x.City)
+                                   .TextContent(x => x.Comments)
                                .EndElement()
                                .Element(Ns + "ContactMethods", x => x.ContactMethods)
                                    .CollectionElement<ContactMethod>(Ns + "ContactMethod")

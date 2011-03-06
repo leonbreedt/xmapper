@@ -36,7 +36,11 @@ namespace XMapper.Fluent
                                                                                        Func<string, TProperty> customDeserializer,
                                                                                        Func<TProperty, string> customSerializer);
 
+        IChildElementMappingBuilder<TElement, TParentBuilder> TextContent<TProperty>(Expression<Func<TElement, TProperty>> property);
+        IChildElementMappingBuilder<TElement, TParentBuilder> TextElement<TChildElement>(XName name, Expression<Func<TElement, TChildElement>> property);
+
         IChildElementMappingBuilder<TChildElement, IChildElementMappingBuilder<TElement, TParentBuilder>> Element<TChildElement>(XName name, Expression<Func<TElement, TChildElement>> propertyInParent);
+
 
         ICollectionChildElementMappingBuilder<TElement, TChildElement, IChildElementMappingBuilder<TElement, TParentBuilder>> CollectionElement<TChildElement>(XName name, Expression<Func<TElement, IList<TChildElement>>> propertyInParent);
         ICollectionChildElementMappingBuilder<TElement, TChildElement, IChildElementMappingBuilder<TElement, TParentBuilder>> CollectionElement<TChildElement>(XName name);

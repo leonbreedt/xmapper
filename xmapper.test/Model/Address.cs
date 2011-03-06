@@ -23,6 +23,7 @@ namespace XMapper.Test.Model
     {
         public string StreetName { get; set; }
         public string City { get; set; }
+        public string Comments { get; set; }
         public PostCode PostCode { get; set; }
         public List<AreaCode> AreaCodes { get; set; }
     }

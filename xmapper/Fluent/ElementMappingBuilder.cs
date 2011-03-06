@@ -29,6 +29,8 @@ namespace XMapper.Fluent
         readonly XName _name;
         readonly List<IAttributeMapping> _attrs;
         readonly List<Func<IChildElementMapping>> _elements;
+        ITextContentMapping _textContent;
+        readonly List<ITextContentMapping> _childTextElements;
         #endregion
 
         public ElementMappingBuilder(XName name)
@@ -36,6 +38,7 @@ namespace XMapper.Fluent
             _name = name;
             _attrs = new List<IAttributeMapping>();
             _elements = new List<Func<IChildElementMapping>>();
+            _childTextElements = new List<ITextContentMapping>();
         }
 
         public IElementMappingBuilder<TElement> Attribute<TProperty>(XName name, Expression<Func<TElement, TProperty>> property)
@@ -47,6 +50,20 @@ namespace XMapper.Fluent
         public IElementMappingBuilder<TElement> Attribute<TProperty>(XName name, Expression<Func<TElement, TProperty>> property, Func<string, TProperty> customDeserializer, Func<TProperty, string> customSerializer)
         {
             _attrs.Add(new AttributeMapping<TElement, TProperty>(name, property, customDeserializer, customSerializer));
+            return this;
+        }
+
+        public IElementMappingBuilder<TElement> TextContent<TProperty>(Expression<Func<TElement, TProperty>> property)
+        {
+            if (_textContent != null)
+                throw new ArgumentException("Only one TextContent() is allowed for a particular element.");
+            _textContent = new TextContentMapping<TElement, TProperty>(property);
+            return this;
+        }
+
+        public IElementMappingBuilder<TElement> TextElement<TChildElement>(XName name, Expression<Func<TElement, TChildElement>> property)
+        {
+            _childTextElements.Add(new TextContentMapping<TElement, TChildElement>(name, property));
             return this;
         }
 
@@ -69,7 +86,9 @@ namespace XMapper.Fluent
             return new ElementMapping<TElement>(_name)
                    {
                        Attributes = _attrs.ToArray(),
-                       ChildElements = _elements.Select(f => f()).ToArray()
+                       ChildElements = _elements.Select(f => f()).ToArray(),
+                       TextContent = _textContent,
+                       ChildTextElements = _childTextElements.ToArray(),
                    };
         }
     }

@@ -26,14 +26,14 @@ namespace XMapper
         /// Reads the object from the property on the target that contains this object.
         /// </summary>
         /// <param name="target">The target.</param>
-        /// <returns>Returns the CLR object.</returns>
+        /// <returns>Returns the object.</returns>
         object GetFromContainer(object target);
 
         /// <summary>
         /// Sets the property on the target to the specified CLR object.
         /// </summary>
         /// <param name="target">The target.</param>
-        /// <param name="item">The CLR object.</param>
+        /// <param name="item">The object to set.</param>
         void SetOnContainer(object target, object item);
     }
 }

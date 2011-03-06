@@ -20,6 +20,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Xml;
 using System.Xml.Schema;
 
@@ -146,6 +147,8 @@ namespace XMapper
                 reader.MoveToElement();
             }
 
+            StringBuilder textContent = null;
+
             if (!reader.IsEmptyElement)
             {
                 bool skipped = false;
@@ -175,14 +178,41 @@ namespace XMapper
                         }
                         else
                         {
-                            reader.Skip();
-                            skipped = true;
+                            ITextContentMapping childTextElementMapping =
+                                string.IsNullOrEmpty(reader.NamespaceURI)
+                                    ? mapping.TryFindChildTextElementMapping(reader.LocalName)
+                                    : mapping.TryFindChildTextElementMapping(reader.NamespaceURI, reader.LocalName);
+
+                            if (childTextElementMapping != null)
+                            {
+                                var text = reader.ReadElementContentAsString();
+                                childTextElementMapping.SetValueFromXmlForm(item, text);
+                            }
+                            else
+                            {
+                                reader.Skip();
+                                skipped = true;
+                            }
                         }
+                    }
+                    else if (mapping.TextContent != null &&
+                             (reader.NodeType == XmlNodeType.Text ||
+                              reader.NodeType == XmlNodeType.CDATA ||
+                              reader.NodeType == XmlNodeType.Whitespace ||
+                              reader.NodeType == XmlNodeType.SignificantWhitespace))
+                    {
+                        if (textContent == null)
+                            textContent = new StringBuilder();
+
+                        textContent.Append(reader.Value);
                     }
                     else if (reader.NodeType == XmlNodeType.EndElement)
                         break;
                 }
             }
+
+            if (textContent != null && mapping.TextContent != null)
+                mapping.TextContent.SetValueFromXmlForm(item, textContent.ToString());
 
             return item;
         }
@@ -201,7 +231,14 @@ namespace XMapper
                 }
             }
 
-            if (mapping.ChildElements != null && mapping.ChildElements.Length > 0)
+            if (mapping.TextContent != null)
+            {
+                var value = mapping.TextContent.GetValueInXmlForm(item);
+                if (value != null)
+                    writer.WriteString(value);
+            }
+
+            if (mapping.ChildElements != null)
             {
                 Dictionary<Type, ICollectionChildElementMapping> collectionMappingsByElementType = null;
                 HashSet<IList> collectionsWritten = null;

@@ -26,20 +26,24 @@ namespace XMapper.Fluent
     /// <summary>
     /// Base interface for collection child element mappings.
     /// </summary>
-    public interface ICollectionChildElementMappingBuilder<TContainer, TMember, TParentBuilder>
+    public interface ICollectionChildElementMappingBuilder<TContainer, TElement, TParentBuilder>
     {
-        ICollectionChildElementMappingBuilder<TContainer, TMember, TParentBuilder> Attribute<TAttributeProperty>(XName name,
-                                                                                                                 Expression<Func<TMember, TAttributeProperty>> property);
+        ICollectionChildElementMappingBuilder<TContainer, TElement, TParentBuilder> Attribute<TProperty>(XName name,
+                                                                                                        Expression<Func<TElement, TProperty>> property);
 
-        ICollectionChildElementMappingBuilder<TContainer, TMember, TParentBuilder> Attribute<TAttributeProperty>(XName name,
-                                                                                                                 Expression<Func<TMember, TAttributeProperty>> property,
-                                                                                                                 Func<string, TAttributeProperty> customDeserializer,
-                                                                                                                 Func<TAttributeProperty, string> customSerializer);
+        ICollectionChildElementMappingBuilder<TContainer, TElement, TParentBuilder> Attribute<TProperty>(XName name,
+                                                                                                        Expression<Func<TElement, TProperty>> property,
+                                                                                                        Func<string, TProperty> customDeserializer,
+                                                                                                        Func<TProperty, string> customSerializer);
 
-        IChildElementMappingBuilder<TChildElement, ICollectionChildElementMappingBuilder<TContainer, TMember, TParentBuilder>> Element<TChildElement>(XName name, Expression<Func<TMember, TChildElement>> propertyInParent);
+        ICollectionChildElementMappingBuilder<TContainer, TElement, TParentBuilder> TextContent<TProperty>(Expression<Func<TElement, TProperty>> property);
+        ICollectionChildElementMappingBuilder<TContainer, TElement, TParentBuilder> TextElement<TChildElement>(XName name, Expression<Func<TElement, TChildElement>> property);
 
-        ICollectionChildElementMappingBuilder<TMember, TChildElement, ICollectionChildElementMappingBuilder<TContainer, TMember, TParentBuilder>> CollectionElement<TChildElement>(XName name, Expression<Func<TMember, IList<TChildElement>>> propertyInParent);
-        ICollectionChildElementMappingBuilder<TMember, TChildElement, ICollectionChildElementMappingBuilder<TContainer, TMember, TParentBuilder>> CollectionElement<TChildElement>(XName name);
+        IChildElementMappingBuilder<TChildElement, ICollectionChildElementMappingBuilder<TContainer, TElement, TParentBuilder>> Element<TChildElement>(XName name, Expression<Func<TElement, TChildElement>> propertyInParent);
+
+
+        ICollectionChildElementMappingBuilder<TElement, TChildElement, ICollectionChildElementMappingBuilder<TContainer, TElement, TParentBuilder>> CollectionElement<TChildElement>(XName name, Expression<Func<TElement, IList<TChildElement>>> propertyInParent);
+        ICollectionChildElementMappingBuilder<TElement, TChildElement, ICollectionChildElementMappingBuilder<TContainer, TElement, TParentBuilder>> CollectionElement<TChildElement>(XName name);
 
         TParentBuilder EndElement();
 
