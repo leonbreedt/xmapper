@@ -53,7 +53,7 @@ namespace XMapper
         /// <summary>
         /// Gets the mappings contained within this description.
         /// </summary>
-        public IEnumerable<IMapping> Mappings
+        public IEnumerable<IElementMapping> Mappings
         {
             get { return _elementMappingsByType.Values; }
         }

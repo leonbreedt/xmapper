@@ -144,8 +144,8 @@ namespace XMapper.Util
             MethodInfo setMethod = info.GetSetMethod();
             if (setMethod != null && setMethod.GetParameters().Length == 1)
             {
-                var target = Expression.Parameter(typeof(TContainer));
-                var value = Expression.Parameter(typeof(object));
+                var target = Expression.Parameter(typeof(TContainer), null);
+                var value = Expression.Parameter(typeof(object), null);
                 var body = Expression.Call(target, setMethod, Expression.Convert(value, info.PropertyType));
 
                 return Expression.Lambda<Action<TContainer, object>>(body, target, value).Compile();
