@@ -122,12 +122,11 @@ namespace XMapper.Util
         /// <returns></returns>
         internal static Func<TContainer, IList<TMember>> GetCollectionPropertyGetterDelegate<TContainer, TMember>(PropertyInfo info)
         {
-            var builder = GetTypedPropertyGetterDelegateMethodInfo.MakeGenericMethod(typeof(TContainer), info.PropertyType);
-            var func = builder.Invoke(null, new object[] {info});
+            var getMethod = info.GetGetMethod(true);
+            if (getMethod == null)
+                throw new NotSupportedException(string.Format("Property {0} of type {1} does not have a getter", info.Name, typeof(TContainer).FullName));
 
-            Func<TContainer, IList<TMember>> constructor = val => (IList<TMember>)((Delegate)func).DynamicInvoke(val);
-
-            return constructor;
+            return (Func<TContainer, IList<TMember>>)Delegate.CreateDelegate(typeof(Func<TContainer, IList<TMember>>), info.GetGetMethod());
         }
 
         /// <summary>
