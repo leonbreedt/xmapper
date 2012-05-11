@@ -36,8 +36,8 @@ namespace XMapper
         #region Fields
         readonly PropertyInfo _propertyInfo;
         readonly Func<IList<TMember>> _collectionConstructor;
-        readonly Func<TContainer, object> _collectionGetter;
-        readonly Action<TContainer, object> _collectionSetter;
+        readonly Func<TContainer, IList<TMember>> _collectionGetter;
+        readonly Action<TContainer, IList<TMember>> _collectionSetter;
         #endregion
 
         /// <summary>
@@ -53,34 +53,34 @@ namespace XMapper
             {
                 _propertyInfo = ReflectionHelper.GetPropertyInfoFromExpression(propertyExpression);
                 _collectionConstructor = ReflectionHelper.GetCollectionConstructorDelegate<TMember>(_propertyInfo.PropertyType);
-                _collectionGetter = ReflectionHelper.GetPropertyGetterDelegate<TContainer>(_propertyInfo);
-                _collectionSetter = ReflectionHelper.GetPropertySetterDelegate<TContainer>(_propertyInfo);
+                _collectionGetter = ReflectionHelper.GetCollectionPropertyGetterDelegate<TContainer, TMember>(_propertyInfo);
+                _collectionSetter = ReflectionHelper.GetCollectionPropertySetterDelegate<TContainer, TMember>(_propertyInfo);
             }
         }
 
         public void AddToCollection(object container, object member)
         {
-            IList collection;
+            IList<TMember> collection;
 
             bool isContainerTheCollection = _propertyInfo == null;
 
             if (isContainerTheCollection)
-                collection = (IList)container;
+                collection = (IList<TMember>)container;
             else
-                collection = (IList)_collectionGetter((TContainer)container);
+                collection = _collectionGetter((TContainer)container);
 
             if (collection == null)
             {
                 if (!isContainerTheCollection)
                 {
-                    collection = (IList)_collectionConstructor();
+                    collection = _collectionConstructor();
                     _collectionSetter((TContainer)container, collection);
                 }
                 else
                     throw new InvalidOperationException(string.Format("Unable to instantiate a new {0} collection", typeof(TMember)));
             }
 
-            collection.Add(member);
+            collection.Add((TMember)member);
         }
 
         public IList GetCollection(object container)

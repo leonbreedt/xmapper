@@ -120,10 +120,14 @@ namespace XMapper.Util
         /// </summary>
         /// <param name="info">The property info of the property.</param>
         /// <returns></returns>
-        internal static Func<TContainer, object> GetPropertyGetterDelegate<TContainer>(PropertyInfo info)
+        internal static Func<TContainer, IList<TMember>> GetCollectionPropertyGetterDelegate<TContainer, TMember>(PropertyInfo info)
         {
             var builder = GetTypedPropertyGetterDelegateMethodInfo.MakeGenericMethod(typeof(TContainer), info.PropertyType);
-            return (Func<TContainer, object>)builder.Invoke(null, new object[] { info });
+            var func = builder.Invoke(null, new object[] {info});
+
+            Func<TContainer, IList<TMember>> constructor = val => (IList<TMember>)((Delegate)func).DynamicInvoke(val);
+
+            return constructor;
         }
 
         /// <summary>
@@ -147,17 +151,17 @@ namespace XMapper.Util
         /// </summary>
         /// <param name="info">The property info of the property.</param>
         /// <returns></returns>
-        internal static Action<TContainer, object> GetPropertySetterDelegate<TContainer>(PropertyInfo info)
+        internal static Action<TContainer, IList<TMember>> GetCollectionPropertySetterDelegate<TContainer, TMember>(PropertyInfo info)
         {
             // http://stackoverflow.com/questions/4085798/creating-an-performant-open-delegate-for-an-property-setter-or-getter
             MethodInfo setMethod = info.GetSetMethod();
             if (setMethod != null && setMethod.GetParameters().Length == 1)
             {
                 var target = Expression.Parameter(typeof(TContainer), null);
-                var value = Expression.Parameter(typeof(object), null);
+                var value = Expression.Parameter(typeof(IList<TMember>), null);
                 var body = Expression.Call(target, setMethod, Expression.Convert(value, info.PropertyType));
 
-                return Expression.Lambda<Action<TContainer, object>>(body, target, value).Compile();
+                return Expression.Lambda<Action<TContainer, IList<TMember>>>(body, target, value).Compile();
             }
             throw new NotSupportedException(string.Format("Property {0} on type {1} does not have a supported setter", info.Name, typeof(TContainer).FullName));
         }
