@@ -35,7 +35,7 @@ namespace XMapper
     {
         #region Fields
         readonly PropertyInfo _propertyInfo;
-        readonly Func<object> _collectionConstructor;
+        readonly Func<IList<TMember>> _collectionConstructor;
         readonly Func<TContainer, object> _collectionGetter;
         readonly Action<TContainer, object> _collectionSetter;
         #endregion
@@ -52,7 +52,7 @@ namespace XMapper
             if (propertyExpression != null)
             {
                 _propertyInfo = ReflectionHelper.GetPropertyInfoFromExpression(propertyExpression);
-                _collectionConstructor = ReflectionHelper.GetConstructorDelegate(_propertyInfo.PropertyType);
+                _collectionConstructor = ReflectionHelper.GetCollectionConstructorDelegate<TMember>(_propertyInfo.PropertyType);
                 _collectionGetter = ReflectionHelper.GetPropertyGetterDelegate<TContainer>(_propertyInfo);
                 _collectionSetter = ReflectionHelper.GetPropertySetterDelegate<TContainer>(_propertyInfo);
             }

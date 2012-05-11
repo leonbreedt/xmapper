@@ -62,12 +62,21 @@ namespace XMapper.Util
         /// <summary>
         /// Gets a delegate for quickly creating new instances for objects of the specified type.
         /// </summary>
-        /// <param name="type">The type to get a constructor delegate for.</param>
+        /// <param name="type">The type to get a constructor delegate for, must implement IList with member type <typeparamref name="TMember" />.
         /// <returns></returns>
-        internal static Func<object> GetConstructorDelegate(Type type)
+        internal static Func<IList<TMember>> GetCollectionConstructorDelegate<TMember>(Type type)
         {
+            if (!ImplementsList(type, typeof(TMember)))
+                throw new ArgumentException(string.Format("Type {0} does not implement IList<{1}>",
+                                                          type.FullName,
+                                                          typeof(TMember).FullName));
+
+
             var builder = GetTypedConstructorDelegateMethodInfo.MakeGenericMethod(type);
-            return (Func<object>)builder.Invoke(null, null);
+            var func = builder.Invoke(null, null);
+
+            Func<IList<TMember>> constructor = () => (IList<TMember>)((Delegate)func).DynamicInvoke();
+            return constructor;
         }
 
         /// <summary>
@@ -192,9 +201,11 @@ namespace XMapper.Util
         }
 
         /// <summary>
-        /// Checks whether the specified type implements IList of the specified type.
+        /// Checks whether the specified type implements IList with the specified element type.
         /// </summary>
-        /// <returns></returns>
+        /// <param name="containerType">The type to check.</param>
+        /// <param name="elementType">The type argument to IList&lt;&gt; to check.</param>
+        /// <returns>Returns <c>true</c> if <paramref name="containerType"/> is an IList with generic argument of <paramref name="elementType"/>.</returns>
         internal static bool ImplementsList(Type containerType, Type elementType)
         {
             foreach (Type iface in containerType.GetInterfaces())
