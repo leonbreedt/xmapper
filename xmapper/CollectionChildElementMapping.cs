@@ -1,5 +1,5 @@
 ﻿//
-// Copyright (C) 2010-2011 Leon Breedt
+// Copyright (C) 2010-2012 Leon Breedt
 // ljb -at- bitserf [dot] org
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -60,27 +60,36 @@ namespace XMapper
 
         public void AddToCollection(object container, object member)
         {
-            IList<TMember> collection;
+            IList collection = null;
+            IList<TMember> typedCollection;
 
             bool isContainerTheCollection = _propertyInfo == null;
-
             if (isContainerTheCollection)
-                collection = (IList<TMember>)container;
+            {
+                typedCollection = container as IList<TMember>;
+                if (typedCollection == null)
+                    collection = container as IList;
+            }
             else
-                collection = _collectionGetter((TContainer)container);
+            {
+                typedCollection = _collectionGetter((TContainer)container);
+            }
 
-            if (collection == null)
+            if (collection == null && typedCollection == null)
             {
                 if (!isContainerTheCollection)
                 {
-                    collection = _collectionConstructor();
-                    _collectionSetter((TContainer)container, collection);
+                    typedCollection = _collectionConstructor();
+                    _collectionSetter((TContainer)container, typedCollection);
                 }
                 else
                     throw new InvalidOperationException(string.Format("Unable to instantiate a new {0} collection", typeof(TMember)));
             }
 
-            collection.Add((TMember)member);
+            if (collection != null)
+                collection.Add(member);
+            else if (typedCollection != null)
+                typedCollection.Add((TMember)member);
         }
 
         public IList GetCollection(object container)

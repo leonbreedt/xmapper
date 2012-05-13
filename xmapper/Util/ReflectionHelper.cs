@@ -1,5 +1,5 @@
 ﻿//
-// Copyright (C) 2010-2011 Leon Breedt
+// Copyright (C) 2010-2012 Leon Breedt
 // ljb -at- bitserf [dot] org
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -27,15 +27,11 @@ namespace XMapper.Util
     /// </summary>
     internal static class ReflectionHelper
     {
-        static readonly MethodInfo GetTypedConstructorDelegateMethodInfo;
-        static readonly MethodInfo GetTypedPropertyGetterDelegateMethodInfo;
-        static readonly MethodInfo GetTypedPropertySetterDelegateMethodInfo;
+        static readonly MethodInfo GetTypedConstructorDelegateWithConvertedReturnTypeMethodInfo;
 
         static ReflectionHelper()
         {
-            GetTypedConstructorDelegateMethodInfo = typeof(ReflectionHelper).GetMethod("GetTypedConstructorDelegate", BindingFlags.Static | BindingFlags.NonPublic);
-            GetTypedPropertyGetterDelegateMethodInfo = typeof(ReflectionHelper).GetMethod("GetTypedPropertyGetterDelegate", BindingFlags.Static | BindingFlags.NonPublic);
-            GetTypedPropertySetterDelegateMethodInfo = typeof(ReflectionHelper).GetMethod("GetTypedPropertySetterDelegate", BindingFlags.Static | BindingFlags.NonPublic);
+            GetTypedConstructorDelegateWithConvertedReturnTypeMethodInfo = typeof(ReflectionHelper).GetMethod("GetTypedConstructorDelegateWithConvertedReturnType", BindingFlags.Static | BindingFlags.NonPublic);
         }
 
         /// <summary>
@@ -43,7 +39,7 @@ namespace XMapper.Util
         /// </summary>
         /// <typeparam name="T">The type to get the constructor for.</typeparam>
         /// <returns>Returns the delegate to use to instantiate new instances of <typeparamref name="T"/>.</returns>
-        internal static Func<T> GetTypedConstructorDelegate<T>()
+        internal static Func<T> GetTypedConstructorDelegate<T>(Type conversionType = null)
         {
             // http://www.smelser.net/blog/post/2010/03/05/When-Activator-is-just-to-slow.aspx
             var type = typeof(T);
@@ -60,9 +56,28 @@ namespace XMapper.Util
         }
 
         /// <summary>
+        /// Gets strongly typed delegate for quickly creating new instances.
+        /// </summary>
+        /// <typeparam name="T">The type to get the constructor for.</typeparam>
+        /// <typeparam name="TReturn">The type to cast the return value to.</typeparam>
+        /// <returns>Returns the delegate to use to instantiate new instances of <typeparamref name="T"/>.</returns>
+        internal static Func<TReturn> GetTypedConstructorDelegateWithConvertedReturnType<T, TReturn>()
+        {
+            var type = typeof(T);
+            ConstructorInfo constructorInfo = type.GetConstructor(Type.EmptyTypes);
+            if (constructorInfo == null)
+            {
+                if (type.IsValueType)
+                    throw new NotSupportedException("Value types are not supported for varying-return-type constructor.");
+                throw new NotSupportedException(string.Format("Type {0} does not have an empty constructor", type.FullName));
+            }
+            return Expression.Lambda<Func<TReturn>>(Expression.Convert(Expression.New(constructorInfo), typeof(TReturn))).Compile();
+        }
+
+        /// <summary>
         /// Gets a delegate for quickly creating new instances for objects of the specified type.
         /// </summary>
-        /// <param name="type">The type to get a constructor delegate for, must implement IList with member type <typeparamref name="TMember" />.
+        /// <param name="type">The type to get a constructor delegate for, must implement IList with member type <typeparamref name="TMember" /></param>
         /// <returns></returns>
         internal static Func<IList<TMember>> GetCollectionConstructorDelegate<TMember>(Type type)
         {
@@ -71,12 +86,9 @@ namespace XMapper.Util
                                                           type.FullName,
                                                           typeof(TMember).FullName));
 
-
-            var builder = GetTypedConstructorDelegateMethodInfo.MakeGenericMethod(type);
-            var func = builder.Invoke(null, null);
-
-            Func<IList<TMember>> constructor = () => (IList<TMember>)((Delegate)func).DynamicInvoke();
-            return constructor;
+            // Returns func that is equivalent to ((IList<TMember>)new type())
+            var builder = GetTypedConstructorDelegateWithConvertedReturnTypeMethodInfo.MakeGenericMethod(type, typeof(IList<TMember>));
+            return (Func<IList<TMember>>)builder.Invoke(null, null);
         }
 
         /// <summary>
@@ -85,7 +97,9 @@ namespace XMapper.Util
         /// <typeparam name="TContainer">The type containing the property.</typeparam>
         /// <typeparam name="TProperty">The type of the property.</typeparam>
         /// <param name="expr">The property reference expression.</param>
-        /// <returns>Returns the <see cref="PropertyInfo"/>.</returns>
+        /// <returns>
+        /// Returns the <see cref="PropertyInfo"/>.
+        /// </returns>
         internal static PropertyInfo GetPropertyInfoFromExpression<TContainer, TProperty>(Expression<Func<TContainer, TProperty>> expr)
         {
             var memberExpr = expr.Body as MemberExpression;

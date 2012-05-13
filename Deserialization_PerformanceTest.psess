@@ -49,7 +49,7 @@
   </PostinstrumentEvent>
   <Binaries>
     <TestBinary>
-      <Path>D:\Dev\Personal\xmapper\xmapper.test\obj\Debug\xmapper.test.dll</Path>
+      <Path>D:\Projects\Prototyping\xmapper\xmapper.test\obj\Debug\xmapper.test.dll</Path>
       <ArgumentTimestamp>01/01/0001 00:00:00</ArgumentTimestamp>
       <Instrument>false</Instrument>
       <Sample>true</Sample>
@@ -59,7 +59,7 @@
       <LaunchProject>true</LaunchProject>
       <OverrideProjectSettings>false</OverrideProjectSettings>
       <LaunchMethod>Test</LaunchMethod>
-      <StartupDirectory>D:\Dev\Personal\xmapper\xmapper.test\bin\Debug\</StartupDirectory>
+      <StartupDirectory>D:\Projects\Prototyping\xmapper\xmapper.test\bin\Debug\</StartupDirectory>
       <Arguments />
       <NetAppHost>IIS</NetAppHost>
       <NetBrowser>InternetExplorer</NetBrowser>
@@ -72,13 +72,13 @@
         <InstrEventExclude>false</InstrEventExclude>
       </PostinstrumentEvent>
       <ProjRef>{ADDB3B14-0B50-4257-9789-B6104B7FA9D1}|xmapper.test\xmapper.test.csproj</ProjRef>
-      <ProjPath>D:\Dev\Personal\xmapper\xmapper.test\xmapper.test.csproj</ProjPath>
+      <ProjPath>D:\Projects\Prototyping\xmapper\xmapper.test\xmapper.test.csproj</ProjPath>
       <ProjName>Deserialization_PerformanceTest</ProjName>
       <TestId>{ced387de-4e74-c111-c2a4-9c9fdde083f2}</TestId>
       <TestName>Deserialization_PerformanceTest</TestName>
     </TestBinary>
     <ProjBinary>
-      <Path>D:\Dev\Personal\xmapper\xmapper\obj\Debug\xmapper.dll</Path>
+      <Path>D:\Projects\Prototyping\xmapper\xmapper\obj\Debug\xmapper.dll</Path>
       <ArgumentTimestamp>01/01/0001 00:00:00</ArgumentTimestamp>
       <Instrument>true</Instrument>
       <Sample>true</Sample>
@@ -88,7 +88,7 @@
       <LaunchProject>true</LaunchProject>
       <OverrideProjectSettings>false</OverrideProjectSettings>
       <LaunchMethod>Executable</LaunchMethod>
-      <StartupDirectory>D:\Dev\Personal\xmapper\xmapper\bin\Debug\</StartupDirectory>
+      <StartupDirectory>D:\Projects\Prototyping\xmapper\xmapper\bin\Debug\</StartupDirectory>
       <Arguments />
       <NetAppHost>IIS</NetAppHost>
       <NetBrowser>InternetExplorer</NetBrowser>
@@ -101,10 +101,15 @@
         <InstrEventExclude>false</InstrEventExclude>
       </PostinstrumentEvent>
       <ProjRef>{8DD6CA4B-D497-47BA-BB6F-24F62C646A6F}|xmapper\xmapper.csproj</ProjRef>
-      <ProjPath>D:\Dev\Personal\xmapper\xmapper\xmapper.csproj</ProjPath>
+      <ProjPath>D:\Projects\Prototyping\xmapper\xmapper\xmapper.csproj</ProjPath>
       <ProjName>xmapper</ProjName>
     </ProjBinary>
   </Binaries>
+  <Reports>
+    <Report>
+      <Path>D:\Projects\Prototyping\xmapper\Deserialization_PerformanceTest120514.vsp</Path>
+    </Report>
+  </Reports>
   <Launches>
     <TestBinary>
       <Path>:TB:{ced387de-4e74-c111-c2a4-9c9fdde083f2}:Deserialization_PerformanceTest:{ADDB3B14-0B50-4257-9789-B6104B7FA9D1}|xmapper.test\xmapper.test.csproj</Path>

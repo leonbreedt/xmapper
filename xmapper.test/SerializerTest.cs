@@ -1,5 +1,5 @@
 ﻿//
-// Copyright (C) 2010-2011 Leon Breedt
+// Copyright (C) 2010-2012 Leon Breedt
 // ljb -at- bitserf [dot] org
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -72,9 +72,9 @@ namespace XMapper.Test
                                           <ContactMethods>
                                               <ContactMethod Type='Email' Value='james@jefferson.com' />
                                               <AddressContactMethod Type='Address' Value='Auckland City' StreetName='232 Queen Street' />
-                                              <ContactMethod Type='HomePhone' Value='555-1234' />
+                                              <ContactMethod Type='HomePhone' OptionalType='HomePhone' Value='555-1234' />
                                           </ContactMethods>
-                                        </Person>
+                                        </Person>a
                                         <Person Id='124' FirstName='Paul' LastName='Jefferson' IsEnabled='false'>
                                           <Address StreetName='500 Dominion Road' City='Auckland' />
                                         </Person>
@@ -97,12 +97,14 @@ namespace XMapper.Test
             person1.Address.Comments.ShouldBe("Some comments");
             person1.ContactMethods.Count.ShouldBe(3);
             person1.ContactMethods[0].Type.ShouldBe(ContactMethodType.Email);
+            person1.ContactMethods[0].OptionalType.ShouldBe(null);
             person1.ContactMethods[0].Value.ShouldBe("james@jefferson.com");
             person1.ContactMethods[1].Type.ShouldBe(ContactMethodType.Address);
             person1.ContactMethods[1].Value.ShouldBe("Auckland City");
             person1.ContactMethods[1].ShouldBeTypeOf(typeof(AddressContactMethod));
             person1.ContactMethods[1].As<AddressContactMethod>().StreetName.ShouldBe("232 Queen Street");
             person1.ContactMethods[2].Type.ShouldBe(ContactMethodType.HomePhone);
+            person1.ContactMethods[2].OptionalType.ShouldBe(ContactMethodType.HomePhone);
             person1.ContactMethods[2].Value.ShouldBe("555-1234");
 
             person2.Id.ShouldBe(124);
@@ -151,6 +153,7 @@ namespace XMapper.Test
                                                          new AddressContactMethod
                                                          {
                                                              Type = ContactMethodType.Address,
+                                                             OptionalType = ContactMethodType.Email,
                                                              Value = "Auckland City",
                                                              StreetName = "232 Queen Street"
                                                          },
@@ -177,7 +180,7 @@ namespace XMapper.Test
                                                 <Address StreetName='231 Queen Street' City='Auckland'>Some comments</Address>
                                                 <ContactMethods>
                                                     <ContactMethod Type='Email' Value='james@jefferson.com' />
-                                                    <AddressContactMethod Type='Address' Value='Auckland City' StreetName='232 Queen Street' />
+                                                    <AddressContactMethod Type='Address' OptionalType='Email' Value='Auckland City' StreetName='232 Queen Street' />
                                                     <ContactMethod Type='HomePhone' Value='555-1234' />
                                                 </ContactMethods>
                                               </Person>
@@ -214,10 +217,12 @@ namespace XMapper.Test
                                .Element(Ns + "ContactMethods", x => x.ContactMethods)
                                    .CollectionElement<ContactMethod>(Ns + "ContactMethod")
                                        .Attribute("Type", x => x.Type)
+                                       .Attribute("OptionalType", x => x.OptionalType)
                                        .Attribute("Value", x => x.Value)
                                    .EndElement()
                                    .CollectionElement<AddressContactMethod>(Ns + "AddressContactMethod")
                                        .Attribute("Type", x => x.Type)
+                                       .Attribute("OptionalType", x => x.OptionalType)
                                        .Attribute("Value", x => x.Value)
                                        .Attribute("StreetName", x => x.StreetName)
                                    .EndElement()

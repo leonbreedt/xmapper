@@ -1,5 +1,5 @@
 ﻿//
-// Copyright (C) 2010-2011 Leon Breedt
+// Copyright (C) 2010-2012 Leon Breedt
 // ljb -at- bitserf [dot] org
 //
 // Licensed under the Apache License, Version 2.0 (the "License");

@@ -1,5 +1,5 @@
 ﻿//
-// Copyright (C) 2010-2011 Leon Breedt
+// Copyright (C) 2010-2012 Leon Breedt
 // ljb -at- bitserf [dot] org
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -40,13 +40,13 @@ namespace XMapper.Test
             Debug.WriteLine("Temp file " + _fileName);
         }
 
-        [TestCleanup, Ignore]
+        [TestCleanup]
         public void Cleanup()
         {
             File.Delete(_fileName);
         }
 
-        [TestCleanup, Ignore]
+        [TestMethod]
         public void Deserialization_PerformanceTest()
         {
             const int numberOfRecords = 50000;
@@ -60,7 +60,7 @@ namespace XMapper.Test
             }
         }
 
-        [TestCleanup, Ignore]
+        [TestMethod]
         public void Deserialization_XDocument_PerformanceTest()
         {
             const int numberOfRecords = 50000;
@@ -72,7 +72,7 @@ namespace XMapper.Test
             }
         }
 
-        [TestCleanup, Ignore]
+        [TestMethod]
         public void Serialization_XMapper_PerformanceTest()
         {
             const int numberOfRecords = 50000;

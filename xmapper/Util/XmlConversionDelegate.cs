@@ -1,5 +1,5 @@
 ﻿//
-// Copyright (C) 2010-2011 Leon Breedt
+// Copyright (C) 2010-2012 Leon Breedt
 // ljb -at- bitserf [dot] org
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -30,8 +30,11 @@ namespace XMapper.Util
     {
         #region Fields
         static readonly MethodInfo EnumReaderBuilderMethod;
+        static readonly MethodInfo NullableEnumReaderBuilderMethod;
         static readonly MethodInfo EnumWriterBuilderMethod;
+        static readonly MethodInfo NullableEnumWriterBuilderMethod;
         static readonly MethodInfo ParseEnumMethod;
+        static readonly MethodInfo ParseNullableEnumMethod;
         static readonly Dictionary<TypeCode, object> WritersByTypeCode;
         static readonly Dictionary<TypeCode, object> ReadersByTypeCode;
         static readonly Dictionary<Type, object> NullableWritersByType;
@@ -43,8 +46,11 @@ namespace XMapper.Util
         static XmlConversionDelegate()
         {
             EnumReaderBuilderMethod = typeof(XmlConversionDelegate).GetMethod("EnumReaderBuilder", BindingFlags.Static | BindingFlags.NonPublic);
+            NullableEnumReaderBuilderMethod = typeof(XmlConversionDelegate).GetMethod("NullableEnumReaderBuilder", BindingFlags.Static | BindingFlags.NonPublic);
             EnumWriterBuilderMethod = typeof(XmlConversionDelegate).GetMethod("EnumWriterBuilder", BindingFlags.Static | BindingFlags.NonPublic);
+            NullableEnumWriterBuilderMethod = typeof(XmlConversionDelegate).GetMethod("NullableEnumWriterBuilder", BindingFlags.Static | BindingFlags.NonPublic);
             ParseEnumMethod = typeof(XmlConversionDelegate).GetMethod("ParseEnum", BindingFlags.Static | BindingFlags.NonPublic);
+            ParseNullableEnumMethod = typeof(XmlConversionDelegate).GetMethod("ParseNullableEnum", BindingFlags.Static | BindingFlags.NonPublic);
 
             Func<string, string> stringConverter = s => s;
 
@@ -168,7 +174,14 @@ namespace XMapper.Util
             object func;
             if (!_readersByEnumType.TryGetValue(type, out func))
             {
-                var builder = EnumReaderBuilderMethod.MakeGenericMethod(type);
+                var actualType = Nullable.GetUnderlyingType(type);
+
+                MethodInfo builder;
+                if (actualType != null)
+                    builder = NullableEnumReaderBuilderMethod.MakeGenericMethod(actualType);
+                else
+                    builder = EnumReaderBuilderMethod.MakeGenericMethod(type);
+
                 func = builder.Invoke(null, null);
             }
             return func;
@@ -182,7 +195,14 @@ namespace XMapper.Util
             object func;
             if (!_writersByEnumType.TryGetValue(type, out func))
             {
-                var builder = EnumWriterBuilderMethod.MakeGenericMethod(type);
+                var actualType = Nullable.GetUnderlyingType(type);
+
+                MethodInfo builder;
+                if (actualType != null)
+                    builder = NullableEnumWriterBuilderMethod.MakeGenericMethod(actualType);
+                else
+                    builder = EnumWriterBuilderMethod.MakeGenericMethod(type);
+
                 func = builder.Invoke(null, null);
             }
             return func;
@@ -196,15 +216,37 @@ namespace XMapper.Util
             return (Func<string, TEnum>)Delegate.CreateDelegate(typeof(Func<string, TEnum>), parserMethodInfo);
         }
 
+        static Func<string, TEnum?> NullableEnumReaderBuilder<TEnum>()
+            where TEnum : struct
+        {
+            var parserMethodInfo = ParseNullableEnumMethod.MakeGenericMethod(typeof(TEnum));
+            return (Func<string, TEnum?>)Delegate.CreateDelegate(typeof(Func<string, TEnum?>), parserMethodInfo);
+        }
+
         static Func<TEnum, string> EnumWriterBuilder<TEnum>()
         {
             Func<TEnum, string> func = e => e.ToString();
             return func;
         }
 
+        static Func<TEnum?, string> NullableEnumWriterBuilder<TEnum>()
+            where TEnum : struct
+        {
+            Func<TEnum?, string> func = e => e.HasValue ? e.Value.ToString() : null;
+            return func;
+        }
+
         static TEnum ParseEnum<TEnum>(string value)
         {
             return (TEnum)Enum.Parse(typeof(TEnum), value, true);
+        }
+
+        static TEnum? ParseNullableEnum<TEnum>(string value)
+            where TEnum : struct
+        {
+            if (string.IsNullOrEmpty(value))
+                return null;
+            return (TEnum?)Enum.Parse(typeof(TEnum), value, true);
         }
 // ReSharper restore UnusedMember.Local
 
