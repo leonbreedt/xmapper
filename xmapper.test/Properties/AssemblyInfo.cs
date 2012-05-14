@@ -5,9 +5,9 @@
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("xmapper")]
-[assembly: AssemblyCopyright("Copyright © Leon Breedt 2011")]
+[assembly: AssemblyCopyright("Copyright © Leon Breedt 2010-2012")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
-[assembly: AssemblyVersion("0.2.5.0")]
-[assembly: AssemblyFileVersion("0.2.5.0")]
+[assembly: AssemblyVersion("0.2.6.0")]
+[assembly: AssemblyFileVersion("0.2.6.0")]

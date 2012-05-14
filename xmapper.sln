@@ -29,7 +29,6 @@ Global
 		{ADDB3B14-0B50-4257-9789-B6104B7FA9D1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{ADDB3B14-0B50-4257-9789-B6104B7FA9D1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ADDB3B14-0B50-4257-9789-B6104B7FA9D1}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{ADDB3B14-0B50-4257-9789-B6104B7FA9D1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

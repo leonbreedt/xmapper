@@ -4,3 +4,4 @@ TestResults/*
 _ReSharper.xmapper/*
 */bin/*
 */obj/*
+*.snk
