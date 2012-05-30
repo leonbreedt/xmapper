@@ -35,8 +35,8 @@ namespace XMapper.Util
         static readonly MethodInfo NullableEnumWriterBuilderMethod;
         static readonly MethodInfo ParseEnumMethod;
         static readonly MethodInfo ParseNullableEnumMethod;
-        static readonly Dictionary<TypeCode, object> WritersByTypeCode;
-        static readonly Dictionary<TypeCode, object> ReadersByTypeCode;
+        static readonly Dictionary<int, object> WritersByTypeCode;
+        static readonly Dictionary<int, object> ReadersByTypeCode;
         static readonly Dictionary<Type, object> NullableWritersByType;
         static readonly Dictionary<Type, object> NullableReadersByType;
         static Dictionary<Type, object> _readersByEnumType;
@@ -54,25 +54,25 @@ namespace XMapper.Util
 
             Func<string, string> stringConverter = s => s;
 
-            WritersByTypeCode = new Dictionary<TypeCode, object>(EnumComparer<TypeCode>.Instance);
+            WritersByTypeCode = new Dictionary<int, object>();
 
-            WritersByTypeCode[TypeCode.Boolean] = (Func<bool, string>)XmlConvert.ToString;
-            WritersByTypeCode[TypeCode.Byte] = (Func<byte, string>)XmlConvert.ToString;
-            WritersByTypeCode[TypeCode.Char] = (Func<char, string>)XmlConvert.ToString;
+            WritersByTypeCode[(int)TypeCode.Boolean] = (Func<bool, string>)XmlConvert.ToString;
+            WritersByTypeCode[(int)TypeCode.Byte] = (Func<byte, string>)XmlConvert.ToString;
+            WritersByTypeCode[(int)TypeCode.Char] = (Func<char, string>)XmlConvert.ToString;
 #pragma warning disable 0618
-            WritersByTypeCode[TypeCode.DateTime] = (Func<DateTime, string>)(d => XmlConvert.ToString(d, XmlDateTimeSerializationMode.Unspecified));
+            WritersByTypeCode[(int)TypeCode.DateTime] = (Func<DateTime, string>)(d => XmlConvert.ToString(d, XmlDateTimeSerializationMode.Unspecified));
 #pragma warning restore 0618
-            WritersByTypeCode[TypeCode.Decimal] = (Func<decimal, string>)XmlConvert.ToString;
-            WritersByTypeCode[TypeCode.Double] = (Func<double, string>)XmlConvert.ToString;
-            WritersByTypeCode[TypeCode.Int16] = (Func<short, string>)XmlConvert.ToString;
-            WritersByTypeCode[TypeCode.Int32] = (Func<int, string>)XmlConvert.ToString;
-            WritersByTypeCode[TypeCode.Int64] = (Func<long, string>)XmlConvert.ToString;
-            WritersByTypeCode[TypeCode.SByte] = (Func<sbyte, string>)XmlConvert.ToString;
-            WritersByTypeCode[TypeCode.Single] = (Func<float, string>)XmlConvert.ToString;
-            WritersByTypeCode[TypeCode.UInt16] = (Func<ushort, string>)XmlConvert.ToString;
-            WritersByTypeCode[TypeCode.UInt32] = (Func<uint, string>)XmlConvert.ToString;
-            WritersByTypeCode[TypeCode.UInt64] = (Func<ulong, string>)XmlConvert.ToString;
-            WritersByTypeCode[TypeCode.String] = stringConverter;
+            WritersByTypeCode[(int)TypeCode.Decimal] = (Func<decimal, string>)XmlConvert.ToString;
+            WritersByTypeCode[(int)TypeCode.Double] = (Func<double, string>)XmlConvert.ToString;
+            WritersByTypeCode[(int)TypeCode.Int16] = (Func<short, string>)XmlConvert.ToString;
+            WritersByTypeCode[(int)TypeCode.Int32] = (Func<int, string>)XmlConvert.ToString;
+            WritersByTypeCode[(int)TypeCode.Int64] = (Func<long, string>)XmlConvert.ToString;
+            WritersByTypeCode[(int)TypeCode.SByte] = (Func<sbyte, string>)XmlConvert.ToString;
+            WritersByTypeCode[(int)TypeCode.Single] = (Func<float, string>)XmlConvert.ToString;
+            WritersByTypeCode[(int)TypeCode.UInt16] = (Func<ushort, string>)XmlConvert.ToString;
+            WritersByTypeCode[(int)TypeCode.UInt32] = (Func<uint, string>)XmlConvert.ToString;
+            WritersByTypeCode[(int)TypeCode.UInt64] = (Func<ulong, string>)XmlConvert.ToString;
+            WritersByTypeCode[(int)TypeCode.String] = stringConverter;
 
             NullableWritersByType = new Dictionary<Type, object>();
 
@@ -91,25 +91,25 @@ namespace XMapper.Util
             NullableWritersByType[typeof(uint?)] = CreateNullableWriter<uint>(XmlConvert.ToString);
             NullableWritersByType[typeof(ulong?)] = CreateNullableWriter<ulong>(XmlConvert.ToString);
 
-            ReadersByTypeCode = new Dictionary<TypeCode, object>(EnumComparer<TypeCode>.Instance);
+            ReadersByTypeCode = new Dictionary<int, object>();
 
-            ReadersByTypeCode[TypeCode.Boolean] = (Func<string, bool>)StringToBoolean;
-            ReadersByTypeCode[TypeCode.Byte] = (Func<string, byte>)XmlConvert.ToByte;
-            ReadersByTypeCode[TypeCode.Char] = (Func<string, char>)XmlConvert.ToChar;
+            ReadersByTypeCode[(int)TypeCode.Boolean] = (Func<string, bool>)StringToBoolean;
+            ReadersByTypeCode[(int)TypeCode.Byte] = (Func<string, byte>)XmlConvert.ToByte;
+            ReadersByTypeCode[(int)TypeCode.Char] = (Func<string, char>)XmlConvert.ToChar;
 #pragma warning disable 0618
-            ReadersByTypeCode[TypeCode.DateTime] = (Func<string, DateTime>)(s => XmlConvert.ToDateTime(s, XmlDateTimeSerializationMode.Unspecified));
+            ReadersByTypeCode[(int)TypeCode.DateTime] = (Func<string, DateTime>)(s => XmlConvert.ToDateTime(s, XmlDateTimeSerializationMode.Unspecified));
 #pragma warning restore 0618
-            ReadersByTypeCode[TypeCode.Decimal] = (Func<string, decimal>)XmlConvert.ToDecimal;
-            ReadersByTypeCode[TypeCode.Double] = (Func<string, double>)XmlConvert.ToDouble;
-            ReadersByTypeCode[TypeCode.Int16] = (Func<string, short>)XmlConvert.ToInt16;
-            ReadersByTypeCode[TypeCode.Int32] = (Func<string, int>)XmlConvert.ToInt32;
-            ReadersByTypeCode[TypeCode.Int64] = (Func<string, long>)XmlConvert.ToInt64;
-            ReadersByTypeCode[TypeCode.SByte] = (Func<string, sbyte>)XmlConvert.ToSByte;
-            ReadersByTypeCode[TypeCode.Single] = (Func<string, float>)XmlConvert.ToSingle;
-            ReadersByTypeCode[TypeCode.UInt16] = (Func<string, ushort>)XmlConvert.ToUInt16;
-            ReadersByTypeCode[TypeCode.UInt32] = (Func<string, uint>)XmlConvert.ToUInt32;
-            ReadersByTypeCode[TypeCode.UInt64] = (Func<string, ulong>)XmlConvert.ToUInt64;
-            ReadersByTypeCode[TypeCode.String] = stringConverter;
+            ReadersByTypeCode[(int)TypeCode.Decimal] = (Func<string, decimal>)XmlConvert.ToDecimal;
+            ReadersByTypeCode[(int)TypeCode.Double] = (Func<string, double>)XmlConvert.ToDouble;
+            ReadersByTypeCode[(int)TypeCode.Int16] = (Func<string, short>)XmlConvert.ToInt16;
+            ReadersByTypeCode[(int)TypeCode.Int32] = (Func<string, int>)XmlConvert.ToInt32;
+            ReadersByTypeCode[(int)TypeCode.Int64] = (Func<string, long>)XmlConvert.ToInt64;
+            ReadersByTypeCode[(int)TypeCode.SByte] = (Func<string, sbyte>)XmlConvert.ToSByte;
+            ReadersByTypeCode[(int)TypeCode.Single] = (Func<string, float>)XmlConvert.ToSingle;
+            ReadersByTypeCode[(int)TypeCode.UInt16] = (Func<string, ushort>)XmlConvert.ToUInt16;
+            ReadersByTypeCode[(int)TypeCode.UInt32] = (Func<string, uint>)XmlConvert.ToUInt32;
+            ReadersByTypeCode[(int)TypeCode.UInt64] = (Func<string, ulong>)XmlConvert.ToUInt64;
+            ReadersByTypeCode[(int)TypeCode.String] = stringConverter;
 
             NullableReadersByType = new Dictionary<Type, object>();
 
@@ -144,7 +144,7 @@ namespace XMapper.Util
                 if (!NullableWritersByType.TryGetValue(type, out func))
                     return null;
             }
-            else if (!WritersByTypeCode.TryGetValue(Type.GetTypeCode(type), out func))
+            else if (!WritersByTypeCode.TryGetValue((int)Type.GetTypeCode(type), out func))
                 return null;
 
             return func;
@@ -160,7 +160,7 @@ namespace XMapper.Util
                 if (!NullableReadersByType.TryGetValue(type, out func))
                     return null;
             }
-            else if (!ReadersByTypeCode.TryGetValue(Type.GetTypeCode(type), out func))
+            else if (!ReadersByTypeCode.TryGetValue((int)Type.GetTypeCode(type), out func))
                 return null;
 
             return func;

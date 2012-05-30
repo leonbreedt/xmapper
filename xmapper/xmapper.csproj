@@ -43,7 +43,6 @@
   <ItemGroup>
     <Compile Include="TextContentMapping.cs" />
     <Compile Include="ITextContentMapping.cs" />
-    <Compile Include="Util\EnumComparer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Util\ReflectionHelper.cs" />
     <Compile Include="Util\XmlConversionDelegate.cs" />
