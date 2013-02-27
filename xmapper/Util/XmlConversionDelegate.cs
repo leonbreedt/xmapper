@@ -60,7 +60,7 @@ namespace XMapper.Util
             WritersByTypeCode[(int)TypeCode.Byte] = (Func<byte, string>)XmlConvert.ToString;
             WritersByTypeCode[(int)TypeCode.Char] = (Func<char, string>)XmlConvert.ToString;
 #pragma warning disable 0618
-            WritersByTypeCode[(int)TypeCode.DateTime] = (Func<DateTime, string>)(d => XmlConvert.ToString(d, XmlDateTimeSerializationMode.Unspecified));
+            WritersByTypeCode[(int)TypeCode.DateTime] = (Func<DateTime, string>)(d => XmlConvert.ToString(d, XmlDateTimeSerializationMode.RoundtripKind));
 #pragma warning restore 0618
             WritersByTypeCode[(int)TypeCode.Decimal] = (Func<decimal, string>)XmlConvert.ToString;
             WritersByTypeCode[(int)TypeCode.Double] = (Func<double, string>)XmlConvert.ToString;
@@ -79,7 +79,7 @@ namespace XMapper.Util
             NullableWritersByType[typeof(bool?)] = CreateNullableWriter<bool>(XmlConvert.ToString);
             NullableWritersByType[typeof(byte?)] = CreateNullableWriter<byte>(XmlConvert.ToString);
             NullableWritersByType[typeof(char?)] = CreateNullableWriter<char>(XmlConvert.ToString);
-            NullableWritersByType[typeof(DateTime?)] = CreateNullableWriter<DateTime>(d => XmlConvert.ToString(d, XmlDateTimeSerializationMode.Unspecified));
+            NullableWritersByType[typeof(DateTime?)] = CreateNullableWriter<DateTime>(d => XmlConvert.ToString(d, XmlDateTimeSerializationMode.RoundtripKind));
             NullableWritersByType[typeof(decimal?)] = CreateNullableWriter<decimal>(XmlConvert.ToString);
             NullableWritersByType[typeof(double?)] = CreateNullableWriter<double>(XmlConvert.ToString);
             NullableWritersByType[typeof(short?)] = CreateNullableWriter<short>(XmlConvert.ToString);
@@ -97,7 +97,7 @@ namespace XMapper.Util
             ReadersByTypeCode[(int)TypeCode.Byte] = (Func<string, byte>)XmlConvert.ToByte;
             ReadersByTypeCode[(int)TypeCode.Char] = (Func<string, char>)XmlConvert.ToChar;
 #pragma warning disable 0618
-            ReadersByTypeCode[(int)TypeCode.DateTime] = (Func<string, DateTime>)(s => XmlConvert.ToDateTime(s, XmlDateTimeSerializationMode.Unspecified));
+            ReadersByTypeCode[(int)TypeCode.DateTime] = (Func<string, DateTime>)(s => XmlConvert.ToDateTime(s, XmlDateTimeSerializationMode.RoundtripKind));
 #pragma warning restore 0618
             ReadersByTypeCode[(int)TypeCode.Decimal] = (Func<string, decimal>)XmlConvert.ToDecimal;
             ReadersByTypeCode[(int)TypeCode.Double] = (Func<string, double>)XmlConvert.ToDouble;
@@ -116,7 +116,7 @@ namespace XMapper.Util
             NullableReadersByType[typeof(bool?)] = CreateNullableReader(StringToBoolean);
             NullableReadersByType[typeof(byte?)] = CreateNullableReader(XmlConvert.ToByte);
             NullableReadersByType[typeof(char?)] = CreateNullableReader(XmlConvert.ToChar);
-            NullableReadersByType[typeof(DateTime?)] = CreateNullableReader(s => XmlConvert.ToDateTime(s, XmlDateTimeSerializationMode.Unspecified));
+            NullableReadersByType[typeof(DateTime?)] = CreateNullableReader(s => XmlConvert.ToDateTime(s, XmlDateTimeSerializationMode.RoundtripKind));
             NullableReadersByType[typeof(decimal?)] = CreateNullableReader(XmlConvert.ToDecimal);
             NullableReadersByType[typeof(double?)] = CreateNullableReader(XmlConvert.ToDouble);
             NullableReadersByType[typeof(short?)] = CreateNullableReader(XmlConvert.ToInt16);

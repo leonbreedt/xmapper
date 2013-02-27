@@ -66,7 +66,7 @@ namespace XMapper.Test
         public void DeserializeDocument_ShouldSucceed()
         {
             const string document = @"<Document xmlns='http://test.com'>
-                                        <Person Id='123' FirstName='James' LastName='Jefferson' DateOfBirth='2010-02-12T23:59:59' TimeSinceLastLogin='00:20:00'>
+                                        <Person Id='123' FirstName='James' LastName='Jefferson' DateOfBirth='2010-02-12T23:59:59Z' TimeSinceLastLogin='00:20:00'>
                                           <IsEnabled>true</IsEnabled>
                                           <Address StreetName='231 Queen Street' City='Auckland'>Some comments</Address>
                                           <ContactMethods>
@@ -89,6 +89,8 @@ namespace XMapper.Test
             var person2 = actual.Persons[1];
 
             person1.Id.ShouldBe(123);
+            person1.DateOfBirth.HasValue.ShouldBe(true);
+            person1.DateOfBirth.Value.Kind.ShouldBe(DateTimeKind.Utc);
             person1.DateOfBirth.ShouldBe(new DateTime(2010, 02, 12, 23, 59, 59));
             person1.TimeSinceLastLogin.ShouldBe(TimeSpan.FromMinutes(20));
             person1.IsEnabled.ShouldBe(true);
@@ -143,7 +145,7 @@ namespace XMapper.Test
                                                  FirstName = "James",
                                                  LastName = "Jefferson",
                                                  IsEnabled = true,
-                                                 DateOfBirth = new DateTime(2010, 02, 12, 23, 59, 59),
+                                                 DateOfBirth = new DateTime(2010, 02, 12, 23, 59, 59, DateTimeKind.Utc),
                                                  TimeSinceLastLogin = TimeSpan.FromMinutes(20),
                                                  Address = new Address {StreetName = "231 Queen Street", City = "Auckland", Comments = "Some comments"},
                                                  ContactMethods =
@@ -175,7 +177,7 @@ namespace XMapper.Test
             serializer.Serialize(stream, document);
 
             var expected = XDocument.Parse(@"<Document xmlns='http://test.com'>
-                                              <Person Id='123' FirstName='James' LastName='Jefferson' DateOfBirth='2010-02-12T23:59:59' TimeSinceLastLogin='00:20:00'>
+                                              <Person Id='123' FirstName='James' LastName='Jefferson' DateOfBirth='2010-02-12T23:59:59Z' TimeSinceLastLogin='00:20:00'>
                                                 <IsEnabled>true</IsEnabled>
                                                 <Address StreetName='231 Queen Street' City='Auckland'>Some comments</Address>
                                                 <ContactMethods>

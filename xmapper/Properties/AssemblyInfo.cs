@@ -6,12 +6,12 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("xmapper")]
-[assembly: AssemblyCopyright("Copyright © Leon Breedt 2010-2012")]
+[assembly: AssemblyCopyright("Copyright © Leon Breedt 2010-2013")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
-[assembly: AssemblyVersion("0.2.7.0")]
-[assembly: AssemblyFileVersion("0.2.7.0")]
+[assembly: AssemblyVersion("0.2.8.0")]
+[assembly: AssemblyFileVersion("0.2.8.0")]
 
 #if DEBUG
 [assembly: InternalsVisibleTo("xmapper.test")]
