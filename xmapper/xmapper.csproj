@@ -41,6 +41,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AnyAttributeMapping.cs" />
+    <Compile Include="AnyElementMapping.cs" />
+    <Compile Include="AnyMappingBase.cs" />
+    <Compile Include="IAnyAttributeMapping.cs" />
+    <Compile Include="IAnyElementMapping.cs" />
     <Compile Include="TextContentMapping.cs" />
     <Compile Include="ITextContentMapping.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

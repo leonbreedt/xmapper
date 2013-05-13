@@ -22,6 +22,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Xml;
+using System.Xml.Linq;
 using System.Xml.Schema;
 
 namespace XMapper
@@ -141,7 +142,20 @@ namespace XMapper
                             : mapping.TryFindAttributeMapping(reader.NamespaceURI, reader.LocalName);
 
                     if (attributeMapping != null)
+                    {
                         attributeMapping.SetValueFromXmlForm(item, reader.Value);
+                    }
+                    else
+                    {
+                        var anyAttributeMapping = mapping.AnyAttribute;
+                        if (anyAttributeMapping != null)
+                        {
+                            anyAttributeMapping.AddToAttributes(item,
+                                                                new XAttribute(
+                                                                    XNamespace.Get(reader.NamespaceURI) + reader.LocalName,
+                                                                    reader.Value));
+                        }
+                    }
 
                 } while (reader.MoveToNextAttribute());
                 reader.MoveToElement();
@@ -183,17 +197,29 @@ namespace XMapper
                                     ? mapping.TryFindChildTextElementMapping(reader.LocalName)
                                     : mapping.TryFindChildTextElementMapping(reader.NamespaceURI, reader.LocalName);
 
+                            // Note: If we read text content, we also have to avoid doing a Read() again, as we may 
+                            // will positioned on the next thing we have to look at (e.g. whitespace or the next element).
+
                             if (childTextElementMapping != null)
                             {
                                 var text = reader.ReadElementContentAsString();
                                 childTextElementMapping.SetValueFromXmlForm(item, text);
+                                skipped = true;
                             }
                             else
-                                reader.Skip();
-
-                            // If we read text content, we also have to avoid doing a Read() again, as we may 
-                            // will positioned on the next thing we have to look at (e.g. whitespace or the next element).
-                            skipped = true;
+                            {
+                                var anyElementMapping = mapping.AnyChildElement;
+                                if (anyElementMapping != null)
+                                {
+                                    var xElement = XElement.Load(reader.ReadSubtree());
+                                    anyElementMapping.AddToElements(item, xElement);
+                                }
+                                else
+                                {
+                                    reader.Skip();
+                                    skipped = true;
+                                }
+                            }
                         }
                     }
                     else if (mapping.TextContent != null &&
@@ -229,6 +255,23 @@ namespace XMapper
                     var value = attrMapping.GetValueInXmlForm(item);
                     if (value != null)
                         writer.WriteAttributeString(attrMapping.LocalName, attrMapping.NamespaceUri, value);
+                }
+            }
+
+            if (mapping.AnyAttribute != null)
+            {
+                var customAttributes = mapping.AnyAttribute.GetAttributes(item);
+                if (customAttributes != null)
+                {
+                    foreach (XAttribute attribute in customAttributes)
+                    {
+                        if (attribute == null)
+                            continue;
+
+                        writer.WriteAttributeString(attribute.Name.LocalName,
+                            attribute.Name.NamespaceName,
+                                                    attribute.Value);
+                    }
                 }
             }
 

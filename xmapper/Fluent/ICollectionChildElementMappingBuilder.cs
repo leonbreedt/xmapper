@@ -36,11 +36,13 @@ namespace XMapper.Fluent
                                                                                                         Func<string, TProperty> customDeserializer,
                                                                                                         Func<TProperty, string> customSerializer);
 
+        ICollectionChildElementMappingBuilder<TContainer, TElement, TParentBuilder> AnyAttribute(Expression<Func<TElement, IList<XAttribute>>> customAttributesProperty);
+
         ICollectionChildElementMappingBuilder<TContainer, TElement, TParentBuilder> TextContent<TProperty>(Expression<Func<TElement, TProperty>> property);
         ICollectionChildElementMappingBuilder<TContainer, TElement, TParentBuilder> TextElement<TChildElement>(XName name, Expression<Func<TElement, TChildElement>> property);
 
         IChildElementMappingBuilder<TChildElement, ICollectionChildElementMappingBuilder<TContainer, TElement, TParentBuilder>> Element<TChildElement>(XName name, Expression<Func<TElement, TChildElement>> propertyInParent);
-
+        ICollectionChildElementMappingBuilder<TContainer, TElement, TParentBuilder> AnyElement(Expression<Func<TElement, IList<XElement>>> customElementsProperty);
 
         ICollectionChildElementMappingBuilder<TElement, TChildElement, ICollectionChildElementMappingBuilder<TContainer, TElement, TParentBuilder>> CollectionElement<TChildElement>(XName name, Expression<Func<TElement, IList<TChildElement>>> propertyInParent);
         ICollectionChildElementMappingBuilder<TElement, TChildElement, ICollectionChildElementMappingBuilder<TContainer, TElement, TParentBuilder>> CollectionElement<TChildElement>(XName name);

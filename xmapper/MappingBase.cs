@@ -65,7 +65,9 @@ namespace XMapper
         public string NamespaceUri { get { return _namespaceUri; } }
         public string LocalName { get { return _localName; } }
         public abstract IAttributeMapping[] Attributes { get; internal set; }
+        public IAnyAttributeMapping AnyAttribute { get; internal set; }
         public abstract IChildElementMapping[] ChildElements { get; internal set; }
+        public IAnyElementMapping AnyChildElement { get; internal set; }
         public abstract ITextContentMapping TextContent { get; internal set; }
         public abstract ITextContentMapping[] ChildTextElements { get; internal set; }
     }

@@ -70,6 +70,7 @@
     <Compile Include="Model\Person.cs" />
     <Compile Include="SerializerTest.cs" />
     <Compile Include="TestBase.cs" />
+    <Compile Include="XAssert.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\xmapper\xmapper.csproj">

@@ -45,9 +45,19 @@ namespace XMapper
         IAttributeMapping[] Attributes { get; }
 
         /// <summary>
+        /// Gets the custom attribute catch-all mapping, if any.
+        /// </summary>
+        IAnyAttributeMapping AnyAttribute { get; }
+
+        /// <summary>
         /// Gets the mappings for the child elements contained within this mapping, if any.
         /// </summary>
         IChildElementMapping[] ChildElements { get; }
+
+        /// <summary>
+        /// Gets the custom element catch-all mapping, if any.
+        /// </summary>
+        IAnyElementMapping AnyChildElement { get; }
 
         /// <summary>
         /// Gets the text content mapping for this element.

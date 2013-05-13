@@ -28,7 +28,9 @@ namespace XMapper.Fluent
         #region Fields
         readonly XName _name;
         readonly List<IAttributeMapping> _attrs;
+        IAnyAttributeMapping _anyAttr;
         readonly List<Func<IChildElementMapping>> _elements;
+        IAnyElementMapping _anyElement;
         ITextContentMapping _textContent;
         readonly List<ITextContentMapping> _childTextElements;
         #endregion
@@ -44,6 +46,14 @@ namespace XMapper.Fluent
         public IElementMappingBuilder<TElement> Attribute<TProperty>(XName name, Expression<Func<TElement, TProperty>> property)
         {
             _attrs.Add(new AttributeMapping<TElement, TProperty>(name, property));
+            return this;
+        }
+
+        public IElementMappingBuilder<TElement> AnyAttribute(Expression<Func<TElement, IList<XAttribute>>> attributeProperty)
+        {
+            if (_anyAttr != null)
+                throw new ArgumentException("Only one AnyAttribute() is allowed for a particular element.");
+            _anyAttr = new AnyAttributeMapping<TElement>(attributeProperty);
             return this;
         }
 
@@ -74,6 +84,14 @@ namespace XMapper.Fluent
             return builder;
         }
 
+        public IElementMappingBuilder<TElement> AnyElement(Expression<Func<TElement, IList<XElement>>> customElementsProperty)
+        {
+            if (_anyElement != null)
+                throw new ArgumentException("Only one AnyElement() is allowed for a particular element.");
+            _anyElement = new AnyElementMapping<TElement>(customElementsProperty);
+            return this;
+        }
+
         public ICollectionChildElementMappingBuilder<TElement, TChildElement, IElementMappingBuilder<TElement>> CollectionElement<TChildElement>(XName name, Expression<Func<TElement, IList<TChildElement>>> propertyInParent)
         {
             var builder = new CollectionChildElementMappingBuilder<TElement, TChildElement, IElementMappingBuilder<TElement>>(this, name, propertyInParent);
@@ -86,9 +104,11 @@ namespace XMapper.Fluent
             return new ElementMapping<TElement>(_name)
                    {
                        Attributes = _attrs.ToArray(),
+                       AnyAttribute = _anyAttr,
                        ChildElements = _elements.Select(f => f()).ToArray(),
+                       AnyChildElement = _anyElement,
                        TextContent = _textContent,
-                       ChildTextElements = _childTextElements.ToArray(),
+                       ChildTextElements = _childTextElements.ToArray()
                    };
         }
     }

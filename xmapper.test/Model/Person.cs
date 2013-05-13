@@ -17,6 +17,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Xml.Linq;
 
 namespace XMapper.Test.Model
 {
@@ -30,5 +31,6 @@ namespace XMapper.Test.Model
         public DateTime? DateOfBirth { get; set; }
         public TimeSpan? TimeSinceLastLogin { get; set; }
         public List<ContactMethod> ContactMethods { get; set; }
+        public List<XAttribute> CustomAttributes { get; set; }
     }
 }

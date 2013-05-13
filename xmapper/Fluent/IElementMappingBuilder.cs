@@ -29,6 +29,7 @@ namespace XMapper.Fluent
     {
         IElementMappingBuilder<TElement> Attribute<TProperty>(XName name,
                                                              Expression<Func<TElement, TProperty>> property);
+        IElementMappingBuilder<TElement> AnyAttribute(Expression<Func<TElement, IList<XAttribute>>> customAttributesProperty);
 
         IElementMappingBuilder<TElement> Attribute<TProperty>(XName name,
                                                              Expression<Func<TElement, TProperty>> property,
@@ -39,6 +40,7 @@ namespace XMapper.Fluent
         IElementMappingBuilder<TElement> TextElement<TChildElement>(XName name, Expression<Func<TElement, TChildElement>> property);
 
         IChildElementMappingBuilder<TChildElement, IElementMappingBuilder<TElement>> Element<TChildElement>(XName name, Expression<Func<TElement, TChildElement>> propertyInParent);
+        IElementMappingBuilder<TElement> AnyElement(Expression<Func<TElement, IList<XElement>>> customElementsProperty);
 
         ICollectionChildElementMappingBuilder<TElement, TChildElement, IElementMappingBuilder<TElement>> CollectionElement<TChildElement>(XName name, Expression<Func<TElement, IList<TChildElement>>> propertyInParent);
         

@@ -16,11 +16,13 @@
 //
 
 using System.Collections.Generic;
+using System.Xml.Linq;
 
 namespace XMapper.Test.Model
 {
     internal class Document
     {
         public List<Person> Persons { get; set; }
+        public List<XElement> CustomElements { get; set; }
     }
 }

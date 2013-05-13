@@ -30,7 +30,9 @@ namespace XMapper.Fluent
         readonly TParentBuilder _parentBuilderScope;
         readonly Expression<Func<TContainer, TElement>> _propertyInParent;
         readonly List<IAttributeMapping> _attrs;
+        IAnyAttributeMapping _anyAttr;
         readonly List<Func<IChildElementMapping>> _elements;
+        IAnyElementMapping _anyElement;
         ITextContentMapping _textContent;
         readonly List<ITextContentMapping> _childTextElements;
         #endregion
@@ -50,7 +52,9 @@ namespace XMapper.Fluent
             return new ChildElementMapping<TContainer, TElement>(_name, _propertyInParent)
                    {
                        Attributes = _attrs.ToArray(),
+                       AnyAttribute = _anyAttr,
                        ChildElements = _elements.Select(f => f()).ToArray(),
+                       AnyChildElement = _anyElement,
                        TextContent = _textContent,
                        ChildTextElements = _childTextElements.ToArray(),
                    };
@@ -65,6 +69,14 @@ namespace XMapper.Fluent
         public IChildElementMappingBuilder<TElement, TParentBuilder> Attribute<TProperty>(XName name, Expression<Func<TElement, TProperty>> property, Func<string, TProperty> customDeserializer, Func<TProperty, string> customSerializer)
         {
             _attrs.Add(new AttributeMapping<TElement, TProperty>(name, property, customDeserializer, customSerializer));
+            return this;
+        }
+
+        public IChildElementMappingBuilder<TElement, TParentBuilder> AnyAttribute(Expression<Func<TElement, IList<XAttribute>>> attributeProperty)
+        {
+            if (_anyAttr != null)
+                throw new ArgumentException("Only one AnyAttribute() is allowed for a particular element.");
+            _anyAttr = new AnyAttributeMapping<TElement>(attributeProperty);
             return this;
         }
 
@@ -87,6 +99,14 @@ namespace XMapper.Fluent
             var builder = new ChildElementMappingBuilder<TElement, TChildElement, IChildElementMappingBuilder<TElement, TParentBuilder>>(this, name, propertyInParent);
             _elements.Add(builder.Build);
             return builder;
+        }
+
+        public IChildElementMappingBuilder<TElement, TParentBuilder> AnyElement(Expression<Func<TElement, IList<XElement>>> customElementsProperty)
+        {
+            if (_anyElement != null)
+                throw new ArgumentException("Only one AnyElement() is allowed for a particular element.");
+            _anyElement = new AnyElementMapping<TElement>(customElementsProperty);
+            return this;
         }
 
         public ICollectionChildElementMappingBuilder<TElement, TChildElement, IChildElementMappingBuilder<TElement, TParentBuilder>> CollectionElement<TChildElement>(XName name, Expression<Func<TElement, IList<TChildElement>>> propertyInParent)

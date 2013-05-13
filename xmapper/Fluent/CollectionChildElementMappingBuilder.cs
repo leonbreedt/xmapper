@@ -30,7 +30,9 @@ namespace XMapper.Fluent
         readonly TParentBuilder _parentBuilderScope;
         readonly Expression<Func<TContainer, IList<TMember>>> _propertyInParent;
         readonly List<IAttributeMapping> _attrs;
+        IAnyAttributeMapping _anyAttr;
         readonly List<Func<IChildElementMapping>> _elements;
+        IAnyElementMapping _anyElement;
         ITextContentMapping _textContent;
         readonly List<ITextContentMapping> _childTextElements;
         #endregion
@@ -62,6 +64,14 @@ namespace XMapper.Fluent
             return this;
         }
 
+        public ICollectionChildElementMappingBuilder<TContainer, TMember, TParentBuilder> AnyAttribute(Expression<Func<TMember, IList<XAttribute>>> attributeProperty)
+        {
+            if (_anyAttr != null)
+                throw new ArgumentException("Only one AnyAttribute() is allowed for a particular element.");
+            _anyAttr = new AnyAttributeMapping<TMember>(attributeProperty);
+            return this;
+        }
+
         public ICollectionChildElementMappingBuilder<TContainer, TMember, TParentBuilder> TextContent<TProperty>(Expression<Func<TMember, TProperty>> property)
         {
             if (_textContent != null)
@@ -81,6 +91,14 @@ namespace XMapper.Fluent
             var builder = new ChildElementMappingBuilder<TMember, TChildElement, ICollectionChildElementMappingBuilder<TContainer, TMember, TParentBuilder>>(this, name, propertyInParent);
             _elements.Add(builder.Build);
             return builder;
+        }
+
+        public ICollectionChildElementMappingBuilder<TContainer, TMember, TParentBuilder> AnyElement(Expression<Func<TMember, IList<XElement>>> customElementsProperty)
+        {
+            if (_anyElement != null)
+                throw new ArgumentException("Only one AnyElement() is allowed for a particular element.");
+            _anyElement = new AnyElementMapping<TMember>(customElementsProperty);
+            return this;
         }
 
         public ICollectionChildElementMappingBuilder<TMember, TChildElement, ICollectionChildElementMappingBuilder<TContainer, TMember, TParentBuilder>> CollectionElement<TChildElement>(XName name, Expression<Func<TMember, IList<TChildElement>>> propertyInParent)
@@ -107,7 +125,9 @@ namespace XMapper.Fluent
             return new CollectionChildElementMapping<TContainer, TMember>(_name, _propertyInParent)
                        {
                            Attributes = _attrs.ToArray(),
+                           AnyAttribute = _anyAttr,
                            ChildElements = _elements.Select(f => f()).ToArray(),
+                           AnyChildElement = _anyElement,
                            TextContent = _textContent,
                            ChildTextElements = _childTextElements.ToArray(),
                        };
