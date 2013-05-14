@@ -49,9 +49,12 @@ namespace XMapper
         public void SerializeAttribute(XmlWriter writer, object attribute)
         {
             var xAttribute = (XAttribute)attribute;
-            writer.WriteAttributeString(xAttribute.Name.LocalName,
-                                        xAttribute.Name.NamespaceName,
-                                        xAttribute.Value);
+            if (!xAttribute.IsNamespaceDeclaration)
+            {
+                writer.WriteAttributeString(xAttribute.Name.LocalName,
+                                            xAttribute.Name.NamespaceName,
+                                            xAttribute.Value);
+            }
         }
 
         public IList GetAttributes(object target)

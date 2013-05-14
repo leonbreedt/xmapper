@@ -136,6 +136,9 @@ namespace XMapper
             {
                 do
                 {
+                    if (IsNamespaceDeclaration(reader.NamespaceURI, reader.LocalName))
+                        continue;
+
                     var attributeMapping =
                         string.IsNullOrEmpty(reader.NamespaceURI)
                             ? mapping.TryFindAttributeMapping(reader.LocalName)
@@ -357,6 +360,16 @@ namespace XMapper
             }
 
             writer.WriteEndElement();
+        }
+
+        internal static bool IsNamespaceDeclaration(string namespaceName, string localName)
+        {
+            bool isNamespaceDeclaration;
+            if (namespaceName.Length == 0)
+                isNamespaceDeclaration = localName == "xmlns";
+            else
+                isNamespaceDeclaration = namespaceName == "http://www.w3.org/2000/xmlns/";
+            return isNamespaceDeclaration;
         }
 
         IElementMapping GetMapping<T>()
