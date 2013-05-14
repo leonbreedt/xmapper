@@ -16,7 +16,7 @@
 //
 
 using System.Collections;
-using System.Xml.Linq;
+using System.Xml;
 
 namespace XMapper
 {
@@ -28,16 +28,29 @@ namespace XMapper
     public interface IAnyAttributeMapping
     {
         /// <summary>
+        /// Deserializes an attribute from an XmlReader.
+        /// </summary>
+        /// <param name="reader">The reader to use, must be positioned on an attribute.</param>
+        object DeserializeAttribute(XmlReader reader);
+
+        /// <summary>
+        /// Serializes an attribute to an XmlWriter.
+        /// </summary>
+        /// <param name="writer">The writer, must be positioned on an attribute.</param>
+        /// <param name="attribute">The attribute to serialize.</param>
+        void SerializeAttribute(XmlWriter writer, object attribute);
+
+        /// <summary>
         /// Gets the custom attributes currently stored against the target.
         /// </summary>
         /// <param name="target">The target object.</param>
         IList GetAttributes(object target);
 
         /// <summary>
-        /// Adds the specified attribute to the list of custom attributes on the target.
+        /// Adds the specified attribute value to the list of custom attributes on the target.
         /// </summary>
         /// <param name="target">The target object.</param>
-        /// <param name="attribute">The attribute to add.</param>
-        void AddToAttributes(object target, XAttribute attribute);
+        /// <param name="attribute">The attribute value to add.</param>
+        void AddToAttributes(object target, object attribute);
     }
 }

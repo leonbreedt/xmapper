@@ -18,6 +18,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
+using System.Xml;
 using System.Xml.Linq;
 
 namespace XMapper.Fluent
@@ -36,13 +37,26 @@ namespace XMapper.Fluent
                                                                                        Func<string, TProperty> customDeserializer,
                                                                                        Func<TProperty, string> customSerializer);
 
-        IChildElementMappingBuilder<TElement, TParentBuilder> AnyAttribute(Expression<Func<TElement, IList<XAttribute>>> customAttributesProperty);
+        IChildElementMappingBuilder<TElement, TParentBuilder> AnyAttribute(
+            Expression<Func<TElement, IList<XAttribute>>> customAttributesProperty);
+
+        IChildElementMappingBuilder<TElement, TParentBuilder> AnyAttribute<TAttribute>(
+            Expression<Func<TElement, IList<TAttribute>>> customAttributesProperty,
+            Func<XmlReader, TAttribute> customDeserializer,
+            Action<XmlWriter, TAttribute> customSerializer);
 
         IChildElementMappingBuilder<TElement, TParentBuilder> TextContent<TProperty>(Expression<Func<TElement, TProperty>> property);
         IChildElementMappingBuilder<TElement, TParentBuilder> TextElement<TChildElement>(XName name, Expression<Func<TElement, TChildElement>> property);
 
         IChildElementMappingBuilder<TChildElement, IChildElementMappingBuilder<TElement, TParentBuilder>> Element<TChildElement>(XName name, Expression<Func<TElement, TChildElement>> propertyInParent);
-        IChildElementMappingBuilder<TElement, TParentBuilder> AnyElement(Expression<Func<TElement, IList<XElement>>> customElementsProperty);
+
+        IChildElementMappingBuilder<TElement, TParentBuilder> AnyElement(
+            Expression<Func<TElement, IList<XElement>>> customElementsProperty);
+
+        IChildElementMappingBuilder<TElement, TParentBuilder> AnyElement<TCustomElement>(
+            Expression<Func<TElement, IList<TCustomElement>>> customElementsProperty,
+            Func<XmlReader, TCustomElement> customDeserializer,
+            Action<XmlWriter, TCustomElement> customSerializer);
 
         ICollectionChildElementMappingBuilder<TElement, TChildElement, IChildElementMappingBuilder<TElement, TParentBuilder>> CollectionElement<TChildElement>(XName name, Expression<Func<TElement, IList<TChildElement>>> propertyInParent);
         ICollectionChildElementMappingBuilder<TElement, TChildElement, IChildElementMappingBuilder<TElement, TParentBuilder>> CollectionElement<TChildElement>(XName name);

@@ -18,6 +18,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
+using System.Xml;
 using System.Xml.Linq;
 
 namespace XMapper.Fluent
@@ -29,7 +30,14 @@ namespace XMapper.Fluent
     {
         IElementMappingBuilder<TElement> Attribute<TProperty>(XName name,
                                                              Expression<Func<TElement, TProperty>> property);
-        IElementMappingBuilder<TElement> AnyAttribute(Expression<Func<TElement, IList<XAttribute>>> customAttributesProperty);
+
+        IElementMappingBuilder<TElement> AnyAttribute(
+            Expression<Func<TElement, IList<XAttribute>>> customAttributesProperty);
+        
+        IElementMappingBuilder<TElement> AnyAttribute<TAttribute>(
+            Expression<Func<TElement, IList<TAttribute>>> attributeProperty,
+            Func<XmlReader, TAttribute> customDeserializer,
+            Action<XmlWriter, TAttribute> customSerializer);
 
         IElementMappingBuilder<TElement> Attribute<TProperty>(XName name,
                                                              Expression<Func<TElement, TProperty>> property,
@@ -41,6 +49,10 @@ namespace XMapper.Fluent
 
         IChildElementMappingBuilder<TChildElement, IElementMappingBuilder<TElement>> Element<TChildElement>(XName name, Expression<Func<TElement, TChildElement>> propertyInParent);
         IElementMappingBuilder<TElement> AnyElement(Expression<Func<TElement, IList<XElement>>> customElementsProperty);
+        IElementMappingBuilder<TElement> AnyElement<TCustomElement>(
+            Expression<Func<TElement, IList<TCustomElement>>> customElementsProperty,
+            Func<XmlReader, TCustomElement> customDeserializer,
+            Action<XmlWriter, TCustomElement> customSerializer);
 
         ICollectionChildElementMappingBuilder<TElement, TChildElement, IElementMappingBuilder<TElement>> CollectionElement<TChildElement>(XName name, Expression<Func<TElement, IList<TChildElement>>> propertyInParent);
         

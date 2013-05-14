@@ -19,15 +19,14 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq.Expressions;
-using System.Reflection;
+using System.Xml;
 using System.Xml.Linq;
-using XMapper.Util;
 
 namespace XMapper
 {
     /// <summary>
-    /// Represents a mapping of an XML any attribute to an object property. That is, any XML attribute
-    /// that is not explicitly declared to be supported will be mapped to the specified property.
+    /// Represents a mapping of an XML custom attribute to a collection object property. That is, any XML attribute
+    /// that is not explicitly declared to be supported will be added to the collection in the specified property.
     /// </summary>
     /// <typeparam name="TContainer">The type that contains the property this mapping is associated with.</typeparam>
     public class AnyAttributeMapping<TContainer> : AnyMappingBase<TContainer, XAttribute>, IAnyAttributeMapping
@@ -41,14 +40,82 @@ namespace XMapper
         {
         }
 
+        public object DeserializeAttribute(XmlReader reader)
+        {
+            return new XAttribute(XNamespace.Get(reader.NamespaceURI) + reader.LocalName,
+                                  reader.Value);
+        }
+
+        public void SerializeAttribute(XmlWriter writer, object attribute)
+        {
+            var xAttribute = (XAttribute)attribute;
+            writer.WriteAttributeString(xAttribute.Name.LocalName,
+                                        xAttribute.Name.NamespaceName,
+                                        xAttribute.Value);
+        }
+
         public IList GetAttributes(object target)
         {
             return GetCustomNodeList(target);
         }
 
-        public void AddToAttributes(object target, XAttribute attribute)
+        public void AddToAttributes(object target, object attribute)
         {
-            AddToCustomNodeList(target, attribute);
+            AddToCustomNodeList(target, (XAttribute)attribute);
+        }
+    }
+
+    /// <summary>
+    /// Represents a mapping of an XML any attribute to a collection object property. That is, any XML attribute
+    /// that is not explicitly declared to be supported will be added to the collection in the specified property.
+    /// </summary>
+    /// <typeparam name="TContainer">The type that contains the property this mapping is associated with.</typeparam>
+    /// <typeparam name="TAttribute">The type of the attribute.</typeparam>
+    public class AnyAttributeMapping<TContainer, TAttribute> : AnyMappingBase<TContainer, TAttribute>, IAnyAttributeMapping
+    {
+        #region Fields
+        readonly Func<XmlReader, TAttribute> _customDeserializer;
+        readonly Action<XmlWriter, TAttribute> _customSerializer;
+        #endregion
+
+        /// <summary>
+        /// Creates a new XML attribute mapping for custom attributes.
+        /// </summary>
+        /// <param name="propertyExpression">A simple member expression referencing the property to associate this mapping with.</param>
+        /// <param name="customDeserializer">Custom deserialization function.</param>
+        /// <param name="customSerializer">Custom serialization function.</param>
+        public AnyAttributeMapping(Expression<Func<TContainer, IList<TAttribute>>> propertyExpression,
+                                   Func<XmlReader, TAttribute> customDeserializer,
+                                   Action<XmlWriter, TAttribute> customSerializer)
+            : base(propertyExpression)
+        {
+            if (customDeserializer == null)
+                throw new ArgumentNullException("customDeserializer");
+            if (customSerializer == null)
+                throw new ArgumentNullException("customSerializer");
+
+            _customDeserializer = customDeserializer;
+            _customSerializer = customSerializer;
+        }
+
+        public object DeserializeAttribute(XmlReader reader)
+        {
+            return _customDeserializer(reader);
+        }
+
+        public void SerializeAttribute(XmlWriter writer, object attribute)
+        {
+            _customSerializer(writer, (TAttribute)attribute);
+        }
+
+        public IList GetAttributes(object target)
+        {
+            return GetCustomNodeList(target);
+        }
+
+        public void AddToAttributes(object target, object attribute)
+        {
+            AddToCustomNodeList(target, (TAttribute)attribute);
         }
     }
 }

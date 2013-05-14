@@ -32,5 +32,7 @@ namespace XMapper.Test.Model
         public TimeSpan? TimeSinceLastLogin { get; set; }
         public List<ContactMethod> ContactMethods { get; set; }
         public List<XAttribute> CustomAttributes { get; set; }
+        public List<string> CustomStringAttributes { get; set; }
+        public List<int> CustomIntegerElements { get; set; }
     }
 }

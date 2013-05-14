@@ -16,6 +16,7 @@
 //
 
 using System;
+using System.Xml.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Shouldly;
 using XMapper.Test.Model;

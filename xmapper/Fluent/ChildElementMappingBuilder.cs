@@ -19,6 +19,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Xml;
 using System.Xml.Linq;
 
 namespace XMapper.Fluent
@@ -80,6 +81,18 @@ namespace XMapper.Fluent
             return this;
         }
 
+        public IChildElementMappingBuilder<TElement, TParentBuilder> AnyAttribute<TAttribute>(Expression<Func<TElement, IList<TAttribute>>> attributeProperty,
+                                                                                              Func<XmlReader, TAttribute> customDeserializer,
+                                                                                              Action<XmlWriter, TAttribute> customSerializer)
+        {
+            if (_anyAttr != null)
+                throw new ArgumentException("Only one AnyAttribute() is allowed for a particular element.");
+            _anyAttr = new AnyAttributeMapping<TElement, TAttribute>(attributeProperty,
+                                                                     customDeserializer,
+                                                                     customSerializer);
+            return this;
+        }
+
         public IChildElementMappingBuilder<TElement, TParentBuilder> TextContent<TProperty>(Expression<Func<TElement, TProperty>> property)
         {
             if (_textContent != null)
@@ -106,6 +119,16 @@ namespace XMapper.Fluent
             if (_anyElement != null)
                 throw new ArgumentException("Only one AnyElement() is allowed for a particular element.");
             _anyElement = new AnyElementMapping<TElement>(customElementsProperty);
+            return this;
+        }
+
+        public IChildElementMappingBuilder<TElement, TParentBuilder> AnyElement<TCustomElement>(Expression<Func<TElement, IList<TCustomElement>>> customElementsProperty, Func<XmlReader, TCustomElement> customDeserializer, Action<XmlWriter, TCustomElement> customSerializer)
+        {
+            if (_anyElement != null)
+                throw new ArgumentException("Only one AnyElement() is allowed for a particular element.");
+            _anyElement = new AnyElementMapping<TElement, TCustomElement>(customElementsProperty,
+                                                                          customDeserializer,
+                                                                          customSerializer);
             return this;
         }
 

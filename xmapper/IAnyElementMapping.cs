@@ -16,7 +16,7 @@
 //
 
 using System.Collections;
-using System.Xml.Linq;
+using System.Xml;
 
 namespace XMapper
 {
@@ -28,6 +28,19 @@ namespace XMapper
     public interface IAnyElementMapping
     {
         /// <summary>
+        /// Deserializes an element from an XmlReader.
+        /// </summary>
+        /// <param name="reader">The reader to use, must be positioned on an element.</param>
+        object DeserializeElement(XmlReader reader);
+
+        /// <summary>
+        /// Serializes an element to an XmlWriter.
+        /// </summary>
+        /// <param name="writer">The writer, must be positioned on an element.</param>
+        /// <param name="element">The element to serialize.</param>
+        void SerializeElement(XmlWriter writer, object element);
+
+        /// <summary>
         /// Gets the custom elements currently stored against the target.
         /// </summary>
         /// <param name="target">The target object.</param>
@@ -38,6 +51,6 @@ namespace XMapper
         /// </summary>
         /// <param name="target">The target object.</param>
         /// <param name="element">The element to add.</param>
-        void AddToElements(object target, XElement element);
+        void AddToElements(object target, object element);
     }
 }

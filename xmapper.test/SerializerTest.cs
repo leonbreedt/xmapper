@@ -162,6 +162,7 @@ namespace XMapper.Test
         {
             var stream = new MemoryStream();
             XNamespace dmsNs = "http://dms.com";
+            XNamespace testNs = "http://test.com";
             var document = new Document
                            {
                                CustomElements = new List<XElement>
@@ -170,9 +171,9 @@ namespace XMapper.Test
                                            new XElement(dmsNs + "Child1"),
                                            new XElement(dmsNs + "Child2",
                                                new XAttribute("Attr1", "Value1"))),
-                                       new XElement("CustomElement2",
+                                       new XElement(testNs + "CustomElement2",
                                            new XAttribute("Name", "Value2")),
-                                       new XElement("CustomElement3",
+                                       new XElement(testNs + "CustomElement3",
                                            new XAttribute("Name", "Value3")),
                                    },
                                Persons = new List<Person>
@@ -234,11 +235,108 @@ namespace XMapper.Test
                                                 <IsEnabled>false</IsEnabled>
                                                 <Address StreetName='500 Dominion Road' City='Auckland' />
                                               </Person>
-                                             </Document>");
+                                              <dms:CustomElement1>
+                                                <dms:Child1 />
+                                                <dms:Child2 Attr1='Value1' />
+                                              </dms:CustomElement1>
+                                              <CustomElement2 Name='Value2' />
+                                              <CustomElement3 Name='Value3' />
+                                            </Document>");
 
             Debug.WriteLine(stream.ToXDocument());
 
             XAssert.AreEqual(expected, stream.ToXDocument());
+        }
+
+        [TestMethod]
+        public void CustomAnyAttributeSerializer_ShouldDeserializeToCustomValue()
+        {
+            var description = new FluentSchemaDescription();
+            description.Element<Person>("Person")
+                       .AnyAttribute<string>(x => x.CustomStringAttributes,
+                                             reader => "Attribute:" + reader.LocalName + "=" + reader.Value,
+                                             (writer, attr) => writer.WriteAttributeString("Oops", "Lost Information: " + attr));
+
+            var schema = description.Build();
+
+            var serializer = new Serializer(schema);
+
+            var person = serializer.Deserialize<Person>("<Person Custom1='Value1' Custom2='Value2' />".ToStream());
+
+            person.CustomStringAttributes.Count.ShouldBe(2);
+            person.CustomStringAttributes[0].ShouldBe("Attribute:Custom1=Value1");
+            person.CustomStringAttributes[1].ShouldBe("Attribute:Custom2=Value2");
+        }
+
+        [TestMethod]
+        public void CustomAnyAttributeSerializer_ShouldSerializeToCustomValue()
+        {
+            int i = 0;
+            var description = new FluentSchemaDescription();
+            description.Element<Person>("Person")
+                       .AnyAttribute<string>(x => x.CustomStringAttributes,
+                                             reader => "Attribute:" + reader.LocalName + "=" + reader.Value,
+                                             (writer, attr) => writer.WriteAttributeString("CustomAttr" + (++i), "MissingValue"));
+
+            var schema = description.Build();
+
+            var serializer = new Serializer(schema);
+
+            var person = serializer.Deserialize<Person>("<Person Custom1='Value1' Custom2='Value2' />".ToStream());
+            var stream = new MemoryStream();
+            serializer.Serialize(stream, person);
+
+            XAssert.AreEqual("<Person CustomAttr1='MissingValue' CustomAttr2='MissingValue' />",
+                             stream.ToXDocument().ToString());
+        }
+
+        [TestMethod]
+        public void CustomAnyElementSerializer_ShouldDeserializeToCustomValue()
+        {
+            var description = new FluentSchemaDescription();
+            description.Element<Person>("Person")
+                       .AnyElement<int>(x => x.CustomIntegerElements,
+                                             reader => reader.ReadElementContentAsInt(),
+                                             (writer, value) => writer.WriteElementString("NewName", value.ToString()));
+
+            var schema = description.Build();
+
+            var serializer = new Serializer(schema);
+
+            var person = serializer.Deserialize<Person>(
+                @"<Person>
+                    <Custom1>34</Custom1>
+                    <Custom2>35</Custom2>
+                  </Person>".ToStream());
+
+            person.CustomIntegerElements.Count.ShouldBe(2);
+            person.CustomIntegerElements[0].ShouldBe(34);
+            person.CustomIntegerElements[1].ShouldBe(35);
+        }
+
+        [TestMethod]
+        public void CustomAnyElementSerializer_ShouldSerializeToCustomValue()
+        {
+            var description = new FluentSchemaDescription();
+            description.Element<Person>("Person")
+                       .AnyElement<int>(x => x.CustomIntegerElements,
+                                             reader => reader.ReadElementContentAsInt(),
+                                             (writer, value) => writer.WriteElementString("NewName", value.ToString()));
+
+            var schema = description.Build();
+
+            var serializer = new Serializer(schema);
+
+            var person = new Person {CustomIntegerElements = new List<int> {1, 2, 3}};
+            var stream = new MemoryStream();
+            serializer.Serialize(stream, person);
+
+            XAssert.AreEqual(@"<Person>
+                                 <NewName>1</NewName>
+                                 <NewName>2</NewName>
+                                 <NewName>3</NewName>
+                               </Person>",
+                             stream.ToXDocument().ToString());
         }
 
         internal static SchemaDescription FullSchema()

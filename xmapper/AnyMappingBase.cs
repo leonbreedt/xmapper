@@ -20,7 +20,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Xml.Linq;
 using XMapper.Util;
 
 namespace XMapper
@@ -32,7 +31,6 @@ namespace XMapper
     /// <typeparam name="TContainer">The containing type.</typeparam>
     /// <typeparam name="TXMLNode">The type of the XML node.</typeparam>
     public abstract class AnyMappingBase<TContainer, TXMLNode> : MappingBase
-        where TXMLNode : XObject
     {
         #region Fields
         readonly Func<IList<TXMLNode>> _listConstructor;

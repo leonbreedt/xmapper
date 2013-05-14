@@ -150,10 +150,7 @@ namespace XMapper
                         var anyAttributeMapping = mapping.AnyAttribute;
                         if (anyAttributeMapping != null)
                         {
-                            anyAttributeMapping.AddToAttributes(item,
-                                                                new XAttribute(
-                                                                    XNamespace.Get(reader.NamespaceURI) + reader.LocalName,
-                                                                    reader.Value));
+                            anyAttributeMapping.AddToAttributes(item, anyAttributeMapping.DeserializeAttribute(reader));
                         }
                     }
 
@@ -211,8 +208,10 @@ namespace XMapper
                                 var anyElementMapping = mapping.AnyChildElement;
                                 if (anyElementMapping != null)
                                 {
-                                    var xElement = XElement.Load(reader.ReadSubtree());
-                                    anyElementMapping.AddToElements(item, xElement);
+                                    var customReader = reader.ReadSubtree();
+                                    customReader.Read();
+                                    anyElementMapping.AddToElements(item,
+                                                                    anyElementMapping.DeserializeElement(customReader));
                                 }
                                 else
                                 {
@@ -263,14 +262,12 @@ namespace XMapper
                 var customAttributes = mapping.AnyAttribute.GetAttributes(item);
                 if (customAttributes != null)
                 {
-                    foreach (XAttribute attribute in customAttributes)
+                    foreach (var attribute in customAttributes)
                     {
                         if (attribute == null)
                             continue;
 
-                        writer.WriteAttributeString(attribute.Name.LocalName,
-                            attribute.Name.NamespaceName,
-                                                    attribute.Value);
+                        mapping.AnyAttribute.SerializeAttribute(writer, attribute);
                     }
                 }
             }
@@ -340,6 +337,21 @@ namespace XMapper
                         var child = childElementMapping.GetFromContainer(item);
                         if (child != null)
                             WriteItem(childElementMapping, writer, child);
+                    }
+                }
+
+                if (mapping.AnyChildElement != null)
+                {
+                    var customElements = mapping.AnyChildElement.GetElements(item);
+                    if (customElements != null)
+                    {
+                        foreach (var element in customElements)
+                        {
+                            if (element == null)
+                                continue;
+
+                            mapping.AnyChildElement.SerializeElement(writer, element);
+                        }
                     }
                 }
             }

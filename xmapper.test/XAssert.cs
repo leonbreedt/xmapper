@@ -28,7 +28,7 @@ namespace XMapper.Test
         public static void AreEqual(string expected, string actual)
         {
             AreEqual(XDocument.Parse(expected, LoadOptions.SetLineInfo),
-                     XDocument.Parse(expected, LoadOptions.SetLineInfo));
+                     XDocument.Parse(actual, LoadOptions.SetLineInfo));
         }
 
         public static void AreEqual(XObject expected, XObject actual)
@@ -62,12 +62,12 @@ namespace XMapper.Test
                 return;
             }
 
-            AssertEqualNames(expected, actual);
             AssertEqualValues(expected, actual);
         }
 
         static void AssertEqualValues(XObject expected, XObject actual)
         {
+            AssertEqualNames(expected, actual);
             if (expected is XAttribute)
                 AssertEqualAttributeValues((XAttribute)expected, (XAttribute)actual);
             else if (expected is XElement)
@@ -83,6 +83,8 @@ namespace XMapper.Test
             {
                 // Ignore xmlns: declarations
                 if (expectedAttribute.Name.Namespace == XNamespace.Xmlns)
+                    continue;
+                if (expectedAttribute.IsNamespaceDeclaration)
                     continue;
 
                 XAttribute actualAttribute;
@@ -108,6 +110,8 @@ namespace XMapper.Test
                 // Ignore xmlns: declarations
                 if (actualAttribute.Name.Namespace == XNamespace.Xmlns)
                     continue;
+                if (actualAttribute.IsNamespaceDeclaration)
+                    continue;
 
                 XAttribute expectedAttribute;
                 if (!expectedAttributesByName.TryGetValue(actualAttribute.Name, out expectedAttribute))
@@ -124,7 +128,7 @@ namespace XMapper.Test
                     string.Format("{0} has {1} child elements", GetXDescription(actual), actualChildElements.Length));
 
             for (int i = 0; i < expectedChildElements.Length; i++)
-                AssertEqualElementValues(actual, expectedChildElements[i], actualChildElements[i]);
+                AreEqual(expectedChildElements[i], actualChildElements[i]);
 
             if (!expectedElement.Value.Equals(actualElement.Value))
             {
